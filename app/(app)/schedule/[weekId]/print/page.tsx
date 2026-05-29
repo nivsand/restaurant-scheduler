@@ -3,32 +3,52 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
-import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
-import {
-  ALL_SHIFT_TYPES,
-  SHIFT_DEFS,
-  ShiftType,
-} from "@/lib/shifts";
-import {
-  themeForShift,
-  NOTE_THEME,
-  NOTE_LABELS_HE,
-} from "@/lib/grid-theme";
+import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import { cn } from "@/lib/utils";
 import { PrintControls } from "@/components/print-controls";
+import { ScheduleGrid } from "@/components/schedule-grid";
 
 export const metadata = {
   title: "סידור להדפסה",
 };
 
-const NOTE_KINDS = ["event", "shift_manager", "hours"] as const;
+const PDF_PAGE_ISOLATION_CSS = `
+  @media screen, print {
+    html, body {
+      background: #fff !important;
+      direction: rtl;
+      margin: 0 !important;
+    }
+
+    body:has(#schedule-area) * {
+      visibility: hidden !important;
+    }
+
+    body:has(#schedule-area) #schedule-area,
+    body:has(#schedule-area) #schedule-area * {
+      visibility: visible !important;
+    }
+
+    body:has(#schedule-area) #schedule-area {
+      position: absolute !important;
+      inset: 0 0 auto 0 !important;
+      margin: 0 !important;
+      max-width: none !important;
+      overflow: visible !important;
+      width: 100% !important;
+    }
+  }
+`;
 
 export default async function PrintSchedulePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ weekId: string }>;
+  searchParams?: Promise<{ pdf?: string }>;
 }) {
   const { weekId } = await params;
+  const isPdfMode = (await searchParams)?.pdf === "1";
   const session = await auth();
   const restaurantId = session!.user.restaurantId;
 
@@ -55,26 +75,20 @@ export default async function PrintSchedulePage({
   const headMap = new Map<string, number>();
   for (const t of templates) headMap.set(`${t.day}:${t.shiftType}`, t.headcount);
   for (const o of week.overrides) headMap.set(`${o.day}:${o.shiftType}`, o.headcount);
-
-  const cellMap = new Map<string, Array<string | null>>();
-  for (const [key, n] of headMap) {
-    if (n <= 0) continue;
-    cellMap.set(key, new Array(n).fill(null));
-  }
-  for (const a of assignments) {
-    const key = `${a.day}:${a.shiftType}`;
-    if (!cellMap.has(key)) continue;
-    const arr = cellMap.get(key)!;
-    arr[a.slotIndex] = a.employee?.name ?? null;
-  }
-
-  const noteMap = new Map<string, string>();
-  for (const n of scheduleNotes) noteMap.set(`${n.day}:${n.kind}`, n.content);
-
-  const activeShiftTypes = ALL_SHIFT_TYPES.filter((st) => {
-    for (const d of DAYS) if ((headMap.get(`${d}:${st}`) ?? 0) > 0) return true;
-    return false;
+  const headcounts = Array.from(headMap.entries()).map(([key, headcount]) => {
+    const [day, shiftType] = key.split(":");
+    return { day: Number(day), shiftType, headcount };
   });
+  const assignmentRows = assignments.map((assignment) => ({
+    day: assignment.day,
+    shiftType: assignment.shiftType,
+    slotIndex: assignment.slotIndex,
+    employeeId: assignment.employeeId,
+    employeeName: assignment.employee?.name ?? null,
+    locked: assignment.locked,
+    generatedScore: assignment.generatedScore,
+    generatedBreakdown: assignment.generatedBreakdown,
+  }));
 
   // Per-employee summary with full 8-column breakdown
   const empCounts = new Map<
@@ -129,6 +143,9 @@ export default async function PrintSchedulePage({
 
   return (
     <main className="min-h-screen bg-white text-slate-900 print:bg-white">
+      {isPdfMode && (
+        <style dangerouslySetInnerHTML={{ __html: PDF_PAGE_ISOLATION_CSS }} />
+      )}
       {/* Toolbar — hidden during print, hidden in captured PNG */}
       <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 print:hidden" data-no-export>
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-2">
@@ -143,7 +160,7 @@ export default async function PrintSchedulePage({
       </div>
 
       <div className="mx-auto max-w-[1400px] p-6 print:p-3" dir="rtl">
-        {/* Schedule area — this is what gets captured to PNG */}
+        {/* Schedule area — PDF and PNG export this same visual grid. */}
         <div id="schedule-area" className="bg-white">
           <div className="mb-3 flex items-end justify-between border-b-4 border-slate-300 pb-2">
             <div>
@@ -167,122 +184,21 @@ export default async function PrintSchedulePage({
             </span>
           </div>
 
-          <table className="w-full border-collapse text-xs">
-            <thead>
-              <tr>
-                <th className="border-2 border-slate-500 bg-slate-100 p-2 text-center font-bold">
-                  משמרת
-                </th>
-                {DAYS.map((d) => (
-                  <th
-                    key={d}
-                    className="border-2 border-slate-500 bg-slate-100 p-2 text-center font-bold"
-                  >
-                    {DAY_NAMES_HE[d]}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {activeShiftTypes.map((st) => {
-                const def = SHIFT_DEFS[st];
-                const theme = themeForShift(st as ShiftType);
-                return (
-                  <tr key={st}>
-                    <td
-                      className={cn(
-                        "whitespace-nowrap border border-slate-500 p-2 text-center font-bold",
-                        theme.labelClass,
-                      )}
-                    >
-                      <div>{def.labelHe}</div>
-                      <div className="num text-[10px] font-normal opacity-80">
-                        {def.start}-{def.end}
-                      </div>
-                    </td>
-                    {DAYS.map((d) => {
-                      const need = headMap.get(`${d}:${st}`) ?? 0;
-                      const cells = cellMap.get(`${d}:${st}`) ?? [];
-                      if (need === 0) {
-                        return (
-                          <td
-                            key={d}
-                            className={cn(
-                              "border border-slate-500 p-2 text-center text-xs font-bold",
-                              theme.closedClass,
-                            )}
-                          >
-                            סגור
-                          </td>
-                        );
-                      }
-                      return (
-                        <td
-                          key={d}
-                          className={cn(
-                            "border border-slate-500 p-1.5 text-center align-middle",
-                            theme.cellClass,
-                          )}
-                        >
-                          <ul className="space-y-0.5">
-                            {cells.map((name, i) => (
-                              <li
-                                key={i}
-                                className={cn(
-                                  "leading-tight",
-                                  !name && "italic text-rose-600",
-                                )}
-                              >
-                                {name ?? "— ריק —"}
-                              </li>
-                            ))}
-                          </ul>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-
-              {/* Editable note rows: events, shift manager, hours */}
-              {NOTE_KINDS.map((kind) => {
-                const theme = NOTE_THEME[kind];
-                return (
-                  <tr key={kind}>
-                    <td
-                      className={cn(
-                        "border border-slate-500 p-2 text-center font-bold",
-                        theme.labelClass,
-                      )}
-                    >
-                      {NOTE_LABELS_HE[kind]}
-                    </td>
-                    {DAYS.map((d) => {
-                      const content = noteMap.get(`${d}:${kind}`) ?? "";
-                      return (
-                        <td
-                          key={d}
-                          className={cn(
-                            "border border-slate-500 p-1.5 text-center align-middle",
-                            theme.cellClass,
-                          )}
-                        >
-                          <div className="whitespace-pre-wrap text-xs leading-tight">
-                            {content || (
-                              <span className="text-slate-300">—</span>
-                            )}
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <ScheduleGrid
+            areaId="schedule-grid"
+            weekId={weekId}
+            assignments={assignmentRows}
+            headcounts={headcounts}
+            notes={scheduleNotes.map((note) => ({
+              day: note.day,
+              kind: note.kind,
+              content: note.content,
+            }))}
+            readOnly
+          />
         </div>
 
-        {/* Summary section — NOT included in PNG capture, only Print/PDF */}
+        {/* Summary section — visible on the print view, excluded from PDF/PNG captures. */}
         <div id="summary-area" className="mt-5 print:break-inside-avoid">
           <h3 className="mb-2 text-sm font-bold">סיכום לפי עובד</h3>
           <table className="w-full border-collapse text-[11px]">

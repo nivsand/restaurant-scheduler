@@ -18,12 +18,62 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  async function downloadFallbackImage() {
+    console.log("[schedule-pdf-export] client fallback=html-to-image-png start", {
+      weekId,
+    });
+    const node = document.getElementById("schedule-area");
+    if (!node) {
+      const fallbackUrl = `/schedule/${weekId}/print?auto=png&fallback=pdf`;
+      console.log("[schedule-pdf-export] client fallback=print-page-png", {
+        fallbackUrl,
+        weekId,
+      });
+      window.location.assign(fallbackUrl);
+      return;
+    }
+
+    const { toPng } = await import("html-to-image");
+    const dataUrl = await toPng(node, {
+      pixelRatio: 2,
+      backgroundColor: "#ffffff",
+      width: node.scrollWidth,
+      height: node.scrollHeight,
+      cacheBust: true,
+      filter: (el) => {
+        if (!(el instanceof HTMLElement)) return true;
+        return el.dataset.noExport !== "true";
+      },
+    });
+    const a = document.createElement("a");
+    a.download = `schedule-${weekId}.png`;
+    a.href = dataUrl;
+    a.click();
+    console.log("[schedule-pdf-export] client fallback=html-to-image-png done", {
+      weekId,
+    });
+  }
+
   async function downloadPdf() {
     setError(null);
     setDownloading("pdf");
+    const endpoint = `/api/schedule/${weekId}/pdf`;
+    console.log("[schedule-pdf-export] client path=puppeteer-route", {
+      endpoint,
+      weekId,
+    });
     try {
-      const response = await fetch(`/api/schedule/${weekId}/pdf`, {
+      const response = await fetch(endpoint, {
         credentials: "same-origin",
+      });
+      console.log("[schedule-pdf-export] client response", {
+        exportId: response.headers.get("x-schedule-pdf-export-id"),
+        fallback: response.headers.get("x-schedule-pdf-fallback"),
+        path: response.headers.get("x-schedule-pdf-export-path"),
+        renderer: response.headers.get("x-schedule-pdf-renderer"),
+        status: response.status,
+        styleCellBg: response.headers.get("x-schedule-pdf-style-cell-bg"),
+        styleDirection: response.headers.get("x-schedule-pdf-style-direction"),
       });
       if (!response.ok) throw new Error("ייצוא PDF נכשל");
       const blob = await response.blob();
@@ -34,7 +84,19 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError((err as Error).message);
+      console.warn(
+        "[schedule-pdf-export] client fallback=html-to-image-png",
+        err,
+      );
+      try {
+        await downloadFallbackImage();
+      } catch (fallbackErr) {
+        console.warn(
+          "[schedule-pdf-export] client fallback=html-to-image-png failed",
+          fallbackErr,
+        );
+        setError((fallbackErr as Error).message);
+      }
     } finally {
       setDownloading(null);
     }

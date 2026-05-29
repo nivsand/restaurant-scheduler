@@ -15,9 +15,24 @@ export function PrintControls({ weekId }: { weekId: string }) {
   async function downloadPdf(autoClose = false) {
     setError(null);
     setDownloading("pdf");
+    const endpoint = `/api/schedule/${weekId}/pdf`;
+    console.log("[schedule-pdf-export] client path=puppeteer-route", {
+      autoClose,
+      endpoint,
+      weekId,
+    });
     try {
-      const response = await fetch(`/api/schedule/${weekId}/pdf`, {
+      const response = await fetch(endpoint, {
         credentials: "same-origin",
+      });
+      console.log("[schedule-pdf-export] client response", {
+        exportId: response.headers.get("x-schedule-pdf-export-id"),
+        fallback: response.headers.get("x-schedule-pdf-fallback"),
+        path: response.headers.get("x-schedule-pdf-export-path"),
+        renderer: response.headers.get("x-schedule-pdf-renderer"),
+        status: response.status,
+        styleCellBg: response.headers.get("x-schedule-pdf-style-cell-bg"),
+        styleDirection: response.headers.get("x-schedule-pdf-style-direction"),
       });
       if (!response.ok) throw new Error("ייצוא PDF נכשל");
       const blob = await response.blob();
@@ -29,7 +44,12 @@ export function PrintControls({ weekId }: { weekId: string }) {
       URL.revokeObjectURL(url);
       if (autoClose) setTimeout(() => window.close(), 500);
     } catch (err) {
+      console.warn(
+        "[schedule-pdf-export] client fallback=html-to-image-png",
+        err,
+      );
       setError((err as Error).message);
+      await downloadPng(autoClose);
     } finally {
       setDownloading(null);
     }
@@ -38,6 +58,10 @@ export function PrintControls({ weekId }: { weekId: string }) {
   async function downloadPng(autoClose = false) {
     setError(null);
     setDownloading("png");
+    console.log("[schedule-pdf-export] client fallback=html-to-image-png start", {
+      autoClose,
+      weekId,
+    });
     try {
       const { toPng } = await import("html-to-image");
       // Target the schedule grid only — NOT the summary section. This avoids
@@ -61,6 +85,10 @@ export function PrintControls({ weekId }: { weekId: string }) {
       link.download = `schedule-${weekId}.png`;
       link.href = dataUrl;
       link.click();
+      console.log("[schedule-pdf-export] client fallback=html-to-image-png done", {
+        autoClose,
+        weekId,
+      });
       if (autoClose) setTimeout(() => window.close(), 500);
     } catch (err) {
       setError((err as Error).message);
@@ -69,7 +97,7 @@ export function PrintControls({ weekId }: { weekId: string }) {
     }
   }
 
-  // Auto-trigger handler: ?auto=print/pdf → download PDF · ?auto=png → download PNG
+  // Auto-trigger handler: ?auto=pdf uses the Puppeteer API route; ?auto=png uses html-to-image.
   useEffect(() => {
     if (autoFiredRef.current) return;
     const auto = params.get("auto");
@@ -77,7 +105,11 @@ export function PrintControls({ weekId }: { weekId: string }) {
     autoFiredRef.current = true;
     // Wait one tick so the page has rendered fonts + layout
     const handle = setTimeout(() => {
-      if (auto === "print" || auto === "pdf") void downloadPdf(true);
+      if (auto === "print") {
+        console.warn("[schedule-pdf-export] client legacy-auto-print=disabled", {
+          weekId,
+        });
+      } else if (auto === "pdf") void downloadPdf(true);
       else if (auto === "png") void downloadPng(true);
     }, 300);
     return () => clearTimeout(handle);

@@ -39,12 +39,14 @@ export interface ScheduleNote {
 const NOTE_KINDS: NoteKind[] = ["event", "shift_manager", "hours"];
 
 export function ScheduleGrid({
+  areaId = "schedule-area",
   weekId,
   assignments,
   headcounts,
   notes,
   readOnly,
 }: {
+  areaId?: string;
   weekId: string;
   assignments: AssignmentRow[];
   headcounts: HeadcountRow[];
@@ -87,7 +89,7 @@ export function ScheduleGrid({
   });
 
   return (
-    <div id="schedule-area" className="overflow-x-auto rounded-xl bg-white">
+    <div id={areaId} className="overflow-x-auto rounded-xl bg-white">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr>
