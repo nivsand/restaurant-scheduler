@@ -1,0 +1,44 @@
+import * as React from "react";
+import { cn } from "@/lib/utils";
+
+type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Size = "sm" | "md" | "lg";
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: Variant;
+  size?: Size;
+}
+
+const variants: Record<Variant, string> = {
+  primary:
+    "bg-brand-600 text-white hover:bg-brand-700 disabled:bg-brand-300 disabled:cursor-not-allowed",
+  secondary:
+    "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 disabled:opacity-50",
+  ghost: "bg-transparent text-slate-700 hover:bg-slate-100",
+  danger:
+    "bg-rose-600 text-white hover:bg-rose-700 disabled:bg-rose-300 disabled:cursor-not-allowed",
+};
+
+const sizes: Record<Size, string> = {
+  sm: "h-8 px-3 text-sm",
+  md: "h-10 px-4 text-sm",
+  lg: "h-12 px-6 text-base",
+};
+
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = "primary", size = "md", className, ...rest }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors",
+          variants[variant],
+          sizes[size],
+          className,
+        )}
+        {...rest}
+      />
+    );
+  },
+);
+Button.displayName = "Button";

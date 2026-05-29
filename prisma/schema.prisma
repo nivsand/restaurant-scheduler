@@ -1,0 +1,247 @@
+// Shift Scheduler — production schema (PostgreSQL).
+//
+// This is the single source of truth for the data model. The app deploys to
+// Vercel against a managed Postgres database (Neon, Supabase, Vercel Postgres,
+// etc). For local development, run Postgres locally (Docker one-liner in
+// DEPLOYMENT.md) and point DATABASE_URL at it.
+//
+//   DATABASE_URL — pooled connection string used by the app at runtime
+//   DIRECT_URL   — direct (non-pooled) connection used by `prisma migrate`
+//                  If your provider has only one URL, set both to the same value.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// One restaurant per deployment in Phase 1, but the FK is in place so we can
+// move to multi-tenant later without a schema change.
+model Restaurant {
+  id                 String   @id @default(cuid())
+  name               String
+  minRestHours       Float    @default(11) // configurable rest between shifts
+  closingsCount      Int      @default(2)  // how many closings per evening (A + B)
+  fairnessWindowDays Int      @default(28) // rolling history window for fairness math
+  maxConsecutiveDays Int      @default(6)  // labor-law-style cap on days in a row
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  managers       Manager[]
+  employees      Employee[]
+  shiftTemplate  ShiftTemplate[]
+  weeks          Week[]
+}
+
+model Manager {
+  id           String   @id @default(cuid())
+  restaurantId String
+  email        String   @unique
+  name         String
+  passwordHash String
+  // isAdmin gates the User Management page. The bootstrap manager is an admin.
+  isAdmin      Boolean  @default(false)
+  // active=false disables login without deleting history/audit references.
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  auditLogs  AuditLog[]
+
+  @@index([restaurantId, active])
+}
+
+// role: "kitchen" | "floor" | "both"
+model Employee {
+  id              String   @id @default(cuid())
+  restaurantId    String
+  name            String
+  role            String   @default("both")
+  // soft preferences — engine treats as constraints unless manager overrides
+  maxShifts       Int?
+  minShifts       Int?
+  onlyMornings    Boolean  @default(false)
+  onlyEvenings    Boolean  @default(false)
+  noClosings      Boolean  @default(false)
+  weekendOk       Boolean  @default(true)
+  submissionToken String   @unique
+  notes           String?
+  archived        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  restaurant     Restaurant            @relation(fields: [restaurantId], references: [id])
+  submissions    RawSubmission[]
+  availabilities ParsedAvailability[]
+  assignments    ScheduleAssignment[]
+  blocks         ScheduleBlock[]
+
+  @@index([restaurantId, archived])
+}
+
+// One row per (restaurant, day-of-week, shift type) defining default headcount.
+// day: 0..6 (Sunday=0). shiftType: see lib/shifts.ts.
+model ShiftTemplate {
+  id           String @id @default(cuid())
+  restaurantId String
+  day          Int
+  shiftType    String
+  headcount    Int    @default(0)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([restaurantId, day, shiftType])
+}
+
+// A scheduling week. weekStart is the Sunday at 00:00 local time.
+model Week {
+  id           String   @id @default(cuid())
+  restaurantId String
+  weekStart    DateTime // ISO; expected to be a Sunday
+  status       String   @default("draft") // draft | approved
+  notes        String?
+  createdAt    DateTime @default(now())
+  approvedAt   DateTime?
+
+  restaurant     Restaurant            @relation(fields: [restaurantId], references: [id])
+  overrides      WeekOverride[]
+  submissions    RawSubmission[]
+  availabilities ParsedAvailability[]
+  assignments    ScheduleAssignment[]
+  scheduleNotes  ScheduleNote[]
+  blocks         ScheduleBlock[]
+  auditLogs      AuditLog[]
+
+  @@unique([restaurantId, weekStart])
+}
+
+// Manager-defined "lock out" — the engine must not assign this employee to
+// this (day, shiftType) for this week. Stored at shift level, not slot level
+// (blocking from one slot effectively blocks the whole shift).
+model ScheduleBlock {
+  id         String   @id @default(cuid())
+  weekId     String
+  day        Int
+  shiftType  String
+  employeeId String
+  createdAt  DateTime @default(now())
+
+  week     Week     @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([weekId, day, shiftType, employeeId])
+  @@index([weekId])
+  @@index([employeeId])
+}
+
+// Per-day editable notes attached to the schedule (events, shift manager, hours).
+// kind values: "event" | "shift_manager" | "hours"
+model ScheduleNote {
+  id        String   @id @default(cuid())
+  weekId    String
+  day       Int
+  kind      String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  week Week @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@unique([weekId, day, kind])
+  @@index([weekId])
+}
+
+model WeekOverride {
+  id        String @id @default(cuid())
+  weekId    String
+  day       Int
+  shiftType String
+  headcount Int
+
+  week Week @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@unique([weekId, day, shiftType])
+}
+
+// source: "paste" | "form"
+model RawSubmission {
+  id              String    @id @default(cuid())
+  weekId          String
+  employeeId      String?
+  content         String
+  source          String
+  // Extracted from "X משמרות" — caps assignments for this employee this week
+  requestedShifts Int?
+  submittedAt     DateTime  @default(now())
+  parsedAt        DateTime?
+
+  week     Week      @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id])
+}
+
+// One row per (week, employee, day, shiftType) when the employee CAN work it.
+// source: "rule" | "llm" | "form" | "manual"
+model ParsedAvailability {
+  id         String  @id @default(cuid())
+  weekId     String
+  employeeId String
+  day        Int
+  shiftType  String
+  available  Boolean @default(true)
+  note       String?
+  confidence Float   @default(1.0)
+  source     String  @default("manual")
+  // Gate for the scheduling engine. Low-confidence parses default false and
+  // must be confirmed by the manager before the engine will use them.
+  confirmed  Boolean @default(true)
+
+  week     Week     @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([weekId, employeeId, day, shiftType])
+  @@index([weekId, day, shiftType])
+  @@index([weekId, confirmed])
+}
+
+// Final assignments. slotIndex distinguishes multiple people in the same shift.
+// employeeId nullable => empty slot (warning surface).
+model ScheduleAssignment {
+  id                 String    @id @default(cuid())
+  weekId             String
+  day                Int
+  shiftType          String
+  slotIndex          Int
+  employeeId         String?
+  locked             Boolean   @default(false) // protected from regenerate
+  // Engine output metadata (null when manually assigned or cleared)
+  generatedScore     Float?
+  generatedBreakdown String?   // JSON
+  generatedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  week     Week      @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id])
+
+  @@unique([weekId, day, shiftType, slotIndex])
+  @@index([weekId, employeeId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  weekId    String?
+  managerId String
+  action    String
+  // Postgres-native JSON. App code writes JSON-encoded strings via Prisma's
+  // typed Json column; reads are transparent.
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  week    Week?   @relation(fields: [weekId], references: [id])
+  manager Manager @relation(fields: [managerId], references: [id])
+}

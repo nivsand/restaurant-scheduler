@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* Subtle focus ring */
+:where(button, a, input, textarea, select):focus-visible {
+  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white rounded;
+}
+
+/* Hebrew numerals stay LTR inside RTL.
+   NOTE: display:inline-block must NOT be applied to table cells — overriding a
+   <td>/<th>'s display:table-cell removes it from the table layout and collapses
+   column alignment (this broke the employee summary tables). Scope it so cells
+   keep their native table-cell display while still isolating the numerals. */
+.num {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+td.num,
+th.num {
+  display: table-cell;
+}
