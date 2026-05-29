@@ -7,13 +7,32 @@ import { exportScheduleExcelAction } from "@/app/(app)/schedule/export-actions";
 
 export function PrintControls({ weekId }: { weekId: string }) {
   const params = useSearchParams();
-  const [downloading, setDownloading] = useState<"png" | "xlsx" | null>(null);
+  const [downloading, setDownloading] = useState<"pdf" | "png" | "xlsx" | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const autoFiredRef = useRef(false);
 
-  function doPrint() {
-    window.print();
+  async function downloadPdf(autoClose = false) {
+    setError(null);
+    setDownloading("pdf");
+    try {
+      const response = await fetch(`/api/schedule/${weekId}/pdf`, {
+        credentials: "same-origin",
+      });
+      if (!response.ok) throw new Error("ייצוא PDF נכשל");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = `schedule-${weekId}.pdf`;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+      if (autoClose) setTimeout(() => window.close(), 500);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setDownloading(null);
+    }
   }
 
   async function downloadPng(autoClose = false) {
@@ -50,7 +69,7 @@ export function PrintControls({ weekId }: { weekId: string }) {
     }
   }
 
-  // Auto-trigger handler: ?auto=print → print dialog · ?auto=png → download PNG
+  // Auto-trigger handler: ?auto=print/pdf → download PDF · ?auto=png → download PNG
   useEffect(() => {
     if (autoFiredRef.current) return;
     const auto = params.get("auto");
@@ -58,7 +77,7 @@ export function PrintControls({ weekId }: { weekId: string }) {
     autoFiredRef.current = true;
     // Wait one tick so the page has rendered fonts + layout
     const handle = setTimeout(() => {
-      if (auto === "print") doPrint();
+      if (auto === "print" || auto === "pdf") void downloadPdf(true);
       else if (auto === "png") void downloadPng(true);
     }, 300);
     return () => clearTimeout(handle);
@@ -95,8 +114,13 @@ export function PrintControls({ weekId }: { weekId: string }) {
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex flex-wrap gap-2">
-        <Button onClick={doPrint} variant="secondary" size="sm">
-          🖨 הדפסה / PDF
+        <Button
+          onClick={() => downloadPdf(false)}
+          variant="secondary"
+          size="sm"
+          disabled={downloading === "pdf"}
+        >
+          {downloading === "pdf" ? "מייצא..." : "🖨 PDF"}
         </Button>
         <Button
           onClick={() => downloadPng(false)}

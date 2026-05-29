@@ -42,3 +42,24 @@ td.num,
 th.num {
   display: table-cell;
 }
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  [data-no-export] {
+    display: none !important;
+  }
+}

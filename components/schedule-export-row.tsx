@@ -8,14 +8,36 @@ import { exportScheduleExcelAction } from "@/app/(app)/schedule/export-actions";
 // flows open the dedicated print page in a new tab (with ?auto=X) which
 // renders cleanly then auto-triggers the action.
 export function ScheduleExportRow({ weekId }: { weekId: string }) {
-  const [downloading, setDownloading] = useState<"png" | "xlsx" | null>(null);
+  const [downloading, setDownloading] = useState<"pdf" | "png" | "xlsx" | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  function openPrint(auto: "print" | "png") {
+  function openPrint(auto: "png") {
     setError(null);
     const url = `/schedule/${weekId}/print?auto=${auto}`;
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  async function downloadPdf() {
+    setError(null);
+    setDownloading("pdf");
+    try {
+      const response = await fetch(`/api/schedule/${weekId}/pdf`, {
+        credentials: "same-origin",
+      });
+      if (!response.ok) throw new Error("ייצוא PDF נכשל");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.download = `schedule-${weekId}.pdf`;
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setDownloading(null);
+    }
   }
 
   function downloadExcel() {
@@ -53,12 +75,13 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Button
-          onClick={() => openPrint("print")}
+          onClick={downloadPdf}
           variant="secondary"
           className="justify-start"
+          disabled={downloading === "pdf"}
         >
           <span className="text-base">🖨</span>
-          <span>הדפסה / PDF</span>
+          <span>{downloading === "pdf" ? "מייצא..." : "PDF"}</span>
         </Button>
         <Button
           onClick={() => openPrint("png")}
@@ -84,7 +107,7 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
         </div>
       )}
       <p className="mt-2 text-[11px] text-slate-400">
-        ההדפסה והתמונה ייפתחו בלשונית חדשה עם תצוגה נקייה.
+        ה-PDF נוצר מהתצוגה המעוצבת; התמונה נפתחת בלשונית נקייה.
       </p>
     </div>
   );
