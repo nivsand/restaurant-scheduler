@@ -101,6 +101,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        // Hash shape diagnostics — confirms the stored value is a real bcrypt
+        // hash (length ~60, prefix like $2a$10$ / $2b$10$). This is the HASH,
+        // not the plaintext password.
+        console.log(`[AUTH_DEBUG] hash length=${manager.passwordHash.length}`);
+        console.log(`[AUTH_DEBUG] hash prefix=${manager.passwordHash.slice(0, 20)}`);
+        console.log(`[AUTH_DEBUG] hash suffix=${manager.passwordHash.slice(-10)}`);
+
         // 3. bcrypt compare — log before and after.
         console.log(`[AUTH_DEBUG] starting bcrypt compare id=${manager.id}`);
         const ok = await bcrypt.compare(password, manager.passwordHash);
