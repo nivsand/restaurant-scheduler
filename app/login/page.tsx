@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; passwordChanged?: string }>;
 }) {
   const sp = await searchParams;
   const cookieStore = await cookies();
@@ -84,8 +84,13 @@ export default async function LoginPage({
               className="text-start"
             />
           </div>
+          {sp.passwordChanged && !sp.error && (
+            <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-2 text-sm text-emerald-700">
+              הסיסמה שונתה בהצלחה. התחבר/י עם הסיסמה החדשה.
+            </p>
+          )}
           {sp.error && (
-            <p className="text-sm text-rose-600">
+            <p role="alert" className="text-sm text-rose-600">
               דוא״ל או סיסמה שגויים
             </p>
           )}
