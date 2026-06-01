@@ -29,16 +29,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       authorize: async (raw) => {
-        // All log lines are prefixed [auth] and NEVER include the plaintext
-        // password. They surface in Vercel → Project → Logs (Functions).
+        // DIAGNOSTIC LOGGING ONLY — business logic is unchanged. Every line is
+        // prefixed [AUTH_DEBUG] and runs in the Node serverless function for
+        // /api/auth, so it appears in Vercel → Project → Logs (Runtime).
+        // The plaintext password is NEVER logged — only whether one was sent.
+
+        // 1. Very beginning: email received + whether a password was provided.
+        const rawEmail =
+          typeof (raw as { email?: unknown })?.email === "string"
+            ? ((raw as { email: string }).email)
+            : "";
+        const passwordProvided =
+          typeof (raw as { password?: unknown })?.password === "string" &&
+          (raw as { password: string }).password.length > 0;
+        console.log(
+          `[AUTH_DEBUG] login attempt email=${rawEmail || "(none)"} passwordProvided=${passwordProvided}`,
+        );
+
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) {
-          console.warn("[auth] login rejected: malformed credentials payload");
+          console.error(
+            `[AUTH_DEBUG] login failed reason=malformed credentials payload email=${rawEmail || "(none)"}`,
+          );
           return null;
         }
         const email = parsed.data.email.trim().toLowerCase();
         const { password } = parsed.data;
 
+        // 2. Manager lookup (with DB-error capture).
         let manager;
         try {
           manager = await prisma.manager.findUnique({
@@ -54,39 +72,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           });
         } catch (err) {
-          // A DB/connection/schema error here also presents to the user as
-          // CredentialsSignin — log it so it isn't mistaken for "wrong password".
-          console.error(`[auth] login error: DB query failed email=${email}`, err);
+          console.error(
+            `[AUTH_DEBUG] login failed reason=database error email=${email}`,
+            err,
+          );
           return null;
         }
 
         if (!manager) {
-          console.warn(`[auth] login failed: manager not found email=${email}`);
+          console.error(`[AUTH_DEBUG] manager lookup result=not found email=${email}`);
+          console.error(`[AUTH_DEBUG] login failed reason=manager not found email=${email}`);
           return null;
         }
+        console.log(
+          `[AUTH_DEBUG] manager found id=${manager.id} active=${manager.active} isAdmin=${manager.isAdmin}`,
+        );
+
         if (!manager.active) {
-          console.warn(
-            `[auth] login failed: manager inactive id=${manager.id} email=${email}`,
+          console.error(
+            `[AUTH_DEBUG] login failed reason=inactive manager id=${manager.id} email=${email}`,
           );
           return null;
         }
         if (!manager.passwordHash) {
-          console.warn(
-            `[auth] login failed: missing passwordHash id=${manager.id} email=${email}`,
+          console.error(
+            `[AUTH_DEBUG] login failed reason=missing passwordHash id=${manager.id} email=${email}`,
           );
           return null;
         }
 
+        // 3. bcrypt compare — log before and after.
+        console.log(`[AUTH_DEBUG] starting bcrypt compare id=${manager.id}`);
         const ok = await bcrypt.compare(password, manager.passwordHash);
+        console.log(`[AUTH_DEBUG] bcrypt compare result=${ok} id=${manager.id}`);
+
         if (!ok) {
-          console.warn(
-            `[auth] login failed: password mismatch id=${manager.id} email=${email}`,
+          console.error(
+            `[AUTH_DEBUG] login failed reason=password mismatch id=${manager.id} email=${email}`,
           );
           return null;
         }
 
-        console.info(
-          `[auth] login success id=${manager.id} email=${email} isAdmin=${manager.isAdmin}`,
+        // 5. Success.
+        console.log(
+          `[AUTH_DEBUG] login success id=${manager.id} email=${email}`,
         );
         return {
           id: manager.id,
