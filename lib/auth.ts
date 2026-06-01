@@ -94,6 +94,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           );
           return null;
         }
+        // ⚠️ TEMPORARY EMERGENCY-ACCESS FALLBACK — REMOVE AFTER LOGIN IS FIXED ⚠️
+        // TODO(REMOVE): This hardcoded fallback exists only so the owner can get
+        // back into their own account while the bcrypt hash is being repaired.
+        // It is scoped to a single email + a single temp password, and STILL
+        // requires the manager row to exist and be active (both checked above).
+        // Once you log in and reset the password via the UI, DELETE this block.
+        if (email === "nivsand@gmail.com" && password === "MyTempPass2026!") {
+          console.log(`[AUTH_DEBUG] temporary admin fallback used`);
+          return {
+            id: manager.id,
+            email: manager.email,
+            name: manager.name,
+            restaurantId: manager.restaurantId,
+          };
+        }
+        // ⚠️ END TEMPORARY FALLBACK ⚠️
+
         if (!manager.passwordHash) {
           console.error(
             `[AUTH_DEBUG] login failed reason=missing passwordHash id=${manager.id} email=${email}`,
