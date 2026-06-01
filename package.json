@@ -15,6 +15,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "bootstrap:admin": "tsx scripts/bootstrap-admin.ts",
+    "reset:login": "tsx scripts/reset-login.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {

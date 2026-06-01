@@ -8,3 +8,5 @@ build
 .env.local
 prisma/*.db
 prisma/*.db-journal
+.vercel
+.env*
