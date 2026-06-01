@@ -98,20 +98,38 @@ export async function changePasswordAction(
     return { error: parsed.error.errors.map((e) => e.message).join(", ") };
   }
 
-  // Guard a missing/blank hash so bcrypt.compare can't throw and crash.
-  if (!manager.passwordHash) {
-    return { error: "אין סיסמה מוגדרת לחשבון. פנה/י למנהל המערכת לאיפוס." };
-  }
+  // ⚠️ TEMPORARY current-password fallback — REMOVE WITH THE LOGIN FALLBACK ⚠️
+  // TODO(REMOVE): When signed in via the emergency login fallback there is no
+  // password that matches the stored hash, so the normal bcrypt check below can
+  // never pass. This lets the owner set a real password ONCE. It is scoped to
+  // the same single email + temp password as the login fallback. Delete this
+  // block (and the one in lib/auth.ts) once a real password works.
+  const isTempFallback =
+    manager.email.toLowerCase() === "nivsand@gmail.com" &&
+    parsed.data.currentPassword === "MyTempPass2026!";
 
   let currentOk = false;
-  try {
-    currentOk = await bcrypt.compare(
-      parsed.data.currentPassword,
-      manager.passwordHash,
+  if (isTempFallback) {
+    console.log(
+      `[PASSWORD_CHANGE_DEBUG] current password validated via temporary fallback`,
     );
-  } catch {
-    return { error: "שגיאה באימות הסיסמה הנוכחית" };
+    currentOk = true;
+  } else {
+    // Normal path — requires a stored hash. Guard a missing/blank hash so
+    // bcrypt.compare can't throw and crash.
+    if (!manager.passwordHash) {
+      return { error: "אין סיסמה מוגדרת לחשבון. פנה/י למנהל המערכת לאיפוס." };
+    }
+    try {
+      currentOk = await bcrypt.compare(
+        parsed.data.currentPassword,
+        manager.passwordHash,
+      );
+    } catch {
+      return { error: "שגיאה באימות הסיסמה הנוכחית" };
+    }
   }
+  // ⚠️ END TEMPORARY current-password fallback ⚠️
   if (!currentOk) return { error: "הסיסמה הנוכחית שגויה" };
 
   // Hash the new password and write it to the row identified by the session.
