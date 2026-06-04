@@ -16,8 +16,9 @@ import {
 import { checkEligibility } from "./candidates";
 import { scoreCandidate } from "./score";
 
-const MAX_ITERATIONS = 200;
-const STAGNANT_LIMIT = 40;
+const MAX_ITERATIONS = 600;
+const STAGNANT_LIMIT = 120;
+const EMPTY_SLOT_FILL_BONUS = 100_000;
 
 export interface RefineParams {
   state: AssignmentState;
@@ -73,7 +74,7 @@ export function refineAssignments(params: RefineParams): {
 
     // Try MOVE-TO-EMPTY first if there are empty slots
     let improved = false;
-    if (emptySlots.length > 0 && rand() < 0.5) {
+    if (emptySlots.length > 0) {
       const target =
         emptySlots[Math.floor(rand() * emptySlots.length)];
 
@@ -304,10 +305,8 @@ function tryMoveToEmpty(
     }
   }
 
-  // Filling an empty slot dominates any soft-improvement swap by design.
-  // 1000 chosen so that a single "fill an empty" move outweighs all routine
-  // fairness / preference deltas, which sit in the ±50 range.
-  const targetFillBonus = 1000;
+  // Filling an empty slot dominates soft fairness/preference deltas.
+  const targetFillBonus = EMPTY_SLOT_FILL_BONUS;
   const repScore = bestRep ? bestRep.score : 0;
   // If the move leaves the ORIGINAL slot empty, lose half the fill bonus.
   // Net: we still prefer the move when 2 empties → 1 empty, but reject it

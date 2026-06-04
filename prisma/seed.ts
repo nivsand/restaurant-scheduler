@@ -23,14 +23,14 @@ function randomToken(length = 24): string {
 }
 
 async function main() {
-  const email = (process.env.DEFAULT_MANAGER_EMAIL ?? "manager@bar.local").toLowerCase();
+  const email = (process.env.DEFAULT_MANAGER_EMAIL ?? "manager@example.com").toLowerCase();
   const password = process.env.DEFAULT_MANAGER_PASSWORD ?? "changeme";
 
   const restaurant = await prisma.restaurant.upsert({
     where: { id: "default-restaurant" },
     create: {
       id: "default-restaurant",
-      name: "בר גלים",
+      name: process.env.RESTAURANT_NAME ?? "Demo Restaurant",
       minRestHours: 11,
     },
     update: {},
@@ -50,7 +50,7 @@ async function main() {
     update: { passwordHash, restaurantId: restaurant.id, isAdmin: true, active: true },
   });
 
-  // Sample employees mirroring the בר גלים sheet
+  // Sample (fictional) employees for local development
   const employees: {
     name: string;
     role: "kitchen" | "floor" | "both";
@@ -59,20 +59,21 @@ async function main() {
     onlyEvenings?: boolean;
     noClosings?: boolean;
   }[] = [
-    { name: "רוני", role: "floor" },
-    { name: "אנה", role: "floor" },
-    { name: "גאיה", role: "floor" },
-    { name: "רון", role: "floor" },
-    { name: "דקל", role: "floor", maxShifts: 5 },
-    { name: "מאי", role: "floor", onlyMornings: true },
-    { name: "עמית הבן", role: "floor" },
-    { name: "עמית הבת", role: "floor" },
-    { name: "שי-לי", role: "floor" },
-    { name: "נטע", role: "kitchen" },
-    { name: "רוס", role: "kitchen" },
-    { name: "טאיו", role: "kitchen" },
-    { name: "קרו", role: "kitchen" },
-    { name: "מאיה", role: "kitchen", noClosings: true },
+    // Fictional sample staff — not real people.
+    { name: "עובד/ת 1", role: "floor" },
+    { name: "עובד/ת 2", role: "floor" },
+    { name: "עובד/ת 3", role: "floor" },
+    { name: "עובד/ת 4", role: "floor" },
+    { name: "עובד/ת 5", role: "floor", maxShifts: 5 },
+    { name: "עובד/ת 6", role: "floor", onlyMornings: true },
+    { name: "עובד/ת 7", role: "floor" },
+    { name: "עובד/ת 8", role: "floor" },
+    { name: "עובד/ת 9", role: "floor" },
+    { name: "עובד/ת 10", role: "kitchen" },
+    { name: "עובד/ת 11", role: "kitchen" },
+    { name: "עובד/ת 12", role: "kitchen" },
+    { name: "עובד/ת 13", role: "kitchen" },
+    { name: "עובד/ת 14", role: "kitchen", noClosings: true },
   ];
 
   for (const emp of employees) {

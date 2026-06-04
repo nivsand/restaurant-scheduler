@@ -52,7 +52,7 @@ export function ProfileForm({
           name="name"
           defaultValue={defaultName}
           required
-          placeholder="לדוגמה: ניב ש."
+          placeholder="לדוגמה: שם מלא"
         />
         <p className="text-xs text-slate-500">יוצג בדאשבורד ובהיסטוריית פעולות</p>
       </div>

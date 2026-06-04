@@ -1,6 +1,5 @@
 // Global availability summary: rows = shift types × cols = days, cells list
-// every employee available for that slot. Visual style mirrors the בר גלים
-// reference schedule.
+// every employee available for that slot.
 
 import { DAYS, DAY_NAMES_HE } from "@/lib/days";
 import {
@@ -16,6 +15,7 @@ export interface AvailabilityCell {
   employeeRole: string;
   confidence: number;
   confirmed: boolean;
+  note?: string | null;
 }
 
 export interface SummaryAvailabilityRow {
@@ -136,7 +136,7 @@ export function AvailabilitySummaryGrid({
                                 <span
                                   key={c.employeeId}
                                   className={cn(
-                                    "inline-flex items-center rounded-full px-1.5 py-0.5 text-[11px]",
+                                    "inline-flex max-w-[135px] flex-col rounded-md px-1.5 py-0.5 text-[11px] leading-tight",
                                     !c.confirmed
                                       ? "border border-dashed border-amber-400 bg-amber-50 text-amber-700"
                                       : c.employeeRole === "kitchen"
@@ -146,12 +146,24 @@ export function AvailabilitySummaryGrid({
                                           : "bg-slate-100 text-slate-700",
                                   )}
                                   title={
-                                    !c.confirmed
-                                      ? "טרם אושר"
-                                      : `${Math.round(c.confidence * 100)}% ביטחון`
+                                    [
+                                      !c.confirmed
+                                        ? "טרם אושר"
+                                        : `${Math.round(c.confidence * 100)}% ביטחון`,
+                                      c.note,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ")
                                   }
                                 >
-                                  {c.employeeName}
+                                  <span className="truncate font-medium">
+                                    {c.employeeName}
+                                  </span>
+                                  {c.note && (
+                                    <span className="truncate text-[10px] opacity-70">
+                                      {c.note}
+                                    </span>
+                                  )}
                                 </span>
                               ))
                             )}

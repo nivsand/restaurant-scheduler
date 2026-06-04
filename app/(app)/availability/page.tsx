@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import {
   getOrCreateWeek,
   parseWeekStartParam,
+  formatWeekParam,
   formatWeekRange,
 } from "@/lib/week";
 import { WeekPicker } from "@/components/week-picker";
@@ -56,7 +57,7 @@ export default async function AvailabilityPage({
       <WeekPicker weekStart={weekStart} basePath="/availability" />
 
       <PasteIngest
-        weekStart={weekStart.toISOString()}
+        weekStart={formatWeekParam(weekStart)}
         weekId={week.id}
         employees={employees.map((e) => ({
           id: e.id,

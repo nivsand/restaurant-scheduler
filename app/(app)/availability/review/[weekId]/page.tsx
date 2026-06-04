@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { formatWeekRange } from "@/lib/week";
+import { formatWeekParam, formatWeekRange } from "@/lib/week";
 import { AvailabilityGrid, ParsedRow } from "@/components/availability-grid";
 import {
   AvailabilitySummaryGrid,
@@ -82,6 +82,7 @@ export default async function ReviewPage({
       employeeRole: emp.role,
       confidence: p.confidence,
       confirmed: p.confirmed,
+      note: p.note?.trim() || null,
     });
   }
   // Sort employees in each cell alphabetically for stable display
@@ -118,7 +119,7 @@ export default async function ReviewPage({
       <div className="flex items-end justify-between">
         <div>
           <Link
-            href={`/availability?week=${encodeURIComponent(week.weekStart.toISOString())}`}
+            href={`/availability?week=${encodeURIComponent(formatWeekParam(week.weekStart))}`}
             className="text-sm text-slate-500 hover:text-slate-700"
           >
             ← חזרה לקליטה

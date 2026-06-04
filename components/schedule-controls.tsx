@@ -24,6 +24,7 @@ export function ScheduleControls({
     seed: number;
     emptySlots: number;
     durationMs: number;
+    trials: number;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +42,7 @@ export function ScheduleControls({
           seed: result.seed,
           emptySlots: result.emptySlots,
           durationMs: result.durationMs,
+          trials: result.trials,
         });
         router.refresh();
       } catch (err) {
@@ -114,7 +116,7 @@ export function ScheduleControls({
 
       {lastRun && (
         <div className="text-xs text-slate-500">
-          הסידור נוצר
+          הסידור נוצר מתוך <span className="num">{lastRun.trials}</span> ניסיונות
           {lastRun.emptySlots > 0 ? (
             <>
               {" "}·{" "}

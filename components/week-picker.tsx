@@ -1,7 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { sundayOf, nextSunday, prevSunday, formatWeekRange } from "@/lib/week";
+import {
+  defaultActiveWeekStart,
+  nextSunday,
+  prevSunday,
+  formatWeekParam,
+  formatWeekRange,
+} from "@/lib/week";
 import { Button } from "@/components/ui/button";
 
 export function WeekPicker({
@@ -16,12 +22,12 @@ export function WeekPicker({
 
   function goTo(d: Date) {
     const sp = new URLSearchParams(params.toString());
-    sp.set("week", sundayOf(d).toISOString());
+    sp.set("week", formatWeekParam(d));
     router.push(`${basePath}?${sp.toString()}`);
   }
 
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white p-3">
       <Button variant="ghost" size="sm" onClick={() => goTo(prevSunday(weekStart))}>
         ◀ שבוע קודם
       </Button>
@@ -31,9 +37,14 @@ export function WeekPicker({
           {formatWeekRange(weekStart)}
         </div>
       </div>
-      <Button variant="ghost" size="sm" onClick={() => goTo(nextSunday(weekStart))}>
-        שבוע הבא ▶
-      </Button>
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="sm" onClick={() => goTo(defaultActiveWeekStart())}>
+          השבוע
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => goTo(nextSunday(weekStart))}>
+          שבוע הבא ▶
+        </Button>
+      </div>
     </div>
   );
 }

@@ -1,39 +1,117 @@
 import { prisma } from "@/lib/db";
 
-// All weeks are Sunday-anchored at 00:00 local time.
+// All weeks are Sunday-anchored at 00:00 in the app timezone. Vercel runs in
+// UTC, so week math must not depend on the server process timezone.
+
+const APP_TIME_ZONE = process.env.APP_TIME_ZONE ?? "Asia/Jerusalem";
+
+const zonedFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: APP_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+});
+
+function zonedParts(date: Date): {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+} {
+  const parts = Object.fromEntries(
+    zonedFormatter
+      .formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, Number(part.value)]),
+  );
+  return {
+    year: parts.year,
+    month: parts.month,
+    day: parts.day,
+    hour: parts.hour,
+    minute: parts.minute,
+    second: parts.second,
+  };
+}
+
+function zonedMidnightToUtc(year: number, month: number, day: number): Date {
+  const utcGuessMs = Date.UTC(year, month - 1, day, 0, 0, 0);
+  const parts = zonedParts(new Date(utcGuessMs));
+  const localAsUtcMs = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+  return new Date(utcGuessMs - (localAsUtcMs - utcGuessMs));
+}
+
+function calendarDateFromParts(year: number, month: number, day: number): Date {
+  return new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+}
 
 export function sundayOf(date: Date): Date {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - d.getDay());
-  return d;
+  const parts = zonedParts(date);
+  const calendar = calendarDateFromParts(parts.year, parts.month, parts.day);
+  calendar.setUTCDate(calendar.getUTCDate() - calendar.getUTCDay());
+  return zonedMidnightToUtc(
+    calendar.getUTCFullYear(),
+    calendar.getUTCMonth() + 1,
+    calendar.getUTCDate(),
+  );
 }
 
 export function nextSunday(date: Date): Date {
-  const s = sundayOf(date);
-  s.setDate(s.getDate() + 7);
-  return s;
+  const parts = zonedParts(sundayOf(date));
+  const calendar = calendarDateFromParts(parts.year, parts.month, parts.day);
+  calendar.setUTCDate(calendar.getUTCDate() + 7);
+  return zonedMidnightToUtc(
+    calendar.getUTCFullYear(),
+    calendar.getUTCMonth() + 1,
+    calendar.getUTCDate(),
+  );
 }
 
 export function prevSunday(date: Date): Date {
-  const s = sundayOf(date);
-  s.setDate(s.getDate() - 7);
-  return s;
+  const parts = zonedParts(sundayOf(date));
+  const calendar = calendarDateFromParts(parts.year, parts.month, parts.day);
+  calendar.setUTCDate(calendar.getUTCDate() - 7);
+  return zonedMidnightToUtc(
+    calendar.getUTCFullYear(),
+    calendar.getUTCMonth() + 1,
+    calendar.getUTCDate(),
+  );
 }
 
 // "Upcoming week" = the next Sunday if today is Fri/Sat, else current week's Sunday.
 export function defaultActiveWeekStart(now = new Date()): Date {
-  const dow = now.getDay();
+  const parts = zonedParts(now);
+  const dow = calendarDateFromParts(parts.year, parts.month, parts.day).getUTCDay();
   if (dow === 5 || dow === 6) return nextSunday(now);
   return sundayOf(now);
 }
 
 export function formatWeekRange(weekStart: Date): string {
-  const end = new Date(weekStart);
-  end.setDate(end.getDate() + 6);
+  const parts = zonedParts(weekStart);
+  const endCalendar = calendarDateFromParts(parts.year, parts.month, parts.day);
+  endCalendar.setUTCDate(endCalendar.getUTCDate() + 6);
+  const end = zonedMidnightToUtc(
+    endCalendar.getUTCFullYear(),
+    endCalendar.getUTCMonth() + 1,
+    endCalendar.getUTCDate(),
+  );
   const fmt = new Intl.DateTimeFormat("he-IL", {
     day: "numeric",
     month: "numeric",
+    timeZone: APP_TIME_ZONE,
   });
   return `${fmt.format(weekStart)} – ${fmt.format(end)}`;
 }
@@ -43,7 +121,15 @@ export function formatWeekStartShort(weekStart: Date): string {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: APP_TIME_ZONE,
   }).format(weekStart);
+}
+
+export function formatWeekParam(weekStart: Date): string {
+  const parts = zonedParts(sundayOf(weekStart));
+  const month = String(parts.month).padStart(2, "0");
+  const day = String(parts.day).padStart(2, "0");
+  return `${parts.year}-${month}-${day}`;
 }
 
 export async function getOrCreateWeek(
@@ -78,6 +164,13 @@ export async function getOrCreateWeek(
 
 export function parseWeekStartParam(input: string | undefined | null): Date {
   if (!input) return defaultActiveWeekStart();
+  const dateOnly = input.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
+    return sundayOf(
+      zonedMidnightToUtc(Number(year), Number(month), Number(day)),
+    );
+  }
   const d = new Date(input);
   if (isNaN(d.getTime())) return defaultActiveWeekStart();
   return sundayOf(d);

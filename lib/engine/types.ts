@@ -158,6 +158,7 @@ export interface EngineOutput {
   perEmployeeStats: PerEmployeeStats[];
   seed: number;
   durationMs: number;
+  trials: number;
 }
 
 // ─── Assignment state (mutable during engine run) ──────────────────────────

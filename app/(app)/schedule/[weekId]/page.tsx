@@ -2,11 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { formatWeekRange } from "@/lib/week";
+import { formatWeekParam, formatWeekRange } from "@/lib/week";
 import { ScheduleGrid } from "@/components/schedule-grid";
 import { ScheduleControls } from "@/components/schedule-controls";
 import { ScheduleExportRow } from "@/components/schedule-export-row";
 import { WeekPicker } from "@/components/week-picker";
+import {
+  AvailabilitySummaryGrid,
+  type SummaryAvailabilityRow,
+} from "@/components/availability-summary-grid";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,6 +67,44 @@ export default async function ScheduleEditorPage({
     return { day: parseInt(day, 10), shiftType, headcount };
   });
 
+  const employeeById = new Map(employees.map((e) => [e.id, e]));
+  const availabilityNoteMap = new Map<string, string>();
+  const availabilityRowsByKey = new Map<string, SummaryAvailabilityRow>();
+  for (const p of parsed) {
+    const note = p.note?.trim() || null;
+    if (note) {
+      availabilityNoteMap.set(
+        `${p.employeeId}:${p.day}:${p.shiftType}`,
+        note,
+      );
+    }
+    const employee = employeeById.get(p.employeeId);
+    if (!employee) continue;
+    const key = `${p.day}:${p.shiftType}`;
+    const row =
+      availabilityRowsByKey.get(key) ??
+      ({
+        day: p.day,
+        shiftType: p.shiftType,
+        cells: [],
+      } satisfies SummaryAvailabilityRow);
+    row.cells.push({
+      employeeId: p.employeeId,
+      employeeName: employee.name,
+      employeeRole: employee.role,
+      confidence: p.confidence,
+      confirmed: p.confirmed,
+      note,
+    });
+    availabilityRowsByKey.set(key, row);
+  }
+  const availabilityRows = Array.from(availabilityRowsByKey.values()).sort(
+    (a, b) => a.day - b.day || a.shiftType.localeCompare(b.shiftType),
+  );
+  for (const row of availabilityRows) {
+    row.cells.sort((a, b) => a.employeeName.localeCompare(b.employeeName, "he"));
+  }
+
   // All slots expanded
   const totalSlots = headcounts.reduce((sum, h) => {
     if (!isShiftAllowedOnDay(h.shiftType as ShiftType, h.day as DayOfWeek)) return sum;
@@ -75,6 +117,9 @@ export default async function ScheduleEditorPage({
     slotIndex: a.slotIndex,
     employeeId: a.employeeId,
     employeeName: a.employee?.name ?? null,
+    employeeNote: a.employeeId
+      ? availabilityNoteMap.get(`${a.employeeId}:${a.day}:${a.shiftType}`) ?? null
+      : null,
     locked: a.locked,
     generatedScore: a.generatedScore,
     generatedBreakdown: a.generatedBreakdown,
@@ -210,7 +255,7 @@ export default async function ScheduleEditorPage({
           <CardBody className="text-sm text-amber-900">
             אין נתוני זמינות מאושרים לשבוע זה.{" "}
             <Link
-              href={`/availability?week=${encodeURIComponent(week.weekStart.toISOString())}`}
+              href={`/availability?week=${encodeURIComponent(formatWeekParam(week.weekStart))}`}
               className="font-medium underline"
             >
               קלוט זמינות
@@ -252,17 +297,39 @@ export default async function ScheduleEditorPage({
       )}
 
       {hasAssignments && (
-        <ScheduleGrid
-          weekId={weekId}
-          assignments={assignmentRows}
-          headcounts={headcounts}
-          notes={scheduleNotes.map((n) => ({
-            day: n.day,
-            kind: n.kind,
-            content: n.content,
-          }))}
-          readOnly={isApproved}
-        />
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="min-w-0 space-y-5">
+            {availabilityRows.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-base font-semibold text-slate-900">
+                  זמינות כללית להשוואה
+                </h3>
+                <AvailabilitySummaryGrid
+                  rows={availabilityRows}
+                  headcounts={headMap}
+                />
+              </section>
+            )}
+
+            <ScheduleGrid
+              weekId={weekId}
+              assignments={assignmentRows}
+              headcounts={headcounts}
+              notes={scheduleNotes.map((n) => ({
+                day: n.day,
+                kind: n.kind,
+                content: n.content,
+              }))}
+              readOnly={isApproved}
+            />
+          </div>
+
+          <MotivationPanel
+            emptySlots={emptySlots}
+            filledSlots={filledSlots}
+            totalSlots={totalSlots}
+          />
+        </div>
       )}
 
       {hasAssignments && empStats.size > 0 && (
@@ -395,5 +462,49 @@ function MiniStat({
         {value}
       </div>
     </div>
+  );
+}
+
+function MotivationPanel({
+  emptySlots,
+  filledSlots,
+  totalSlots,
+}: {
+  emptySlots: number;
+  filledSlots: number;
+  totalSlots: number;
+}) {
+  return (
+    <aside
+      className="h-fit rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm"
+      dir="ltr"
+    >
+      <div className="space-y-3">
+        <p className="text-sm font-semibold text-slate-900">
+          Great schedules make great shifts ✨
+        </p>
+        <p className="text-xs leading-5 text-slate-500">
+          You're doing amazing. Almost there, keep going!
+        </p>
+        <div className="rounded-xl bg-slate-50 p-3">
+          <div className="text-[10px] font-semibold uppercase text-slate-400">
+            Coverage
+          </div>
+          <div className="mt-1 text-lg font-bold text-slate-900 num">
+            {filledSlots}/{totalSlots}
+          </div>
+          <div
+            className={cn(
+              "mt-1 text-xs",
+              emptySlots === 0 ? "text-emerald-600" : "text-rose-600",
+            )}
+          >
+            {emptySlots === 0
+              ? "Every required shift is covered."
+              : `${emptySlots} slots left to solve.`}
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 }

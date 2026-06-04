@@ -10,6 +10,7 @@ export interface SlotChip {
   slotIndex: number;
   employeeId: string | null;
   employeeName: string | null;
+  note?: string | null;
   locked: boolean;
   score: number | null;
   breakdown?: string | null; // JSON
@@ -87,12 +88,24 @@ export function ScheduleCell({
               type="button"
               disabled={readOnly || isPending}
               onClick={() => setOpenSlotIdx(chip.slotIndex)}
-              className="flex-1 truncate text-center font-medium"
+              className="min-w-0 flex-1 text-center"
               title={
-                chip.score != null ? `ציון: ${chip.score.toFixed(0)}` : undefined
+                [
+                  chip.score != null ? `ציון: ${chip.score.toFixed(0)}` : null,
+                  chip.note,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || undefined
               }
             >
-              {chip.employeeName ?? "— ריק —"}
+              <span className="block truncate font-medium">
+                {chip.employeeName ?? "— ריק —"}
+              </span>
+              {chip.employeeName && chip.note && (
+                <span className="mt-0.5 block truncate text-[10px] font-normal leading-tight text-slate-500">
+                  {chip.note}
+                </span>
+              )}
             </button>
             {chip.employeeId && !readOnly && (
               <button

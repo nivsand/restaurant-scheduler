@@ -5,7 +5,6 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { loadEngineInput } from "@/lib/engine/load";
-import { runEngine } from "@/lib/engine/run";
 import { checkEligibility } from "@/lib/engine/candidates";
 import { ShiftType } from "@/lib/shifts";
 import { DayOfWeek } from "@/lib/days";
@@ -46,10 +45,10 @@ export async function generateScheduleAction(payloadJson: string) {
         : undefined;
 
   const input = await loadEngineInput(weekId, numericSeed);
-  // On shuffle, run multiple trials with different seeds and pick the best
-  // (fewest empty slots, then highest score). On normal generate/regenerate,
-  // a single deterministic run is enough.
-  const output = isShuffle ? runEngineMultiTrial(input, 5) : runEngine(input);
+  // Every generation runs multiple candidates and keeps the best. Empty slots
+  // are ranked first, then the ordinary fairness/preference score.
+  const trials = isShuffle ? 48 : 24;
+  const output = runEngineMultiTrial(input, trials);
 
   // Persist: delete non-locked assignments + insert new ones
   await prisma.$transaction(async (tx) => {
@@ -96,6 +95,7 @@ export async function generateScheduleAction(payloadJson: string) {
           seed: output.seed,
           assignmentCount: output.assignments.length,
           emptyCount: output.emptySlots.length,
+          trials: output.trials,
           warningCount: output.warnings.length,
           durationMs: output.durationMs,
         }),
@@ -110,6 +110,7 @@ export async function generateScheduleAction(payloadJson: string) {
     seed: output.seed,
     assignments: output.assignments.length,
     emptySlots: output.emptySlots.length,
+    trials: output.trials,
     warnings: output.warnings.length,
     durationMs: output.durationMs,
   };
@@ -408,4 +409,3 @@ export async function listBlocksAction(weekId: string): Promise<
     employeeName: b.employee.name,
   }));
 }
-

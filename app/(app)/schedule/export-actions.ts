@@ -78,7 +78,7 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
   });
   if (!week) throw new Error("שבוע לא נמצא");
 
-  const [templates, assignments, employees, scheduleNotes, submissions] =
+  const [templates, assignments, employees, scheduleNotes, submissions, parsed] =
     await Promise.all([
       prisma.shiftTemplate.findMany({ where: { restaurantId } }),
       prisma.scheduleAssignment.findMany({
@@ -94,18 +94,35 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
         where: { weekId, employeeId: { not: null } },
         orderBy: { submittedAt: "desc" },
       }),
+      prisma.parsedAvailability.findMany({
+        where: { weekId, confirmed: true },
+      }),
     ]);
 
   const headMap = new Map<string, number>();
   for (const t of templates) headMap.set(`${t.day}:${t.shiftType}`, t.headcount);
   for (const o of week.overrides) headMap.set(`${o.day}:${o.shiftType}`, o.headcount);
 
+  const availabilityNoteMap = new Map<string, string>();
+  for (const row of parsed) {
+    const note = row.note?.trim();
+    if (!note) continue;
+    availabilityNoteMap.set(
+      `${row.employeeId}:${row.day}:${row.shiftType}`,
+      note,
+    );
+  }
+
   const cellMap = new Map<string, Array<string | null>>();
   for (const [k, n] of headMap) if (n > 0) cellMap.set(k, new Array(n).fill(null));
   for (const a of assignments) {
     const key = `${a.day}:${a.shiftType}`;
     if (!cellMap.has(key)) continue;
-    cellMap.get(key)![a.slotIndex] = a.employee?.name ?? null;
+    const name = a.employee?.name ?? null;
+    const note = a.employeeId
+      ? availabilityNoteMap.get(`${a.employeeId}:${a.day}:${a.shiftType}`) ?? null
+      : null;
+    cellMap.get(key)![a.slotIndex] = name && note ? `${name}\n${note}` : name;
   }
 
   const noteMap = new Map<string, string>();
@@ -173,11 +190,18 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
       ...DAYS.map((d) => {
         const need = headMap.get(`${d}:${st}`) ?? 0;
         if (need === 0) return 1;
-        return need;
+        const cells = cellMap.get(`${d}:${st}`) ?? [];
+        return Math.max(
+          1,
+          cells.reduce(
+            (sum, value) => sum + (value ? value.split("\n").length : 1),
+            0,
+          ),
+        );
       }),
       2,
     );
-    row.height = Math.max(22, maxLines * 16);
+    row.height = Math.max(22, maxLines * 14);
     rowIdx += 1;
   }
 

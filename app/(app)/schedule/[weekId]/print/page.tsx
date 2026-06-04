@@ -58,7 +58,7 @@ export default async function PrintSchedulePage({
   });
   if (!week) notFound();
 
-  const [templates, employees, assignments, scheduleNotes] = await Promise.all([
+  const [templates, employees, assignments, scheduleNotes, parsed] = await Promise.all([
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
     prisma.employee.findMany({
       where: { restaurantId, archived: false },
@@ -69,6 +69,9 @@ export default async function PrintSchedulePage({
       include: { employee: true },
     }),
     prisma.scheduleNote.findMany({ where: { weekId } }),
+    prisma.parsedAvailability.findMany({
+      where: { weekId, confirmed: true },
+    }),
   ]);
 
   // Effective headcount per (day, shiftType)
@@ -79,12 +82,26 @@ export default async function PrintSchedulePage({
     const [day, shiftType] = key.split(":");
     return { day: Number(day), shiftType, headcount };
   });
+  const availabilityNoteMap = new Map<string, string>();
+  for (const row of parsed) {
+    const note = row.note?.trim();
+    if (!note) continue;
+    availabilityNoteMap.set(
+      `${row.employeeId}:${row.day}:${row.shiftType}`,
+      note,
+    );
+  }
   const assignmentRows = assignments.map((assignment) => ({
     day: assignment.day,
     shiftType: assignment.shiftType,
     slotIndex: assignment.slotIndex,
     employeeId: assignment.employeeId,
     employeeName: assignment.employee?.name ?? null,
+    employeeNote: assignment.employeeId
+      ? availabilityNoteMap.get(
+          `${assignment.employeeId}:${assignment.day}:${assignment.shiftType}`,
+        ) ?? null
+      : null,
     locked: assignment.locked,
     generatedScore: assignment.generatedScore,
     generatedBreakdown: assignment.generatedBreakdown,

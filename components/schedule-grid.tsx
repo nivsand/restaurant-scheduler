@@ -19,6 +19,7 @@ export interface AssignmentRow {
   slotIndex: number;
   employeeId: string | null;
   employeeName: string | null;
+  employeeNote?: string | null;
   locked: boolean;
   generatedScore: number | null;
   generatedBreakdown: string | null;
@@ -73,6 +74,7 @@ export function ScheduleGrid({
         slotIndex: i,
         employeeId: a?.employeeId ?? null,
         employeeName: a?.employeeName ?? null,
+        note: a?.employeeNote ?? null,
         locked: a?.locked ?? false,
         score: a?.generatedScore ?? null,
         breakdown: a?.generatedBreakdown ?? null,

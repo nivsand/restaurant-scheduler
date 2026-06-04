@@ -45,8 +45,8 @@ In Vercel → your project → Settings → Environment Variables, add:
 | `AUTH_TRUST_HOST` | `true` | Required behind Vercel's proxy |
 | `ADMIN_EMAIL` | `you@example.com` | First-manager email (bootstrap) |
 | `ADMIN_PASSWORD` | choose-a-strong-password | First-manager password (≥8 chars) |
-| `ADMIN_NAME` | `ניב ש.` | Display name |
-| `RESTAURANT_NAME` | `בר גלים` | Restaurant display name |
+| `ADMIN_NAME` | `Admin` | Display name |
+| `RESTAURANT_NAME` | `My Restaurant` | Restaurant display name |
 | `PUBLIC_URL` | `https://your-app.vercel.app` | Used by the share-form card |
 | `ANTHROPIC_API_KEY` | `sk-ant-...` | Optional — only needed for LLM fallback in the parser |
 
@@ -93,10 +93,10 @@ Once tables exist, create the first manager + restaurant:
 
 ```bash
 # locally pointing at prod
-ADMIN_EMAIL=you@example.com \
-ADMIN_PASSWORD=changeme-please \
-ADMIN_NAME="ניב ש." \
-RESTAURANT_NAME="בר גלים" \
+ADMIN_EMAIL=admin@example.com \
+ADMIN_PASSWORD='choose-a-strong-password' \
+ADMIN_NAME="Admin" \
+RESTAURANT_NAME="My Restaurant" \
 DATABASE_URL="postgresql://..." \
 npx tsx scripts/bootstrap-admin.ts
 ```

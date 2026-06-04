@@ -1,10 +1,15 @@
 // Create-or-reset a single manager login, then SELF-VERIFY the bcrypt hash so
 // you know the credentials will work before you try the UI.
 //
-// Defaults match the account you want to recover, but every field can be
-// overridden by env vars. Run against PRODUCTION by exporting the Neon
-// DATABASE_URL (and DIRECT_URL) first — see the bottom of this file.
+// All values are supplied via environment variables — nothing is hardcoded.
+// Run against a specific database by exporting DATABASE_URL (and DIRECT_URL)
+// first. Example:
 //
+//   LOGIN_EMAIL=admin@example.com \
+//   LOGIN_PASSWORD='choose-a-strong-password' \
+//   LOGIN_NAME='Admin' \
+//   RESTAURANT_NAME='My Restaurant' \
+//   DATABASE_URL='postgresql://...' \
 //   npx tsx scripts/reset-login.ts
 //
 // Never logs the plaintext password.
@@ -15,14 +20,20 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = (process.env.LOGIN_EMAIL ?? "nivsand@gmail.com").trim().toLowerCase();
-  const password = process.env.LOGIN_PASSWORD ?? "12345678";
-  const name = (process.env.LOGIN_NAME ?? "ניב").trim();
+  const email = (process.env.LOGIN_EMAIL ?? "").trim().toLowerCase();
+  const password = process.env.LOGIN_PASSWORD ?? "";
+  const name = (process.env.LOGIN_NAME ?? "Admin").trim();
   const restaurantId = (process.env.RESTAURANT_ID ?? "default-restaurant").trim();
-  const restaurantName = (process.env.RESTAURANT_NAME ?? "בר גלים").trim();
+  const restaurantName = (process.env.RESTAURANT_NAME ?? "Restaurant").trim();
 
+  if (!email || !password) {
+    console.error(
+      "[reset-login] LOGIN_EMAIL and LOGIN_PASSWORD env vars are required.",
+    );
+    process.exit(1);
+  }
   if (password.length < 8) {
-    console.error("[reset-login] password must be at least 8 characters.");
+    console.error("[reset-login] LOGIN_PASSWORD must be at least 8 characters.");
     process.exit(1);
   }
 

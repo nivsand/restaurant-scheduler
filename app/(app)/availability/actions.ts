@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getOrCreateWeek, parseWeekStartParam } from "@/lib/week";
+import { formatWeekParam, getOrCreateWeek, parseWeekStartParam } from "@/lib/week";
 import { parseAvailability } from "@/lib/parser";
 import { isShiftAllowedOnDay, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import { DayOfWeek } from "@/lib/days";
@@ -18,7 +18,7 @@ export async function goToWeekAction(formData: FormData) {
   const weekStartStr = String(formData.get("weekStart") ?? "");
   const ws = parseWeekStartParam(weekStartStr);
   await getOrCreateWeek(restaurantId, ws);
-  redirect(`/availability?week=${encodeURIComponent(ws.toISOString())}`);
+  redirect(`/availability?week=${encodeURIComponent(formatWeekParam(ws))}`);
 }
 
 // ─── Ingest a paste batch ──────────────────────────────────────────────────

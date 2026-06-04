@@ -3,6 +3,7 @@ import { Heebo } from "next/font/google";
 import { prisma } from "@/lib/db";
 import {
   defaultActiveWeekStart,
+  formatWeekParam,
   formatWeekRange,
   getOrCreateWeek,
 } from "@/lib/week";
@@ -106,7 +107,7 @@ export default async function PublicAvailabilityPage({
 
             <EmployeeAvailabilityForm
               token={token}
-              weekStart={weekStart.toISOString()}
+              weekStart={formatWeekParam(weekStart)}
               initialCells={existing.map((e) => ({
                 day: e.day,
                 shiftType: e.shiftType,

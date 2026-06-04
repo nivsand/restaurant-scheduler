@@ -15,6 +15,8 @@ import { runGreedy } from "./greedy";
 import { refineAssignments } from "./refine";
 import { mulberry32 } from "./random";
 
+const EMPTY_SLOT_PENALTY = 100_000;
+
 export function runEngine(input: EngineInput): EngineOutput {
   const t0 = Date.now();
   const rand = mulberry32(input.seed);
@@ -160,32 +162,47 @@ export function runEngine(input: EngineInput): EngineOutput {
     perEmployeeStats,
     seed: input.seed,
     durationMs: Date.now() - t0,
+    trials: 1,
   };
 }
 
 // Multi-trial wrapper: runs the engine N times with different seeds and
 // returns the best result. "Best" = fewest empty slots first, then highest
-// total assignment score. Used by shuffle so the manager gets a noticeably
-// better schedule than a single random seed would produce.
+// utility after applying a very large empty-slot penalty.
 export function runEngineMultiTrial(
   baseInput: EngineInput,
   trials: number,
 ): EngineOutput {
+  const t0 = Date.now();
+  const trialCount = Math.max(1, Math.floor(trials));
   let best: EngineOutput | null = null;
   const baseSeed = baseInput.seed >>> 0;
-  for (let i = 0; i < trials; i++) {
+  for (let i = 0; i < trialCount; i++) {
     const trialSeed = (baseSeed + i * 2654435761) >>> 0; // simple mixer
     const out = runEngine({ ...baseInput, seed: trialSeed });
-    if (
-      !best ||
-      out.emptySlots.length < best.emptySlots.length ||
-      (out.emptySlots.length === best.emptySlots.length &&
-        sumScore(out) > sumScore(best))
-    ) {
+    if (!best || isBetterSchedule(out, best)) {
       best = out;
     }
   }
-  return best!;
+  return {
+    ...best!,
+    durationMs: Date.now() - t0,
+    trials: trialCount,
+  };
+}
+
+function isBetterSchedule(candidate: EngineOutput, current: EngineOutput): boolean {
+  if (candidate.emptySlots.length !== current.emptySlots.length) {
+    return candidate.emptySlots.length < current.emptySlots.length;
+  }
+  const candidateUtility = scheduleUtility(candidate);
+  const currentUtility = scheduleUtility(current);
+  if (candidateUtility !== currentUtility) return candidateUtility > currentUtility;
+  return candidate.seed < current.seed;
+}
+
+function scheduleUtility(o: EngineOutput): number {
+  return sumScore(o) - o.emptySlots.length * EMPTY_SLOT_PENALTY;
 }
 
 function sumScore(o: EngineOutput): number {
