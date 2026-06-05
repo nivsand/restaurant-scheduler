@@ -163,6 +163,39 @@ function wouldExceedConsecutive(
   return maxRun > cap;
 }
 
+// Like eligibleCandidates but ignores requestedShifts and maxShifts caps.
+// Used as a rescue fill after greedy+refine when slots remain empty because
+// all available employees hit their requested/max count.
+export function eligibleCandidatesRelaxedCaps(
+  slot: SlotDef,
+  employees: EmployeeProfile[],
+  availability: AvailabilityRow[],
+  state: AssignmentState,
+  weekStart: Date,
+  minRestHours: number,
+  maxConsecutiveDays: number,
+  blocks?: ReadonlyArray<{ employeeId: string; day: number; shiftType: string }>,
+): Array<{ employee: EmployeeProfile; confidence: number }> {
+  const out: Array<{ employee: EmployeeProfile; confidence: number }> = [];
+  for (const emp of employees) {
+    const r = checkEligibility(emp, slot, availability, state, weekStart, minRestHours, maxConsecutiveDays, blocks);
+    if (r.eligible) {
+      out.push({ employee: emp, confidence: r.confidence });
+      continue;
+    }
+    // Rescue only employees blocked solely by their shift cap
+    const isCapBlock = r.reason.startsWith("מילא/ה") || r.reason.startsWith("הגיע/ה");
+    if (!isCapBlock) continue;
+    // Re-check with caps removed — if eligible, include them
+    const empNoCap: EmployeeProfile = { ...emp, requestedShifts: null, maxShifts: null };
+    const r2 = checkEligibility(empNoCap, slot, availability, state, weekStart, minRestHours, maxConsecutiveDays, blocks);
+    if (r2.eligible) {
+      out.push({ employee: emp, confidence: r2.confidence });
+    }
+  }
+  return out;
+}
+
 // Wrapper that returns just the eligible employees for a slot, with their
 // availability confidence attached (used by the greedy stage).
 export function eligibleCandidates(

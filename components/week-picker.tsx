@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   defaultActiveWeekStart,
   nextSunday,
@@ -18,12 +18,9 @@ export function WeekPicker({
   basePath: string;
 }) {
   const router = useRouter();
-  const params = useSearchParams();
 
   function goTo(d: Date) {
-    const sp = new URLSearchParams(params.toString());
-    sp.set("week", formatWeekParam(d));
-    router.push(`${basePath}?${sp.toString()}`);
+    router.push(`${basePath}?week=${formatWeekParam(d)}`);
   }
 
   return (

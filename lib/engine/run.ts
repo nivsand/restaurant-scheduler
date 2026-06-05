@@ -5,6 +5,7 @@ import { SHIFT_DEFS } from "@/lib/shifts";
 import {
   AssignmentDecision,
   AssignmentState,
+  EmptySlotReport,
   EngineInput,
   EngineOutput,
   EngineWarning,
@@ -13,6 +14,8 @@ import {
 } from "./types";
 import { runGreedy } from "./greedy";
 import { refineAssignments } from "./refine";
+import { eligibleCandidatesRelaxedCaps } from "./candidates";
+import { scoreCandidate } from "./score";
 import { mulberry32 } from "./random";
 
 const EMPTY_SLOT_PENALTY = 100_000;
@@ -79,8 +82,15 @@ export function runEngine(input: EngineInput): EngineOutput {
     blocks: input.blocks,
   });
 
+  // Rescue pass: for any slots still empty after refine, try employees who hit
+  // their requested/max cap but are otherwise available. Better to over-schedule
+  // one employee than leave a required shift unfilled.
+  const rescuedEmptySlots = refined.emptySlots.length > 0
+    ? rescueEmptySlots(refined.state, refined.emptySlots, input)
+    : refined.emptySlots;
+
   const finalAssignments = Array.from(refined.state.bySlot.values());
-  const emptySlots = refined.emptySlots;
+  const emptySlots = rescuedEmptySlots;
 
   // Warnings synthesis
   const warnings: EngineWarning[] = [];
@@ -164,6 +174,82 @@ export function runEngine(input: EngineInput): EngineOutput {
     durationMs: Date.now() - t0,
     trials: 1,
   };
+}
+
+function rescueEmptySlots(
+  state: AssignmentState,
+  emptySlots: EmptySlotReport[],
+  input: EngineInput,
+): EmptySlotReport[] {
+  const remaining: EmptySlotReport[] = [];
+  const activeCount = input.employees.length;
+
+  for (const report of emptySlots) {
+    const slot = input.slots.find(
+      (s) =>
+        s.day === report.day &&
+        s.shiftType === report.shiftType &&
+        s.slotIndex === report.slotIndex,
+    );
+    if (!slot) { remaining.push(report); continue; }
+
+    const cands = eligibleCandidatesRelaxedCaps(
+      slot,
+      input.employees,
+      input.availability,
+      state,
+      input.weekStart,
+      input.restaurant.minRestHours,
+      input.restaurant.maxConsecutiveDays,
+      input.blocks,
+    );
+    if (cands.length === 0) { remaining.push(report); continue; }
+
+    const scored = cands
+      .map((c) => {
+        const avail = input.availability.find(
+          (a) =>
+            a.employeeId === c.employee.id &&
+            a.day === slot.day &&
+            a.shiftType === slot.shiftType,
+        );
+        if (!avail) return null;
+        const { score, breakdown } = scoreCandidate(
+          c.employee,
+          slot,
+          avail,
+          state,
+          input.history,
+          activeCount,
+          1,
+        );
+        return { employee: c.employee, score, breakdown };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+
+    if (scored.length === 0) { remaining.push(report); continue; }
+    scored.sort((a, b) => b.score - a.score);
+    const top = scored[0];
+
+    const decision: AssignmentDecision = {
+      day: slot.day,
+      shiftType: slot.shiftType,
+      slotIndex: slot.slotIndex,
+      employeeId: top.employee.id,
+      locked: false,
+      score: top.score,
+      breakdown: [...top.breakdown, { key: "rescueFill", delta: 0, note: "שיבוץ חירום" }],
+      alternatives: [],
+    };
+
+    const empArr = state.byEmployee.get(top.employee.id) ?? [];
+    empArr.push(decision);
+    state.byEmployee.set(top.employee.id, empArr);
+    state.bySlot.set(slotKey(slot), decision);
+    // slot filled — not added to remaining
+  }
+
+  return remaining;
 }
 
 // Multi-trial wrapper: runs the engine N times with different seeds and
