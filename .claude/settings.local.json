@@ -40,7 +40,12 @@
       "Bash(PORT=3021 npx next dev)",
       "Bash(lsof -i:3021)",
       "Bash(PORT=3022 npx next dev)",
-      "Bash(lsof -i:3022)"
+      "Bash(lsof -i:3022)",
+      "Bash(ls -la ~/Downloads | grep -E \"\\(claude|caveman|token|rtk|context\\)\" | head -20)",
+      "Bash(rtk read *)",
+      "Bash(rtk tsc *)",
+      "Bash(rtk git *)",
+      "Bash(rtk grep *)"
     ]
   }
 }

@@ -9,12 +9,12 @@ import {
 } from "@/lib/shifts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/input";
 import { submitAvailabilityForm } from "@/app/a/[token]/actions";
 
 interface ExistingCell {
   day: number;
   shiftType: string;
+  note?: string | null;
 }
 
 export interface HeadcountEntry {
@@ -27,21 +27,25 @@ export function EmployeeAvailabilityForm({
   token,
   weekStart,
   initialCells,
-  initialNote,
   employeeRole,
   headcounts,
 }: {
   token: string;
   weekStart: string;
   initialCells: ExistingCell[];
-  initialNote: string;
   employeeRole: "kitchen" | "floor" | "both";
   headcounts: HeadcountEntry[];
 }) {
   const [selected, setSelected] = useState<Set<string>>(
     new Set(initialCells.map((c) => `${c.day}:${c.shiftType}`)),
   );
-  const [note, setNote] = useState(initialNote);
+  const [notes, setNotes] = useState<Record<string, string>>(
+    Object.fromEntries(
+      initialCells
+        .filter((c) => c.note)
+        .map((c) => [`${c.day}:${c.shiftType}`, c.note!]),
+    ),
+  );
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -82,12 +86,13 @@ export function EmployeeAvailabilityForm({
     }
     const cells = Array.from(selected).map((k) => {
       const [d, st] = k.split(":");
-      return { day: parseInt(d, 10), shiftType: st };
+      const note = notes[k]?.trim() || undefined;
+      return { day: parseInt(d, 10), shiftType: st, ...(note ? { note } : {}) };
     });
     startTransition(async () => {
       try {
         const result = await submitAvailabilityForm(
-          JSON.stringify({ token, weekStart, cells, note }),
+          JSON.stringify({ token, weekStart, cells }),
         );
         if (result?.ok) {
           window.location.href = result.redirectTo;
@@ -228,32 +233,46 @@ export function EmployeeAvailabilityForm({
                     const key = `${d}:${st}`;
                     const on = selected.has(key);
                     return (
-                      <button
-                        type="button"
-                        key={st}
-                        onClick={() => toggle(d, st)}
-                        className={cn(
-                          "flex flex-col items-start gap-0.5 rounded-xl border p-2.5 text-start transition-all active:scale-[0.98]",
-                          on
-                            ? def.role === "kitchen"
-                              ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500"
-                              : "border-floor-400 bg-floor-50 text-floor-500"
-                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
-                        )}
-                      >
-                        <span
+                      <div key={st} className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={() => toggle(d, st)}
                           className={cn(
-                            "text-sm font-medium",
-                            on && "font-semibold",
+                            "flex flex-col items-start gap-0.5 rounded-xl border p-2.5 text-start transition-all active:scale-[0.98] w-full",
+                            on
+                              ? def.role === "kitchen"
+                                ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500"
+                                : "border-floor-400 bg-floor-50 text-floor-500"
+                              : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
                           )}
                         >
-                          {def.labelHe}
-                        </span>
-                        <span className="num text-xs text-slate-500">
-                          {def.start}-{def.end}
-                          {def.isClosing && " · סגירה"}
-                        </span>
-                      </button>
+                          <span
+                            className={cn(
+                              "text-sm font-medium",
+                              on && "font-semibold",
+                            )}
+                          >
+                            {def.labelHe}
+                          </span>
+                          <span className="num text-xs text-slate-500">
+                            {def.start}-{def.end}
+                            {def.isClosing && " · סגירה"}
+                          </span>
+                        </button>
+                        {on && (
+                          <input
+                            type="text"
+                            value={notes[key] ?? ""}
+                            onChange={(e) =>
+                              setNotes((prev) => ({ ...prev, [key]: e.target.value }))
+                            }
+                            placeholder="הערה..."
+                            maxLength={200}
+                            dir="auto"
+                            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs outline-none placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+                          />
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -261,18 +280,6 @@ export function EmployeeAvailabilityForm({
             </div>
           );
         })}
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-3">
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          הערה (אופציונלי)
-        </label>
-        <Textarea
-          rows={2}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="לדוגמה: 2 משמרות מקסימום, או הערות לסידור"
-        />
       </div>
 
       {error && (

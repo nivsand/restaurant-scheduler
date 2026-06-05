@@ -354,6 +354,7 @@ const noteSchema = z.object({
   weekId: z.string(),
   employeeId: z.string(),
   day: z.number().int().min(0).max(6),
+  shiftType: z.string(),
   note: z.string().max(200),
 });
 
@@ -362,7 +363,7 @@ export async function setAvailabilityNoteAction(payloadJson: string) {
   const restaurantId = session!.user.restaurantId;
   const parsed = noteSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
-  const { weekId, employeeId, day, note } = parsed.data;
+  const { weekId, employeeId, day, shiftType, note } = parsed.data;
 
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },
@@ -372,7 +373,7 @@ export async function setAvailabilityNoteAction(payloadJson: string) {
   const trimmed = note.trim() || null;
 
   await prisma.parsedAvailability.updateMany({
-    where: { weekId, employeeId, day },
+    where: { weekId, employeeId, day, shiftType },
     data: { note: trimmed },
   });
 

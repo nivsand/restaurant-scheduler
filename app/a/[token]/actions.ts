@@ -7,28 +7,28 @@ import { getOrCreateWeek, parseWeekStartParam } from "@/lib/week";
 import { isShiftAllowedOnDay, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import { DAY_NAMES_HE, DAYS, DayOfWeek } from "@/lib/days";
 
-// Renders form-submitted cells as readable Hebrew, grouped by day. Used for
-// the RawSubmission.content field so the manager review page shows something
-// readable instead of "0:MORNING_FLOOR, 1:CLOSING_A_19, ...".
+// Renders form-submitted cells as readable Hebrew grouped by day.
+// Per-shift notes are inlined after the shift label when present.
 function formatFormContent(
-  cells: Array<{ day: number; shiftType: string }>,
-  note: string,
+  cells: Array<{ day: number; shiftType: string; note?: string }>,
 ): string {
   const byDay = new Map<number, string[]>();
   for (const c of cells) {
     const def = SHIFT_DEFS[c.shiftType as ShiftType];
     if (!def) continue;
+    const label = c.note?.trim()
+      ? `${def.labelHe} (${c.note.trim()})`
+      : def.labelHe;
     const arr = byDay.get(c.day) ?? [];
-    arr.push(def.labelHe);
+    arr.push(label);
     byDay.set(c.day, arr);
   }
   const lines: string[] = [];
   for (const d of DAYS) {
     const day = d as DayOfWeek;
     if (!byDay.has(day)) continue;
-    lines.push(`${DAY_NAMES_HE[day]}: ${byDay.get(day)!.join(", ")}`);
+    lines.push(`${DAY_NAMES_HE[day]}: ${byDay.get(day)!.join(" · ")}`);
   }
-  if (note && note.trim()) lines.push(`הערה: ${note.trim()}`);
   return lines.join("\n");
 }
 
@@ -42,13 +42,13 @@ const cellSchema = z.object({
     "CLOSING_A_19",
     "CLOSING_B_20",
   ]),
+  note: z.string().max(200).optional(),
 });
 
 const formPayloadSchema = z.object({
   token: z.string().min(1),
   weekStart: z.string().min(1),
   cells: z.array(cellSchema),
-  note: z.string().optional().default(""),
 });
 
 export async function submitAvailabilityForm(payloadJson: string): Promise<{
@@ -60,7 +60,7 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
   if (!parsed.success) {
     throw new Error("בקשה לא תקינה");
   }
-  const { token, weekStart, cells, note } = parsed.data;
+  const { token, weekStart, cells } = parsed.data;
 
   const employee = await prisma.employee.findUnique({
     where: { submissionToken: token },
@@ -87,7 +87,7 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
     data: {
       weekId: week.id,
       employeeId: employee.id,
-      content: formatFormContent(cells, note),
+      content: formatFormContent(cells),
       source: "form",
       parsedAt: new Date(),
     },
@@ -130,14 +130,14 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
         available: true,
         confidence: 1.0,
         source: "form",
-        note: note || null,
+        note: cell.note?.trim() || null,
         confirmed: true,
       },
       update: {
         available: true,
         confidence: 1.0,
         source: "form",
-        note: note || null,
+        note: cell.note?.trim() || null,
         confirmed: true,
       },
     });

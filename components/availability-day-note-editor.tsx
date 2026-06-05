@@ -1,80 +1,110 @@
 "use client";
 
 import { useTransition, useState, useEffect } from "react";
-import { DAY_NAMES_HE } from "@/lib/days";
+import { DAY_NAMES_HE, DAYS } from "@/lib/days";
+import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import { setAvailabilityNoteAction } from "@/app/(app)/availability/actions";
 
-export interface DayNoteEntry {
+export interface ShiftNoteEntry {
   day: number;
+  shiftType: string;
   note: string | null;
 }
 
-export function AvailabilityDayNoteEditor({
+// Kept old export name so the import in review/page.tsx compiles without
+// renaming; the component is now shift-scoped, not day-scoped.
+export type DayNoteEntry = ShiftNoteEntry;
+
+export function AvailabilityShiftNoteEditor({
   weekId,
   employeeId,
-  dayNotes,
+  shiftNotes,
 }: {
   weekId: string;
   employeeId: string;
-  dayNotes: DayNoteEntry[];
+  shiftNotes: ShiftNoteEntry[];
 }) {
-  const [values, setValues] = useState<Record<number, string>>(() =>
-    Object.fromEntries(dayNotes.map((d) => [d.day, d.note ?? ""])),
-  );
-  const [saved, setSaved] = useState<Record<number, string>>(() =>
-    Object.fromEntries(dayNotes.map((d) => [d.day, d.note ?? ""])),
-  );
+  const initMap = () =>
+    Object.fromEntries(
+      shiftNotes.map((s) => [`${s.day}:${s.shiftType}`, s.note ?? ""]),
+    );
+
+  const [values, setValues] = useState<Record<string, string>>(initMap);
+  const [saved, setSaved] = useState<Record<string, string>>(initMap);
   const [isPending, startTransition] = useTransition();
 
-  // Sync when server re-renders with fresh data
   useEffect(() => {
-    const next = Object.fromEntries(dayNotes.map((d) => [d.day, d.note ?? ""]));
-    setValues(next);
-    setSaved(next);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const m = initMap();
+    setValues(m);
+    setSaved(m);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekId, employeeId]);
 
-  if (dayNotes.length === 0) return null;
+  if (shiftNotes.length === 0) return null;
 
-  function save(day: number) {
-    const v = values[day] ?? "";
-    if (v === (saved[day] ?? "")) return;
+  function save(day: number, shiftType: string) {
+    const key = `${day}:${shiftType}`;
+    const v = values[key] ?? "";
+    if (v === (saved[key] ?? "")) return;
     startTransition(async () => {
       await setAvailabilityNoteAction(
-        JSON.stringify({ weekId, employeeId, day, note: v }),
+        JSON.stringify({ weekId, employeeId, day, shiftType, note: v }),
       );
-      setSaved((prev) => ({ ...prev, [day]: v }));
+      setSaved((prev) => ({ ...prev, [key]: v }));
     });
   }
 
+  // Group entries by day for a clean display
+  const byDay = new Map<number, ShiftNoteEntry[]>();
+  for (const e of shiftNotes) {
+    const arr = byDay.get(e.day) ?? [];
+    arr.push(e);
+    byDay.set(e.day, arr);
+  }
+  const orderedDays = ([...DAYS] as number[]).filter((d) => byDay.has(d));
+
   return (
-    <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
-      <p className="text-xs font-medium text-slate-500">הערות לפי יום (מופיעות בסידור)</p>
-      <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {dayNotes.map(({ day }) => (
-          <label key={day} className="flex items-center gap-1.5">
-            <span className="w-14 shrink-0 text-xs font-medium text-slate-600">
-              {DAY_NAMES_HE[day as keyof typeof DAY_NAMES_HE]}
-            </span>
-            <input
-              type="text"
-              value={values[day] ?? ""}
-              onChange={(e) =>
-                setValues((prev) => ({ ...prev, [day]: e.target.value }))
-              }
-              onBlur={() => save(day)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") e.currentTarget.blur();
-              }}
-              placeholder="הוסף הערה..."
-              disabled={isPending}
-              maxLength={200}
-              dir="auto"
-              className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs outline-none transition placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200 disabled:opacity-60"
-            />
-          </label>
-        ))}
-      </div>
+    <div className="mt-3 space-y-3 border-t border-slate-100 pt-3">
+      <p className="text-xs font-medium text-slate-500">
+        הערות לפי משמרת (מופיעות בסידור)
+      </p>
+      {orderedDays.map((day) => (
+        <div key={day} className="space-y-1.5">
+          <p className="text-[11px] font-semibold text-slate-600">
+            {DAY_NAMES_HE[day as keyof typeof DAY_NAMES_HE]}
+          </p>
+          {byDay.get(day)!.map(({ shiftType }) => {
+            const def = SHIFT_DEFS[shiftType as ShiftType];
+            const key = `${day}:${shiftType}`;
+            return (
+              <label key={shiftType} className="flex items-center gap-2">
+                <span className="w-28 shrink-0 text-[11px] text-slate-500">
+                  {def?.labelHe ?? shiftType}
+                </span>
+                <input
+                  type="text"
+                  value={values[key] ?? ""}
+                  onChange={(e) =>
+                    setValues((prev) => ({ ...prev, [key]: e.target.value }))
+                  }
+                  onBlur={() => save(day, shiftType)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.currentTarget.blur();
+                  }}
+                  placeholder="הוסף הערה..."
+                  disabled={isPending}
+                  maxLength={200}
+                  dir="auto"
+                  className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs outline-none transition placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200 disabled:opacity-60"
+                />
+              </label>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
+
+// Legacy alias kept so existing code compiles without renaming.
+export const AvailabilityDayNoteEditor = AvailabilityShiftNoteEditor;

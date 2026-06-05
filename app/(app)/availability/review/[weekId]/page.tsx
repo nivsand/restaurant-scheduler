@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RequestedShiftsEditor } from "@/components/requested-shifts-editor";
 import {
-  AvailabilityDayNoteEditor,
-  type DayNoteEntry,
+  AvailabilityShiftNoteEditor,
+  type ShiftNoteEntry,
 } from "@/components/availability-day-note-editor";
 import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import {
@@ -234,15 +234,10 @@ export default async function ReviewPage({
               note: p.note,
             }));
 
-            // One note entry per day the employee has any availability row.
-            // All shift-rows for the same day share one note (see setAvailabilityNoteAction).
-            const dayNoteMap = new Map<number, string | null>();
-            for (const p of empParsed) {
-              if (!dayNoteMap.has(p.day)) dayNoteMap.set(p.day, p.note ?? null);
-            }
-            const dayNotes: DayNoteEntry[] = Array.from(dayNoteMap.entries())
-              .map(([day, note]) => ({ day, note }))
-              .sort((a, b) => a.day - b.day);
+            // One note entry per (day, shiftType) — exact shift-level granularity.
+            const shiftNotes: ShiftNoteEntry[] = empParsed
+              .map((p) => ({ day: p.day, shiftType: p.shiftType, note: p.note ?? null }))
+              .sort((a, b) => a.day - b.day || a.shiftType.localeCompare(b.shiftType));
             const empUnconfirmed = empParsed.filter((p) => !p.confirmed).length;
             return (
               <Card key={emp.id}>
@@ -345,10 +340,10 @@ export default async function ReviewPage({
                     employeeId={emp.id}
                     initial={requestedByEmp.get(emp.id) ?? null}
                   />
-                  <AvailabilityDayNoteEditor
+                  <AvailabilityShiftNoteEditor
                     weekId={weekId}
                     employeeId={emp.id}
-                    dayNotes={dayNotes}
+                    shiftNotes={shiftNotes}
                   />
                 </CardBody>
               </Card>

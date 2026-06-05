@@ -6,6 +6,9 @@ import {
   formatWeekParam,
   formatWeekRange,
   getOrCreateWeek,
+  nextSunday,
+  parseWeekStartParam,
+  prevSunday,
 } from "@/lib/week";
 import { EmployeeAvailabilityForm } from "@/components/employee-availability-form";
 
@@ -21,10 +24,12 @@ export const metadata = {
 
 export default async function PublicAvailabilityPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ week?: string }>;
 }) {
-  const { token } = await params;
+  const [{ token }, sp] = await Promise.all([params, searchParams]);
 
   const employee = await prisma.employee.findUnique({
     where: { submissionToken: token },
@@ -32,24 +37,31 @@ export default async function PublicAvailabilityPage({
   });
   if (!employee || employee.archived) notFound();
 
-  const weekStart = defaultActiveWeekStart();
+  const activeWeekStart = defaultActiveWeekStart();
+  // Allow 1 week back, 2 weeks forward from the current active week.
+  const minWeek = prevSunday(activeWeekStart);
+  const maxWeek = nextSunday(nextSunday(activeWeekStart));
+
+  // Clamp the requested week to [min, max]
+  const requestedWeek = parseWeekStartParam(sp.week);
+  const weekStart =
+    requestedWeek < minWeek
+      ? minWeek
+      : requestedWeek > maxWeek
+        ? maxWeek
+        : requestedWeek;
+
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
 
-  const [existing, latestSubmission, templates, weekOverrides] = await Promise.all([
+  const [existing, templates, weekOverrides] = await Promise.all([
     prisma.parsedAvailability.findMany({
       where: { weekId: week.id, employeeId: employee.id },
-    }),
-    prisma.rawSubmission.findFirst({
-      where: { weekId: week.id, employeeId: employee.id, source: "form" },
-      orderBy: { submittedAt: "desc" },
     }),
     prisma.shiftTemplate.findMany({
       where: { restaurantId: employee.restaurantId },
     }),
     prisma.weekOverride.findMany({ where: { weekId: week.id } }),
   ]);
-  const submittedNote =
-    latestSubmission?.content.match(/הערה:\s*([\s\S]+)$/)?.[1]?.trim() ?? "";
 
   // Template headcount per (day, shiftType) — used to hide closed combos on the form.
   const headcountMap = new Map<string, number>();
@@ -59,6 +71,15 @@ export default async function PublicAvailabilityPage({
     const [day, shiftType] = k.split(":");
     return { day: parseInt(day, 10), shiftType, headcount: n };
   });
+
+  const prevWeek = prevSunday(weekStart);
+  const nextWeek = nextSunday(weekStart);
+  const hasPrev = prevWeek >= minWeek;
+  const hasNext = nextWeek <= maxWeek;
+
+  function weekUrl(d: Date) {
+    return `/a/${token}?week=${encodeURIComponent(formatWeekParam(d))}`;
+  }
 
   return (
     <main className={`min-h-screen bg-slate-50 ${heebo.className}`}>
@@ -72,6 +93,33 @@ export default async function PublicAvailabilityPage({
               {formatWeekRange(weekStart)}
             </span>
           </p>
+        </div>
+
+        {/* Week navigation */}
+        <div className="mb-3 flex items-center justify-between rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200">
+          {hasPrev ? (
+            <a
+              href={weekUrl(prevWeek)}
+              className="text-sm text-brand-600 hover:underline"
+            >
+              ← שבוע קודם
+            </a>
+          ) : (
+            <span className="text-sm text-slate-300">← שבוע קודם</span>
+          )}
+          <span className="num text-xs text-slate-500">
+            {formatWeekRange(weekStart)}
+          </span>
+          {hasNext ? (
+            <a
+              href={weekUrl(nextWeek)}
+              className="text-sm text-brand-600 hover:underline"
+            >
+              שבוע הבא →
+            </a>
+          ) : (
+            <span className="text-sm text-slate-300">שבוע הבא →</span>
+          )}
         </div>
 
         {week.status === "approved" ? (
@@ -111,8 +159,8 @@ export default async function PublicAvailabilityPage({
               initialCells={existing.map((e) => ({
                 day: e.day,
                 shiftType: e.shiftType,
+                note: e.note ?? null,
               }))}
-              initialNote={submittedNote}
               employeeRole={employee.role as "kitchen" | "floor" | "both"}
               headcounts={headcounts}
             />
