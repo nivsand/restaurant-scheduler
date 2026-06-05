@@ -345,6 +345,41 @@ export async function setRequestedShiftsAction(payloadJson: string) {
   revalidatePath(`/schedule/${weekId}`);
 }
 
+// ─── Set a manager note on an employee's availability for a given day ─────────
+// Applies the same note text to ALL parsedAvailability rows for
+// (weekId, employeeId, day) so it surfaces in whichever shift slot the
+// employee is ultimately assigned to.
+
+const noteSchema = z.object({
+  weekId: z.string(),
+  employeeId: z.string(),
+  day: z.number().int().min(0).max(6),
+  note: z.string().max(200),
+});
+
+export async function setAvailabilityNoteAction(payloadJson: string) {
+  const session = await auth();
+  const restaurantId = session!.user.restaurantId;
+  const parsed = noteSchema.safeParse(JSON.parse(payloadJson));
+  if (!parsed.success) throw new Error("בקשה לא תקינה");
+  const { weekId, employeeId, day, note } = parsed.data;
+
+  const week = await prisma.week.findFirst({
+    where: { id: weekId, restaurantId },
+  });
+  if (!week) throw new Error("שבוע לא נמצא");
+
+  const trimmed = note.trim() || null;
+
+  await prisma.parsedAvailability.updateMany({
+    where: { weekId, employeeId, day },
+    data: { note: trimmed },
+  });
+
+  revalidatePath(`/availability/review/${weekId}`);
+  revalidatePath(`/schedule/${weekId}`);
+}
+
 export async function unconfirmAvailabilityCellAction(payloadJson: string) {
   const session = await auth();
   const restaurantId = session!.user.restaurantId;

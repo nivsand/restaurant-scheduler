@@ -12,6 +12,10 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RequestedShiftsEditor } from "@/components/requested-shifts-editor";
+import {
+  AvailabilityDayNoteEditor,
+  type DayNoteEntry,
+} from "@/components/availability-day-note-editor";
 import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import {
   deleteSubmissionAction,
@@ -229,6 +233,16 @@ export default async function ReviewPage({
               confirmed: p.confirmed,
               note: p.note,
             }));
+
+            // One note entry per day the employee has any availability row.
+            // All shift-rows for the same day share one note (see setAvailabilityNoteAction).
+            const dayNoteMap = new Map<number, string | null>();
+            for (const p of empParsed) {
+              if (!dayNoteMap.has(p.day)) dayNoteMap.set(p.day, p.note ?? null);
+            }
+            const dayNotes: DayNoteEntry[] = Array.from(dayNoteMap.entries())
+              .map(([day, note]) => ({ day, note }))
+              .sort((a, b) => a.day - b.day);
             const empUnconfirmed = empParsed.filter((p) => !p.confirmed).length;
             return (
               <Card key={emp.id}>
@@ -331,14 +345,11 @@ export default async function ReviewPage({
                     employeeId={emp.id}
                     initial={requestedByEmp.get(emp.id) ?? null}
                   />
-                  {empParsed.some((p) => p.note) && (
-                    <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 p-2 text-xs text-amber-900">
-                      <span className="font-medium">הערה מהעובד:</span>{" "}
-                      {Array.from(
-                        new Set(empParsed.map((p) => p.note).filter(Boolean)),
-                      ).join(" · ")}
-                    </div>
-                  )}
+                  <AvailabilityDayNoteEditor
+                    weekId={weekId}
+                    employeeId={emp.id}
+                    dayNotes={dayNotes}
+                  />
                 </CardBody>
               </Card>
             );
