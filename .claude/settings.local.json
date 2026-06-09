@@ -45,7 +45,8 @@
       "Bash(rtk read *)",
       "Bash(rtk tsc *)",
       "Bash(rtk git *)",
-      "Bash(rtk grep *)"
+      "Bash(rtk grep *)",
+      "Bash(rtk ls *)"
     ]
   }
 }
