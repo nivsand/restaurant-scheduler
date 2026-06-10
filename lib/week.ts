@@ -91,13 +91,13 @@ export function prevSunday(date: Date): Date {
   );
 }
 
-// Wed–Sat (dow 3-6): managers prepare next week's schedule, so default two weeks ahead.
-// Sun–Tue (dow 0-2): default to the upcoming week.
+// Sun–Tue (dow 0-2): default to current calendar week.
+// Wed–Sat (dow 3-6): default to next week.
 export function defaultActiveWeekStart(now = new Date()): Date {
   const parts = zonedParts(now);
   const dow = calendarDateFromParts(parts.year, parts.month, parts.day).getUTCDay();
-  if (dow >= 3) return nextSunday(nextSunday(now));
-  return nextSunday(now);
+  if (dow >= 3) return nextSunday(now);
+  return sundayOf(now);
 }
 
 export function formatWeekRange(weekStart: Date): string {
