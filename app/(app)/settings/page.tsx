@@ -5,8 +5,13 @@ import {
   getActiveManagerForSession,
   hasValidSessionUser,
 } from "@/lib/session-validation";
+import { prisma } from "@/lib/db";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProfileForm, ChangePasswordForm } from "@/components/settings-forms";
+import {
+  ProfileForm,
+  ChangePasswordForm,
+  RestaurantForm,
+} from "@/components/settings-forms";
 
 export default async function SettingsPage() {
   // Validate the session gracefully (same pattern as the layout/dashboard).
@@ -20,12 +25,25 @@ export default async function SettingsPage() {
   const manager = await getActiveManagerForSession(session);
   if (!manager) redirect(clearSessionPath("/login"));
 
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: manager.restaurantId },
+  });
+
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <h2 className="text-2xl font-bold text-slate-900">הגדרות</h2>
         <p className="text-sm text-slate-500">ניהול חשבון המנהל/ת</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>פרטי המקום</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <RestaurantForm defaultName={restaurant?.name ?? ""} />
+        </CardBody>
+      </Card>
 
       <Card>
         <CardHeader>

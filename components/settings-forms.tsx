@@ -8,6 +8,7 @@ import { PasswordField } from "@/components/password-field";
 import {
   updateProfileAction,
   changePasswordAction,
+  updateRestaurantNameAction,
   type SettingsActionState,
 } from "@/app/(app)/settings/actions";
 
@@ -67,6 +68,39 @@ export function ProfileForm({
           dir="ltr"
           className="text-start"
         />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <FormMessage state={state} />
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "שומר..." : "שמור שינויים"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function RestaurantForm({ defaultName }: { defaultName: string }) {
+  const [state, formAction, isPending] = useActionState(
+    updateRestaurantNameAction,
+    initial,
+  );
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="restaurant-name">שם המקום</Label>
+        <Input
+          id="restaurant-name"
+          name="name"
+          defaultValue={defaultName}
+          required
+          maxLength={80}
+          dir="auto"
+          placeholder="לדוגמה: המסעדה"
+        />
+        <p className="text-xs text-slate-500">
+          יוצג בדאשבורד, בסידור העבודה ובדפי הזמינות
+        </p>
       </div>
       <div className="flex items-center justify-between gap-3">
         <FormMessage state={state} />

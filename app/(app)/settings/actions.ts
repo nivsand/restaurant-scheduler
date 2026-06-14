@@ -64,6 +64,37 @@ export async function updateProfileAction(
   return { ok: true };
 }
 
+// ─── Restaurant name ─────────────────────────────────────────────────────────
+const restaurantNameSchema = z.object({
+  name: z.string().trim().min(1, "שם המקום חובה").max(80, "שם המקום: עד 80 תווים"),
+});
+
+export async function updateRestaurantNameAction(
+  _prev: SettingsActionState,
+  formData: FormData,
+): Promise<SettingsActionState> {
+  const manager = await currentManager();
+  if (!manager) return { error: SESSION_EXPIRED };
+
+  const parsed = restaurantNameSchema.safeParse({
+    name: formData.get("name"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.errors.map((e) => e.message).join(", ") };
+  }
+
+  await prisma.restaurant.update({
+    where: { id: manager.restaurantId },
+    data: { name: parsed.data.name },
+  });
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  revalidatePath("/schedule");
+  revalidatePath("/availability");
+  return { ok: true };
+}
+
 // ─── Password change ─────────────────────────────────────────────────────────
 const passwordSchema = z
   .object({
