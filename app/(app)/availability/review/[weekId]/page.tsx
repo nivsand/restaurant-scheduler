@@ -16,7 +16,7 @@ import {
   AvailabilityShiftNoteEditor,
   type ShiftNoteEntry,
 } from "@/components/availability-day-note-editor";
-import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { SHIFT_DEFS, ShiftType, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 import {
   deleteSubmissionAction,
   confirmAvailabilityAction,
@@ -37,7 +37,7 @@ export default async function ReviewPage({
   });
   if (!week) notFound();
 
-  const [employees, parsed, submissions, templates] = await Promise.all([
+  const [employees, allParsed, submissions, templates] = await Promise.all([
     prisma.employee.findMany({
       where: { restaurantId, archived: false },
       orderBy: { name: "asc" },
@@ -49,6 +49,15 @@ export default async function ReviewPage({
     }),
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
   ]);
+
+  // General weekly notes (sentinel rows) — keyed by employee, surfaced
+  // separately from the per-shift availability grid.
+  const weekNoteByEmployee = new Map<string, string>();
+  for (const p of allParsed) {
+    if (p.shiftType !== WEEK_NOTE_SHIFT_TYPE) continue;
+    if (p.note?.trim()) weekNoteByEmployee.set(p.employeeId, p.note.trim());
+  }
+  const parsed = allParsed.filter((p) => p.shiftType !== WEEK_NOTE_SHIFT_TYPE);
 
   // Latest requestedShifts per employee for this week
   const requestedByEmp = new Map<string, number | null>();
@@ -318,6 +327,16 @@ export default async function ReviewPage({
                   </div>
                 </CardHeader>
                 <CardBody>
+                  {weekNoteByEmployee.has(emp.id) && (
+                    <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                      <div className="mb-1 text-xs font-semibold text-amber-700">
+                        הערה כללית לשבוע
+                      </div>
+                      <div className="whitespace-pre-wrap">
+                        {weekNoteByEmployee.get(emp.id)}
+                      </div>
+                    </div>
+                  )}
                   <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
                     <AvailabilityGrid
                       weekId={weekId}

@@ -14,19 +14,19 @@ export interface RowTheme {
 }
 
 const ORANGE: RowTheme = {
-  cellClass: "bg-orange-100",
-  labelClass: "bg-orange-200 text-orange-900",
-  closedClass: "bg-rose-200 text-rose-700",
+  cellClass: "bg-orange-200",
+  labelClass: "bg-orange-300 text-orange-950",
+  closedClass: "bg-rose-300 text-rose-800",
 };
 const BLUE: RowTheme = {
-  cellClass: "bg-sky-100",
-  labelClass: "bg-sky-200 text-sky-900",
-  closedClass: "bg-rose-200 text-rose-700",
+  cellClass: "bg-sky-200",
+  labelClass: "bg-sky-300 text-sky-950",
+  closedClass: "bg-rose-300 text-rose-800",
 };
 const GREEN: RowTheme = {
-  cellClass: "bg-emerald-100",
-  labelClass: "bg-emerald-200 text-emerald-900",
-  closedClass: "bg-rose-200 text-rose-700",
+  cellClass: "bg-emerald-200",
+  labelClass: "bg-emerald-300 text-emerald-950",
+  closedClass: "bg-rose-300 text-rose-800",
 };
 
 export function themeForShift(st: ShiftType): RowTheme {
@@ -48,16 +48,16 @@ export function themeForShift(st: ShiftType): RowTheme {
 // Note rows
 export const NOTE_THEME = {
   event: {
-    cellClass: "bg-violet-100",
-    labelClass: "bg-violet-200 text-violet-900",
+    cellClass: "bg-violet-200",
+    labelClass: "bg-violet-300 text-violet-950",
   },
   shift_manager: {
-    cellClass: "bg-purple-100",
-    labelClass: "bg-purple-200 text-purple-900",
+    cellClass: "bg-purple-200",
+    labelClass: "bg-purple-300 text-purple-950",
   },
   hours: {
-    cellClass: "bg-emerald-50",
-    labelClass: "bg-emerald-100 text-emerald-800",
+    cellClass: "bg-emerald-100",
+    labelClass: "bg-emerald-200 text-emerald-900",
   },
 } as const;
 

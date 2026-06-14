@@ -29,12 +29,14 @@ export function EmployeeAvailabilityForm({
   initialCells,
   employeeRole,
   headcounts,
+  initialWeekNote,
 }: {
   token: string;
   weekStart: string;
   initialCells: ExistingCell[];
   employeeRole: "kitchen" | "floor" | "both";
   headcounts: HeadcountEntry[];
+  initialWeekNote?: string;
 }) {
   const [selected, setSelected] = useState<Set<string>>(
     new Set(initialCells.map((c) => `${c.day}:${c.shiftType}`)),
@@ -46,6 +48,7 @@ export function EmployeeAvailabilityForm({
         .map((c) => [`${c.day}:${c.shiftType}`, c.note!]),
     ),
   );
+  const [weekNote, setWeekNote] = useState(initialWeekNote ?? "");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -89,10 +92,16 @@ export function EmployeeAvailabilityForm({
       const note = notes[k]?.trim() || undefined;
       return { day: parseInt(d, 10), shiftType: st, ...(note ? { note } : {}) };
     });
+    const trimmedNote = weekNote.trim();
     startTransition(async () => {
       try {
         const result = await submitAvailabilityForm(
-          JSON.stringify({ token, weekStart, cells }),
+          JSON.stringify({
+            token,
+            weekStart,
+            cells,
+            ...(trimmedNote ? { weekNote: trimmedNote } : {}),
+          }),
         );
         if (result?.ok) {
           window.location.href = result.redirectTo;
@@ -280,6 +289,21 @@ export function EmployeeAvailabilityForm({
             </div>
           );
         })}
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-3">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-900">
+          הערה כללית לשבוע
+        </label>
+        <textarea
+          value={weekNote}
+          onChange={(e) => setWeekNote(e.target.value)}
+          placeholder="הערה כללית למנהל/ת (לא קשורה למשמרת מסוימת)..."
+          maxLength={1000}
+          dir="auto"
+          rows={3}
+          className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+        />
       </div>
 
       {error && (

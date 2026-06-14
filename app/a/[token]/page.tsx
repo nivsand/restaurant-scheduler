@@ -11,6 +11,7 @@ import {
   prevSunday,
 } from "@/lib/week";
 import { EmployeeAvailabilityForm } from "@/components/employee-availability-form";
+import { WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 
 const heebo = Heebo({
   subsets: ["latin", "hebrew"],
@@ -71,6 +72,9 @@ export default async function PublicAvailabilityPage({
     const [day, shiftType] = k.split(":");
     return { day: parseInt(day, 10), shiftType, headcount: n };
   });
+
+  const weekNoteRow = existing.find((e) => e.shiftType === WEEK_NOTE_SHIFT_TYPE);
+  const shiftCells = existing.filter((e) => e.shiftType !== WEEK_NOTE_SHIFT_TYPE);
 
   const prevWeek = prevSunday(weekStart);
   const nextWeek = nextSunday(weekStart);
@@ -133,9 +137,9 @@ export default async function PublicAvailabilityPage({
               <br />
               אם יש שינוי דחוף, פנו ישירות למנהל/ת.
             </p>
-            {existing.length > 0 && (
+            {shiftCells.length > 0 && (
               <p className="mt-3 text-xs text-emerald-700">
-                הזמינות שהוגשה: <span className="num">{existing.length}</span> משמרות
+                הזמינות שהוגשה: <span className="num">{shiftCells.length}</span> משמרות
               </p>
             )}
           </div>
@@ -156,13 +160,14 @@ export default async function PublicAvailabilityPage({
             <EmployeeAvailabilityForm
               token={token}
               weekStart={formatWeekParam(weekStart)}
-              initialCells={existing.map((e) => ({
+              initialCells={shiftCells.map((e) => ({
                 day: e.day,
                 shiftType: e.shiftType,
                 note: e.note ?? null,
               }))}
               employeeRole={employee.role as "kitchen" | "floor" | "both"}
               headcounts={headcounts}
+              initialWeekNote={weekNoteRow?.note ?? ""}
             />
           </>
         )}

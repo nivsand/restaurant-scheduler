@@ -71,7 +71,7 @@ export function PrintControls({ weekId }: { weekId: string }) {
       if (!node) throw new Error("לא נמצא אזור הסידור");
       // Use the natural scrollWidth/scrollHeight so wide grids aren't cropped
       const dataUrl = await toPng(node, {
-        pixelRatio: 2,
+        pixelRatio: 3,
         backgroundColor: "#ffffff",
         width: node.scrollWidth,
         height: node.scrollHeight,

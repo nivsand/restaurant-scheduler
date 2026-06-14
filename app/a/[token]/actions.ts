@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getOrCreateWeek, parseWeekStartParam } from "@/lib/week";
-import { isShiftAllowedOnDay, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import {
+  isShiftAllowedOnDay,
+  SHIFT_DEFS,
+  ShiftType,
+  WEEK_NOTE_SHIFT_TYPE,
+} from "@/lib/shifts";
 import { DAY_NAMES_HE, DAYS, DayOfWeek } from "@/lib/days";
 
 // Renders form-submitted cells as readable Hebrew grouped by day.
@@ -49,6 +54,7 @@ const formPayloadSchema = z.object({
   token: z.string().min(1),
   weekStart: z.string().min(1),
   cells: z.array(cellSchema),
+  weekNote: z.string().max(1000).optional(),
 });
 
 export async function submitAvailabilityForm(payloadJson: string): Promise<{
@@ -60,7 +66,7 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
   if (!parsed.success) {
     throw new Error("בקשה לא תקינה");
   }
-  const { token, weekStart, cells } = parsed.data;
+  const { token, weekStart, cells, weekNote } = parsed.data;
 
   const employee = await prisma.employee.findUnique({
     where: { submissionToken: token },
@@ -139,6 +145,38 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
         source: "form",
         note: cell.note?.trim() || null,
         confirmed: true,
+      },
+    });
+  }
+
+  // General free-text note for the whole week (separate from per-shift
+  // notes). Stored as a sentinel ParsedAvailability row so it survives
+  // alongside per-shift cells without a schema change.
+  const trimmedWeekNote = weekNote?.trim();
+  if (trimmedWeekNote) {
+    await prisma.parsedAvailability.upsert({
+      where: {
+        weekId_employeeId_day_shiftType: {
+          weekId: week.id,
+          employeeId: employee.id,
+          day: 0,
+          shiftType: WEEK_NOTE_SHIFT_TYPE,
+        },
+      },
+      create: {
+        weekId: week.id,
+        employeeId: employee.id,
+        day: 0,
+        shiftType: WEEK_NOTE_SHIFT_TYPE,
+        available: false,
+        confidence: 1.0,
+        source: "form",
+        note: trimmedWeekNote,
+        confirmed: true,
+      },
+      update: {
+        source: "form",
+        note: trimmedWeekNote,
       },
     });
   }

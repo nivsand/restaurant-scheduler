@@ -35,7 +35,7 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
 
     const { toPng } = await import("html-to-image");
     const dataUrl = await toPng(node, {
-      pixelRatio: 2,
+      pixelRatio: 3,
       backgroundColor: "#ffffff",
       width: node.scrollWidth,
       height: node.scrollHeight,

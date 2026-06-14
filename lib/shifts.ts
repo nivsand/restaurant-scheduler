@@ -92,6 +92,21 @@ export const SHIFT_DEFS: Record<ShiftType, ShiftDef> = {
 
 export const ALL_SHIFT_TYPES = Object.keys(SHIFT_DEFS) as ShiftType[];
 
+// Sentinel "shiftType" used to store a free-text general weekly note on the
+// employee availability form. Stored as a ParsedAvailability row (day 0,
+// available=false) so it rides along with per-shift cells without a schema
+// change. Always excluded from ALL_SHIFT_TYPES-based engine/UI loops.
+export const WEEK_NOTE_SHIFT_TYPE = "WEEK_NOTE";
+
+// Friday "פלור בוקר" split-cell display: when both slots of MORNING_FLOOR on
+// Friday (day 5) are filled, the cell shows two employees stacked with a
+// divider, each annotated with a start time. Times default to these values
+// and are editable per-week (stored as ScheduleNote rows, kind
+// "floor_split_0"/"floor_split_1", day 5).
+export const FRIDAY_FLOOR_SPLIT_DAY = 5;
+export const FRIDAY_FLOOR_SPLIT_SHIFT_TYPE: ShiftType = "MORNING_FLOOR";
+export const FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES: [string, string] = ["11:00", "13:00"];
+
 // Whether a given shift type is permitted on a given day.
 // Now lenient: ANY shift on ANY day is allowed at the type level. The actual
 // "is the venue open?" signal lives in the ShiftTemplate.headcount — zero

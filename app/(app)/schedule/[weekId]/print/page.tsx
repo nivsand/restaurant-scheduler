@@ -212,6 +212,7 @@ export default async function PrintSchedulePage({
               content: note.content,
             }))}
             readOnly
+            cleanExport
           />
         </div>
 

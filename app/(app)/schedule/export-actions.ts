@@ -5,7 +5,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE } from "@/lib/days";
-import { ALL_SHIFT_TYPES, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import {
+  ALL_SHIFT_TYPES,
+  SHIFT_DEFS,
+  ShiftType,
+  FRIDAY_FLOOR_SPLIT_DAY,
+  FRIDAY_FLOOR_SPLIT_SHIFT_TYPE,
+  FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES,
+} from "@/lib/shifts";
 
 // Excel ARGB colors (alpha first). Matches the on-screen theme.
 const COLOR = {
@@ -128,6 +135,14 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
   const noteMap = new Map<string, string>();
   for (const n of scheduleNotes) noteMap.set(`${n.day}:${n.kind}`, n.content);
 
+  // Friday "פלור בוקר" split-cell start times (per-week override or default).
+  const fridayFloorSplitTimes: [string, string] = [
+    noteMap.get(`${FRIDAY_FLOOR_SPLIT_DAY}:floor_split_0`) ??
+      FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES[0],
+    noteMap.get(`${FRIDAY_FLOOR_SPLIT_DAY}:floor_split_1`) ??
+      FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES[1],
+  ];
+
   const activeShiftTypes = ALL_SHIFT_TYPES.filter((st) => {
     for (const d of DAYS) if ((headMap.get(`${d}:${st}`) ?? 0) > 0) return true;
     return false;
@@ -170,6 +185,22 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
         const need = headMap.get(`${d}:${st}`) ?? 0;
         if (need === 0) return "סגור";
         const cells = cellMap.get(`${d}:${st}`) ?? [];
+        // Friday "פלור בוקר" split: two employees, each with their own start
+        // time, separated by a divider line. Falls back to the normal list
+        // when fewer than two employees are assigned.
+        if (
+          d === FRIDAY_FLOOR_SPLIT_DAY &&
+          st === FRIDAY_FLOOR_SPLIT_SHIFT_TYPE &&
+          cells.length === 2 &&
+          cells[0] &&
+          cells[1]
+        ) {
+          return [
+            `${cells[0]} (${fridayFloorSplitTimes[0]})`,
+            "────────",
+            `${cells[1]} (${fridayFloorSplitTimes[1]})`,
+          ].join("\n");
+        }
         return cells.map((n) => n ?? "— ריק —").join("\n");
       }),
     ];

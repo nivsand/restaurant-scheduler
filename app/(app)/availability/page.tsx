@@ -12,6 +12,7 @@ import { PasteIngest } from "@/components/paste-ingest";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 
 export default async function AvailabilityPage({
   searchParams,
@@ -40,6 +41,7 @@ export default async function AvailabilityPage({
   // Quick per-employee summary: how many parsed rows + mean confidence
   const summary = new Map<string, { rows: number; conf: number }>();
   for (const r of parsedRows) {
+    if (r.shiftType === WEEK_NOTE_SHIFT_TYPE) continue;
     const cur = summary.get(r.employeeId) ?? { rows: 0, conf: 0 };
     summary.set(r.employeeId, { rows: cur.rows + 1, conf: cur.conf + r.confidence });
   }

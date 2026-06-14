@@ -3,6 +3,9 @@ import {
   ALL_SHIFT_TYPES,
   SHIFT_DEFS,
   ShiftType,
+  FRIDAY_FLOOR_SPLIT_DAY,
+  FRIDAY_FLOOR_SPLIT_SHIFT_TYPE,
+  FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES,
 } from "@/lib/shifts";
 import {
   themeForShift,
@@ -46,6 +49,7 @@ export function ScheduleGrid({
   headcounts,
   notes,
   readOnly,
+  cleanExport,
 }: {
   areaId?: string;
   weekId: string;
@@ -53,6 +57,8 @@ export function ScheduleGrid({
   headcounts: HeadcountRow[];
   notes: ScheduleNote[];
   readOnly: boolean;
+  /** true for final exports (PDF/print/WhatsApp/Excel): hide lock/edit-state styling */
+  cleanExport?: boolean;
 }) {
   const headMap = new Map<string, number>();
   for (const h of headcounts) headMap.set(`${h.day}:${h.shiftType}`, h.headcount);
@@ -64,6 +70,14 @@ export function ScheduleGrid({
 
   const noteMap = new Map<string, string>();
   for (const n of notes) noteMap.set(`${n.day}:${n.kind}`, n.content);
+
+  // Friday "פלור בוקר" split-cell start times (per-week override or default).
+  const fridayFloorSplitTimes: [string, string] = [
+    noteMap.get(`${FRIDAY_FLOOR_SPLIT_DAY}:floor_split_0`) ??
+      FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES[0],
+    noteMap.get(`${FRIDAY_FLOOR_SPLIT_DAY}:floor_split_1`) ??
+      FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES[1],
+  ];
 
   function chipsFor(day: number, shiftType: string): SlotChip[] {
     const count = headMap.get(`${day}:${shiftType}`) ?? 0;
@@ -138,6 +152,12 @@ export function ScheduleGrid({
                       readOnly={readOnly}
                       cellTint={theme.cellClass}
                       closedTint={theme.closedClass}
+                      cleanExport={cleanExport}
+                      fridayFloorSplitTimes={
+                        d === FRIDAY_FLOOR_SPLIT_DAY && st === FRIDAY_FLOOR_SPLIT_SHIFT_TYPE
+                          ? fridayFloorSplitTimes
+                          : undefined
+                      }
                     />
                   );
                 })}

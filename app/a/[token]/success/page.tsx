@@ -8,7 +8,7 @@ import {
   getOrCreateWeek,
 } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
-import { ALL_SHIFT_TYPES, SHIFT_DEFS } from "@/lib/shifts";
+import { ALL_SHIFT_TYPES, SHIFT_DEFS, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 import { cn } from "@/lib/utils";
 
 const heebo = Heebo({
@@ -38,10 +38,12 @@ export default async function AvailabilitySuccessPage({
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
 
   // Pull everything this employee currently has on file for the week
-  const parsed = await prisma.parsedAvailability.findMany({
+  const allParsed = await prisma.parsedAvailability.findMany({
     where: { weekId: week.id, employeeId: employee.id },
     orderBy: [{ day: "asc" }, { shiftType: "asc" }],
   });
+  const weekNoteRow = allParsed.find((p) => p.shiftType === WEEK_NOTE_SHIFT_TYPE);
+  const parsed = allParsed.filter((p) => p.shiftType !== WEEK_NOTE_SHIFT_TYPE);
   const latestSub = await prisma.rawSubmission.findFirst({
     where: { weekId: week.id, employeeId: employee.id },
     orderBy: { submittedAt: "desc" },
@@ -138,6 +140,15 @@ export default async function AvailabilitySuccessPage({
           <div className="mt-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
             <div className="mb-1 text-xs font-medium text-amber-700">הערה</div>
             {note}
+          </div>
+        )}
+
+        {weekNoteRow?.note && (
+          <div className="mt-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
+            <div className="mb-1 text-xs font-medium text-amber-700">
+              הערה כללית לשבוע
+            </div>
+            <div className="whitespace-pre-wrap">{weekNoteRow.note}</div>
           </div>
         )}
 

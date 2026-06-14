@@ -50,7 +50,10 @@ export function EditableNoteCell({
 
   if (readOnly) {
     return (
-      <div className="whitespace-pre-wrap break-words text-center text-xs leading-tight">
+      <div
+        dir="auto"
+        className="min-h-[3rem] whitespace-pre-wrap break-words text-center text-xs leading-tight"
+      >
         {value}
       </div>
     );
@@ -59,28 +62,25 @@ export function EditableNoteCell({
   return (
     <textarea
       ref={ref}
+      dir="auto"
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onBlur={save}
       onKeyDown={(e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          e.currentTarget.blur();
-        }
         if (e.key === "Escape") {
           setValue(savedValue);
           e.currentTarget.blur();
         }
       }}
       placeholder={placeholder ?? "—"}
-      rows={1}
+      rows={2}
       disabled={isPending}
       className={cn(
         "w-full resize-none bg-transparent text-center text-xs leading-tight outline-none transition-all",
         "placeholder:text-slate-300/70 focus:bg-white/70 focus:ring-1 focus:ring-brand-300 rounded-sm",
         isPending && "opacity-60",
       )}
-      style={{ minHeight: "1.5rem" }}
+      style={{ minHeight: "3rem" }}
     />
   );
 }

@@ -14,7 +14,7 @@ import {
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SHIFT_DEFS, ShiftType, isShiftAllowedOnDay } from "@/lib/shifts";
+import { SHIFT_DEFS, ShiftType, isShiftAllowedOnDay, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +71,7 @@ export default async function ScheduleEditorPage({
   const availabilityNoteMap = new Map<string, string>();
   const availabilityRowsByKey = new Map<string, SummaryAvailabilityRow>();
   for (const p of parsed) {
+    if (p.shiftType === WEEK_NOTE_SHIFT_TYPE) continue;
     const note = p.note?.trim() || null;
     if (note) {
       availabilityNoteMap.set(
