@@ -11,7 +11,8 @@ export default async function ScheduleIndex({
   searchParams: Promise<{ week?: string }>;
 }) {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
   const sp = await searchParams;
   const weekStart = parseWeekStartParam(sp.week);
   const week = await getOrCreateWeek(restaurantId, weekStart);

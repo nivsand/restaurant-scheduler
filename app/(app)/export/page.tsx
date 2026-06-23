@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
@@ -9,7 +10,8 @@ import { ExportWeekButtons } from "@/components/export-week-buttons";
 
 export default async function ExportIndexPage() {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
 
   // Pull recent weeks with their assignment counts
   const weeks = await prisma.week.findMany({

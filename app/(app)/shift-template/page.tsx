@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -18,12 +20,14 @@ import { cn } from "@/lib/utils";
 
 export default async function ShiftTemplatePage() {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
 
   const [restaurant, templates] = await Promise.all([
-    prisma.restaurant.findUniqueOrThrow({ where: { id: restaurantId } }),
+    prisma.restaurant.findUnique({ where: { id: restaurantId } }),
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
   ]);
+  if (!restaurant) notFound();
 
   const map = new Map<string, number>();
   for (const t of templates) map.set(`${t.day}:${t.shiftType}`, t.headcount);

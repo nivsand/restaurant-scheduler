@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
   ALL_SHIFT_TYPES,
@@ -11,8 +11,7 @@ import {
 import { DAYS, DayOfWeek } from "@/lib/days";
 
 export async function saveTemplateAction(formData: FormData) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const rows: { day: DayOfWeek; shiftType: ShiftType; headcount: number }[] = [];
 
@@ -54,8 +53,7 @@ export async function saveTemplateAction(formData: FormData) {
 }
 
 export async function saveRestaurantSettingsAction(formData: FormData) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const raw = Number(formData.get("minRestHours"));
   const minRestHours =

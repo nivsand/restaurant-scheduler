@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { EmployeeForm } from "@/components/employee-form";
@@ -22,7 +22,8 @@ export default async function EditEmployeePage({
 }) {
   const { id } = await params;
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
 
   const employee = await prisma.employee.findFirst({
     where: { id, restaurantId },

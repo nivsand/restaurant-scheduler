@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekParam, getOrCreateWeek, parseWeekStartParam } from "@/lib/week";
 import { parseAvailability } from "@/lib/parser";
@@ -13,8 +13,7 @@ import { DayOfWeek } from "@/lib/days";
 // ─── Navigate to a week (create-or-get) ────────────────────────────────────
 
 export async function goToWeekAction(formData: FormData) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const weekStartStr = String(formData.get("weekStart") ?? "");
   const ws = parseWeekStartParam(weekStartStr);
   await getOrCreateWeek(restaurantId, ws);
@@ -38,8 +37,7 @@ export async function ingestPasteAction(payloadJson: string): Promise<{
   created: number;
   warnings: string[];
 }> {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const parsed = ingestPayloadSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) {
@@ -192,8 +190,7 @@ const toggleSchema = z.object({
 });
 
 export async function toggleAvailabilityAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const parsed = toggleSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
@@ -266,8 +263,7 @@ const confirmSchema = z.object({
 });
 
 export async function confirmAvailabilityAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const parsed = confirmSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
   const { weekId, employeeId, day, shiftType } = parsed.data;
@@ -302,8 +298,7 @@ const requestedSchema = z.object({
 });
 
 export async function setRequestedShiftsAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const parsed = requestedSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
   const { weekId, employeeId, requestedShifts } = parsed.data;
@@ -359,8 +354,7 @@ const noteSchema = z.object({
 });
 
 export async function setAvailabilityNoteAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const parsed = noteSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
   const { weekId, employeeId, day, shiftType, note } = parsed.data;
@@ -382,8 +376,7 @@ export async function setAvailabilityNoteAction(payloadJson: string) {
 }
 
 export async function unconfirmAvailabilityCellAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const parsed = z
     .object({
       weekId: z.string(),
@@ -407,8 +400,7 @@ export async function unconfirmAvailabilityCellAction(payloadJson: string) {
 }
 
 export async function deleteSubmissionAction(submissionId: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const sub = await prisma.rawSubmission.findUnique({
     where: { id: submissionId },
     include: { week: true },

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 const noteSchema = z.object({
@@ -13,8 +13,7 @@ const noteSchema = z.object({
 });
 
 export async function updateScheduleNoteAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const parsed = noteSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");
@@ -53,8 +52,7 @@ const floorSplitTimeSchema = z.object({
 });
 
 export async function updateFridayFloorSplitTimeAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const parsed = floorSplitTimeSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) throw new Error("בקשה לא תקינה");

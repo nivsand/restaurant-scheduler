@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { randomToken } from "@/lib/utils";
 
@@ -31,8 +31,7 @@ function parseFormBooleans(formData: FormData): Record<string, boolean> {
 }
 
 export async function createEmployeeAction(formData: FormData) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const raw = {
     name: formData.get("name"),
@@ -83,8 +82,7 @@ export async function createEmployeeAction(formData: FormData) {
 }
 
 export async function updateEmployeeAction(id: string, formData: FormData) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const raw = {
     name: formData.get("name"),
@@ -140,8 +138,7 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
 }
 
 export async function setArchivedAction(id: string, archived: boolean) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const existing = await prisma.employee.findFirst({
     where: { id, restaurantId },
   });
@@ -151,8 +148,7 @@ export async function setArchivedAction(id: string, archived: boolean) {
 }
 
 export async function regenerateTokenAction(id: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const existing = await prisma.employee.findFirst({
     where: { id, restaurantId },
   });
@@ -170,8 +166,7 @@ const passwordSchema = z.object({
 });
 
 export async function setEmployeePasswordAction(payloadJson: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const parsed = passwordSchema.safeParse(JSON.parse(payloadJson));
   if (!parsed.success) {
     throw new Error(parsed.error.errors.map((e) => e.message).join(", "));
@@ -193,8 +188,7 @@ export async function setEmployeePasswordAction(payloadJson: string) {
 }
 
 export async function clearEmployeePasswordAction(employeeId: string) {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
   const existing = await prisma.employee.findFirst({
     where: { id: employeeId, restaurantId },
   });

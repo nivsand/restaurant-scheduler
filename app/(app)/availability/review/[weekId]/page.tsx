@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekParam, formatWeekRange } from "@/lib/week";
@@ -29,7 +29,8 @@ export default async function ReviewPage({
 }) {
   const { weekId } = await params;
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
 
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },

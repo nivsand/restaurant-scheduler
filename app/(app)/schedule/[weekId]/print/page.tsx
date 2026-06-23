@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -50,7 +50,8 @@ export default async function PrintSchedulePage({
   const { weekId } = await params;
   const isPdfMode = (await searchParams)?.pdf === "1";
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
 
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },

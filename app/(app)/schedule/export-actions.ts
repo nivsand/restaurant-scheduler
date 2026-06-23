@@ -1,7 +1,7 @@
 "use server";
 
 import ExcelJS from "exceljs";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE } from "@/lib/days";
@@ -76,8 +76,7 @@ function styleCell(
 }
 
 export async function exportScheduleExcelAction(weekId: string): Promise<string> {
-  const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  const { restaurantId } = await requireAuth();
 
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },

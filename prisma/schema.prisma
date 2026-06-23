@@ -238,13 +238,13 @@ model ScheduleAssignment {
 model AuditLog {
   id        String   @id @default(cuid())
   weekId    String?
-  managerId String
+  managerId String?
   action    String
   // Postgres-native JSON. App code writes JSON-encoded strings via Prisma's
   // typed Json column; reads are transparent.
   payload   Json     @default("{}")
   createdAt DateTime @default(now())
 
-  week    Week?   @relation(fields: [weekId], references: [id])
-  manager Manager @relation(fields: [managerId], references: [id])
+  week    Week?    @relation(fields: [weekId], references: [id])
+  manager Manager? @relation(fields: [managerId], references: [id])
 }

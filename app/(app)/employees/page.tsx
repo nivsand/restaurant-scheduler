@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Card, CardBody } from "@/components/ui/card";
@@ -12,7 +13,8 @@ export default async function EmployeesPage({
   searchParams: Promise<{ archived?: string }>;
 }) {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
   const sp = await searchParams;
   const showArchived = sp.archived === "1";
 

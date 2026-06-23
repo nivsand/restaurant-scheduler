@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -20,7 +21,8 @@ export default async function AvailabilityPage({
   searchParams: Promise<{ week?: string }>;
 }) {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) redirect("/login");
+  const restaurantId = session.user.restaurantId;
   const sp = await searchParams;
   const weekStart = parseWeekStartParam(sp.week);
   const week = await getOrCreateWeek(restaurantId, weekStart);

@@ -20,6 +20,22 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+export async function requireAuth() {
+  const session = await auth();
+  if (
+    !session?.user?.id ||
+    typeof session.user.restaurantId !== "string" ||
+    !session.user.restaurantId
+  ) {
+    throw new Error("לא מחובר");
+  }
+  return {
+    userId: session.user.id,
+    restaurantId: session.user.restaurantId,
+    session,
+  };
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [

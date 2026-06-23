@@ -22,12 +22,13 @@ const generateSchema = z.object({
 
 async function authedWeek(weekId: string) {
   const session = await auth();
-  const restaurantId = session!.user.restaurantId;
+  if (!session?.user?.restaurantId) throw new Error("לא מחובר");
+  const restaurantId = session.user.restaurantId;
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },
   });
   if (!week) throw new Error("שבוע לא נמצא");
-  return { week, restaurantId, managerId: session!.user.id };
+  return { week, restaurantId, managerId: session.user.id };
 }
 
 export async function generateScheduleAction(payloadJson: string) {

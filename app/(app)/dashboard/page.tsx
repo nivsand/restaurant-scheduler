@@ -23,7 +23,7 @@ export default async function DashboardPage() {
 
   const [restaurant, employeeCount, templateCount, latestWeek, anyAvailability, anySchedule] =
     await Promise.all([
-      prisma.restaurant.findUniqueOrThrow({ where: { id: restaurantId } }),
+      prisma.restaurant.findUnique({ where: { id: restaurantId } }),
       prisma.employee.count({ where: { restaurantId, archived: false } }),
       prisma.shiftTemplate.count({
         where: { restaurantId, headcount: { gt: 0 } },
@@ -39,6 +39,8 @@ export default async function DashboardPage() {
         where: { week: { restaurantId }, employeeId: { not: null } },
       }),
     ]);
+
+  if (!restaurant) redirect(clearSessionPath("/login"));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
