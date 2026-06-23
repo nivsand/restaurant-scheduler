@@ -9,6 +9,7 @@ import { Card, CardBody } from "@/components/ui/card";
 export interface EmployeeFormValues {
   name: string;
   role: "kitchen" | "floor" | "both";
+  email: string | null;
   maxShifts: number | null;
   minShifts: number | null;
   onlyMornings: boolean;
@@ -41,6 +42,18 @@ export function EmployeeForm({
               defaultValue={initial?.name ?? ""}
               placeholder="לדוגמה: רוני"
               autoFocus
+            />
+          </Field>
+
+          <Field label="אימייל / שם משתמש (להתחברות)">
+            <Input
+              name="email"
+              type="text"
+              defaultValue={initial?.email ?? ""}
+              placeholder="לדוגמה: roni@email.com"
+              dir="ltr"
+              className="text-start"
+              maxLength={120}
             />
           </Field>
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { randomToken } from "@/lib/utils";
@@ -10,6 +11,7 @@ import { randomToken } from "@/lib/utils";
 const employeeSchema = z.object({
   name: z.string().trim().min(1, "שם חובה"),
   role: z.enum(["kitchen", "floor", "both"]),
+  email: z.string().trim().toLowerCase().max(120).optional().nullable(),
   maxShifts: z.coerce.number().int().min(0).max(14).optional().nullable(),
   minShifts: z.coerce.number().int().min(0).max(14).optional().nullable(),
   onlyMornings: z.coerce.boolean().optional().default(false),
@@ -35,6 +37,7 @@ export async function createEmployeeAction(formData: FormData) {
   const raw = {
     name: formData.get("name"),
     role: formData.get("role"),
+    email: formData.get("email") || null,
     maxShifts: formData.get("maxShifts") || null,
     minShifts: formData.get("minShifts") || null,
     notes: formData.get("notes") || null,
@@ -50,11 +53,20 @@ export async function createEmployeeAction(formData: FormData) {
     throw new Error("לא ניתן לסמן גם 'רק בקרים' וגם 'רק ערבים'");
   }
 
+  const emailVal = data.email || null;
+  if (emailVal) {
+    const dup = await prisma.employee.findFirst({
+      where: { restaurantId, email: emailVal },
+    });
+    if (dup) throw new Error("אימייל כבר בשימוש על ידי עובד אחר");
+  }
+
   await prisma.employee.create({
     data: {
       restaurantId,
       name: data.name,
       role: data.role,
+      email: emailVal,
       maxShifts: data.maxShifts,
       minShifts: data.minShifts,
       onlyMornings: data.onlyMornings,
@@ -77,6 +89,7 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
   const raw = {
     name: formData.get("name"),
     role: formData.get("role"),
+    email: formData.get("email") || null,
     maxShifts: formData.get("maxShifts") || null,
     minShifts: formData.get("minShifts") || null,
     notes: formData.get("notes") || null,
@@ -97,11 +110,20 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
   });
   if (!existing) throw new Error("עובד לא נמצא");
 
+  const emailVal = data.email || null;
+  if (emailVal && emailVal !== existing.email) {
+    const dup = await prisma.employee.findFirst({
+      where: { restaurantId, email: emailVal, id: { not: id } },
+    });
+    if (dup) throw new Error("אימייל כבר בשימוש על ידי עובד אחר");
+  }
+
   await prisma.employee.update({
     where: { id },
     data: {
       name: data.name,
       role: data.role,
+      email: emailVal,
       maxShifts: data.maxShifts,
       minShifts: data.minShifts,
       onlyMornings: data.onlyMornings,
@@ -140,4 +162,48 @@ export async function regenerateTokenAction(id: string) {
     data: { submissionToken: randomToken() },
   });
   revalidatePath(`/employees/${id}`);
+}
+
+const passwordSchema = z.object({
+  employeeId: z.string().min(1),
+  password: z.string().min(4, "סיסמה חייבת להכיל לפחות 4 תווים"),
+});
+
+export async function setEmployeePasswordAction(payloadJson: string) {
+  const session = await auth();
+  const restaurantId = session!.user.restaurantId;
+  const parsed = passwordSchema.safeParse(JSON.parse(payloadJson));
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors.map((e) => e.message).join(", "));
+  }
+
+  const existing = await prisma.employee.findFirst({
+    where: { id: parsed.data.employeeId, restaurantId },
+  });
+  if (!existing) throw new Error("עובד לא נמצא");
+  if (!existing.email) throw new Error("יש להגדיר אימייל לפני הגדרת סיסמה");
+
+  const hash = await bcrypt.hash(parsed.data.password, 10);
+  await prisma.employee.update({
+    where: { id: parsed.data.employeeId },
+    data: { passwordHash: hash },
+  });
+
+  revalidatePath(`/employees/${parsed.data.employeeId}`);
+}
+
+export async function clearEmployeePasswordAction(employeeId: string) {
+  const session = await auth();
+  const restaurantId = session!.user.restaurantId;
+  const existing = await prisma.employee.findFirst({
+    where: { id: employeeId, restaurantId },
+  });
+  if (!existing) throw new Error("עובד לא נמצא");
+
+  await prisma.employee.update({
+    where: { id: employeeId },
+    data: { passwordHash: null },
+  });
+
+  revalidatePath(`/employees/${employeeId}`);
 }

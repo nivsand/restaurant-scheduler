@@ -25,13 +25,15 @@ export interface HeadcountEntry {
 
 export function EmployeeAvailabilityForm({
   token,
+  employeeId,
   weekStart,
   initialCells,
   employeeRole,
   headcounts,
   initialWeekNote,
 }: {
-  token: string;
+  token?: string;
+  employeeId?: string;
   weekStart: string;
   initialCells: ExistingCell[];
   employeeRole: "kitchen" | "floor" | "both";
@@ -97,7 +99,8 @@ export function EmployeeAvailabilityForm({
       try {
         const result = await submitAvailabilityForm(
           JSON.stringify({
-            token,
+            ...(token ? { token } : {}),
+            ...(employeeId ? { employeeId } : {}),
             weekStart,
             cells,
             ...(trimmedNote ? { weekNote: trimmedNote } : {}),

@@ -156,6 +156,24 @@ export async function getOrCreateWeek(
   const created = await prisma.week.create({
     data: { restaurantId, weekStart: normalized, status: "draft" },
   });
+
+  // Snapshot current ShiftTemplate headcounts into WeekOverride so that
+  // future template changes don't retroactively alter this week's layout.
+  const templates = await prisma.shiftTemplate.findMany({
+    where: { restaurantId },
+  });
+  if (templates.length > 0) {
+    await prisma.weekOverride.createMany({
+      data: templates.map((t) => ({
+        weekId: created.id,
+        day: t.day,
+        shiftType: t.shiftType,
+        headcount: t.headcount,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
   return {
     id: created.id,
     weekStart: created.weekStart,

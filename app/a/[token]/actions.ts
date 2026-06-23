@@ -51,7 +51,8 @@ const cellSchema = z.object({
 });
 
 const formPayloadSchema = z.object({
-  token: z.string().min(1),
+  token: z.string().min(1).optional(),
+  employeeId: z.string().min(1).optional(),
   weekStart: z.string().min(1),
   cells: z.array(cellSchema),
   weekNote: z.string().max(1000).optional(),
@@ -66,12 +67,22 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
   if (!parsed.success) {
     throw new Error("בקשה לא תקינה");
   }
-  const { token, weekStart, cells, weekNote } = parsed.data;
+  const { token, employeeId, weekStart, cells, weekNote } = parsed.data;
 
-  const employee = await prisma.employee.findUnique({
-    where: { submissionToken: token },
-  });
-  if (!employee) throw new Error("קישור לא תקין");
+  let employee;
+  if (token) {
+    employee = await prisma.employee.findUnique({
+      where: { submissionToken: token },
+    });
+    if (!employee) throw new Error("קישור לא תקין");
+  } else if (employeeId) {
+    employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+    });
+    if (!employee) throw new Error("עובד לא נמצא");
+  } else {
+    throw new Error("בקשה לא תקינה");
+  }
   if (employee.archived) throw new Error("חשבון לא פעיל");
 
   const week = await getOrCreateWeek(
@@ -193,14 +204,19 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
     });
   }
 
-  revalidatePath(`/a/${token}`);
+  if (token) revalidatePath(`/a/${token}`);
+  revalidatePath(`/employee`);
   revalidatePath(`/availability`);
   // CRITICAL: revalidate the per-week review page so the manager sees the
   // submission immediately. Without this, the SSR page may render stale data.
   revalidatePath(`/availability/review/${week.id}`);
+
+  const redirectTo = token
+    ? `/a/${token}/success?submission=${submission.id}`
+    : `/employee/success?submission=${submission.id}`;
   return {
     ok: true,
     submissionId: submission.id,
-    redirectTo: `/a/${token}/success?submission=${submission.id}`,
+    redirectTo,
   };
 }

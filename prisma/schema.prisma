@@ -70,6 +70,8 @@ model Employee {
   noClosings      Boolean  @default(false)
   weekendOk       Boolean  @default(true)
   submissionToken String   @unique
+  email           String?
+  passwordHash    String?
   notes           String?
   archived        Boolean  @default(false)
   createdAt       DateTime @default(now())
@@ -81,6 +83,7 @@ model Employee {
   assignments    ScheduleAssignment[]
   blocks         ScheduleBlock[]
 
+  @@unique([restaurantId, email])
   @@index([restaurantId, archived])
 }
 

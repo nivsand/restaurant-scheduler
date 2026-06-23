@@ -7,8 +7,10 @@ import { CopyableLink } from "@/components/copyable-link";
 
 export async function ShareFormCard({
   path,
+  label,
 }: {
   path: string; // e.g. "/a/ABC123..."
+  label?: string;
 }) {
   const ctx = await sharingContext();
 
@@ -19,7 +21,7 @@ export async function ShareFormCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>קישור אישי לטופס זמינות</CardTitle>
+        <CardTitle>{label ?? "קישור אישי לטופס זמינות"}</CardTitle>
       </CardHeader>
       <CardBody className="space-y-4">
         <p className="text-xs text-slate-500">

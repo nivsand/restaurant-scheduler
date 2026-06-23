@@ -7,10 +7,13 @@ import {
   updateEmployeeAction,
   setArchivedAction,
   regenerateTokenAction,
+  setEmployeePasswordAction,
+  clearEmployeePasswordAction,
 } from "../actions";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShareFormCard } from "@/components/share-form-card";
+import { EmployeeCredentialsCard } from "@/components/employee-credentials-card";
 
 export default async function EditEmployeePage({
   params,
@@ -47,6 +50,7 @@ export default async function EditEmployeePage({
         initial={{
           name: employee.name,
           role: employee.role as "kitchen" | "floor" | "both",
+          email: employee.email,
           maxShifts: employee.maxShifts,
           minShifts: employee.minShifts,
           onlyMornings: employee.onlyMornings,
@@ -56,6 +60,12 @@ export default async function EditEmployeePage({
           notes: employee.notes,
         }}
         submitLabel="שמור שינויים"
+      />
+
+      <EmployeeCredentialsCard
+        employeeId={employee.id}
+        hasEmail={!!employee.email}
+        hasPassword={!!employee.passwordHash}
       />
 
       <ShareFormCard path={`/a/${employee.submissionToken}`} />

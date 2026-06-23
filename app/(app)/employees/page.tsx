@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ShareFormCard } from "@/components/share-form-card";
 
 export default async function EmployeesPage({
   searchParams,
@@ -40,6 +41,13 @@ export default async function EmployeesPage({
           </Link>
         </div>
       </div>
+
+      {!showArchived && (
+        <ShareFormCard
+          path="/employee/login"
+          label="קישור התחברות משותף לעובדים"
+        />
+      )}
 
       {employees.length === 0 ? (
         <Card>

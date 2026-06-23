@@ -8,6 +8,7 @@ const PUBLIC_PATHS = [
   "/login",
   "/api/auth",
   "/a",             // public employee form lives at /a/[token]
+  "/employee",      // employee login + availability (own auth)
   "/share",        // public schedule view by token
 ];
 
