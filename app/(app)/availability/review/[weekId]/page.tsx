@@ -282,12 +282,16 @@ export default async function ReviewPage({
                       {latest && (
                         <span>
                           {latest.source === "form" ? "טופס" : "הדבקה"} ·{" "}
+                          {empSubs.length > 1 ? "עודכן " : ""}
                           {new Intl.DateTimeFormat("he-IL", {
                             day: "numeric",
                             month: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                           }).format(latest.submittedAt)}
+                          {empSubs.length > 1 && (
+                            <span className="text-amber-600"> · {empSubs.length} הגשות</span>
+                          )}
                         </span>
                       )}
                     </div>

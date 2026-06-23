@@ -87,40 +87,54 @@ export default async function AvailabilityPage({
               </p>
             ) : (
               <ul className="space-y-2">
-                {submissions.map((s) => {
-                  const stats = summary.get(s.employeeId ?? "");
-                  const meanConf = stats ? stats.conf / stats.rows : 0;
-                  return (
-                    <li
-                      key={s.id}
-                      className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2"
-                    >
-                      <div>
-                        <div className="text-sm font-medium text-slate-900">
-                          {s.employee?.name ?? "(לא מתויג)"}
+                {(() => {
+                  const latestByEmp = new Map<string, typeof submissions[number]>();
+                  const countByEmp = new Map<string, number>();
+                  for (const s of submissions) {
+                    const key = s.employeeId ?? s.id;
+                    countByEmp.set(key, (countByEmp.get(key) ?? 0) + 1);
+                    if (!latestByEmp.has(key)) latestByEmp.set(key, s);
+                  }
+                  return Array.from(latestByEmp.values()).map((s) => {
+                    const key = s.employeeId ?? s.id;
+                    const stats = summary.get(s.employeeId ?? "");
+                    const meanConf = stats ? stats.conf / stats.rows : 0;
+                    const count = countByEmp.get(key) ?? 1;
+                    return (
+                      <li
+                        key={s.id}
+                        className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2"
+                      >
+                        <div>
+                          <div className="text-sm font-medium text-slate-900">
+                            {s.employee?.name ?? "(לא מתויג)"}
+                          </div>
+                          <div className="mt-0.5 text-xs text-slate-500">
+                            {s.source === "form" ? "טופס" : "הדבקה"} ·{" "}
+                            {new Intl.DateTimeFormat("he-IL", {
+                              day: "numeric",
+                              month: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }).format(s.submittedAt)}
+                            {count > 1 && (
+                              <span className="text-amber-600"> · עודכן {count} פעמים</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="mt-0.5 text-xs text-slate-500">
-                          {s.source === "form" ? "טופס" : "הדבקה"} ·{" "}
-                          {new Intl.DateTimeFormat("he-IL", {
-                            day: "numeric",
-                            month: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }).format(s.submittedAt)}
+                        <div className="flex items-center gap-2">
+                          {stats ? (
+                            <Badge tone={confTone(meanConf)}>
+                              {stats.rows} שורות · {Math.round(meanConf * 100)}%
+                            </Badge>
+                          ) : (
+                            <Badge tone="warning">ממתין לפענוח</Badge>
+                          )}
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {stats ? (
-                          <Badge tone={confTone(meanConf)}>
-                            {stats.rows} שורות · {Math.round(meanConf * 100)}%
-                          </Badge>
-                        ) : (
-                          <Badge tone="warning">ממתין לפענוח</Badge>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
+                      </li>
+                    );
+                  });
+                })()}
               </ul>
             )}
           </CardBody>

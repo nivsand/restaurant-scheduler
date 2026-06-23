@@ -416,10 +416,12 @@ export async function deleteSubmissionAction(submissionId: string) {
   if (!sub || sub.week.restaurantId !== restaurantId) {
     throw new Error("הגשה לא נמצאה");
   }
-  await prisma.rawSubmission.delete({ where: { id: submissionId } });
   if (sub.employeeId) {
-    // Also drop the parsed rows derived from this submission's source flow.
-    // Manual rows remain untouched.
+    // Delete ALL raw submissions for this employee+week (not just one)
+    // so resubmissions don't leave orphaned records.
+    await prisma.rawSubmission.deleteMany({
+      where: { weekId: sub.weekId, employeeId: sub.employeeId },
+    });
     await prisma.parsedAvailability.deleteMany({
       where: {
         weekId: sub.weekId,
@@ -427,6 +429,8 @@ export async function deleteSubmissionAction(submissionId: string) {
         source: { in: ["rule", "llm", "form"] },
       },
     });
+  } else {
+    await prisma.rawSubmission.delete({ where: { id: submissionId } });
   }
   revalidatePath(`/availability/review/${sub.weekId}`);
   revalidatePath("/availability");
