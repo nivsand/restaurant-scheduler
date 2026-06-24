@@ -45,7 +45,7 @@ export default async function EditManagerPage({
           >
             ← ניהול משתמשים
           </Link>
-          <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold text-slate-900">
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-slate-900">
             {manager.name}
             {manager.active ? (
               <Badge tone="neutral">פעיל</Badge>

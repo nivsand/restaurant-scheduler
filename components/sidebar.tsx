@@ -69,19 +69,22 @@ export function Sidebar({
   const pathname = usePathname();
   const visibleItems = items.filter((item) => !item.adminOnly || isAdmin);
   return (
-    <aside className="hidden w-64 shrink-0 border-s border-slate-200 bg-white md:block">
+    <aside className="hidden w-64 shrink-0 border-s border-navy-700/30 bg-navy md:flex md:flex-col">
       <div className="px-5 py-6">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-md shadow-brand-500/30">
             <ScheduleIcon />
           </span>
           <div>
-            <div className="text-sm font-semibold text-slate-900">סידור משמרות</div>
-            <div className="text-xs text-slate-500">{restaurantName || ""}</div>
+            <div className="text-sm font-bold text-white">סידור משמרות</div>
+            <div className="text-xs text-slate-400">{restaurantName || ""}</div>
           </div>
         </div>
       </div>
-      <nav className="px-3 pb-6">
+      <div className="px-4 pb-1">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">ניווט</div>
+      </div>
+      <nav className="flex-1 px-3 pb-6">
         {visibleItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -89,17 +92,17 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "group mb-1 flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                "group mb-1 flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                 active
-                  ? "bg-brand-50 text-brand-700"
-                  : "text-slate-700 hover:bg-slate-50",
+                  ? "bg-brand-500/15 text-brand-300"
+                  : "text-white/60 hover:bg-white/[0.06] hover:text-white/90",
               )}
             >
               <span className="flex items-center gap-3">
                 <span
                   className={cn(
-                    "text-slate-400 transition-colors",
-                    active && "text-brand-600",
+                    "transition-colors",
+                    active ? "text-brand-400" : "text-slate-400",
                   )}
                 >
                   {item.icon}
@@ -107,7 +110,7 @@ export function Sidebar({
                 {item.label}
               </span>
               {item.comingSoon && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-400">
                   בקרוב
                 </span>
               )}

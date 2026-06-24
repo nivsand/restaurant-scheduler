@@ -203,7 +203,7 @@ export default async function ScheduleEditorPage({
           >
             ← סידור
           </Link>
-          <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold text-slate-900">
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-slate-900">
             סידור שבועי
             {isApproved ? (
               <Badge tone="success">מאושר</Badge>
@@ -343,7 +343,7 @@ export default async function ScheduleEditorPage({
             {/* RTL: first <th> renders rightmost; last <th> renders leftmost. */}
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-slate-50 text-xs font-semibold text-slate-700">
+                <tr className="bg-navy text-xs font-semibold text-white">
                   <th className="border border-slate-200 px-3 py-2 text-center">
                     עובד
                   </th>
@@ -383,7 +383,7 @@ export default async function ScheduleEditorPage({
                     if (e.noClosings && s.closings > 0)
                       notes.push("שובץ לסגירה למרות העדפה");
                     return (
-                      <tr key={e.id} className="hover:bg-slate-50">
+                      <tr key={e.id} className="hover:bg-brand-50/40">
                         <td className="border border-slate-200 px-3 py-2 text-center font-medium text-slate-900">
                           {e.name}
                         </td>
@@ -449,15 +449,15 @@ function MiniStat({
   tone?: "success" | "danger";
 }) {
   return (
-    <div className="rounded-xl bg-slate-50 px-3 py-2 text-center">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">
+    <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-center shadow-sm">
+      <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
         {label}
       </div>
       <div
         className={cn(
-          "mt-1 text-lg font-bold num",
+          "mt-1 text-xl font-extrabold num",
           tone === "danger" && "text-rose-600",
-          tone === "success" && "text-emerald-600",
+          tone === "success" && "text-brand-600",
           !tone && "text-slate-900",
         )}
       >
@@ -478,27 +478,27 @@ function MotivationPanel({
 }) {
   return (
     <aside
-      className="h-fit rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm"
+      className="h-fit rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm"
       dir="ltr"
     >
       <div className="space-y-3">
-        <p className="text-sm font-semibold text-slate-900">
+        <p className="text-sm font-bold text-slate-900">
           Great schedules make great shifts ✨
         </p>
         <p className="text-xs leading-5 text-slate-500">
           You're doing amazing. Almost there, keep going!
         </p>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <div className="text-[10px] font-semibold uppercase text-slate-400">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+          <div className="text-[10px] font-bold uppercase text-slate-400">
             Coverage
           </div>
-          <div className="mt-1 text-lg font-bold text-slate-900 num">
+          <div className="mt-1 text-xl font-extrabold text-slate-900 num">
             {filledSlots}/{totalSlots}
           </div>
           <div
             className={cn(
               "mt-1 text-xs",
-              emptySlots === 0 ? "text-emerald-600" : "text-rose-600",
+              emptySlots === 0 ? "text-brand-600" : "text-rose-600",
             )}
           >
             {emptySlots === 0

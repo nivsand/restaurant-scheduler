@@ -40,9 +40,9 @@ export default async function EmployeeSuccessPage() {
   const totalCells = parsed.length;
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-md p-4">
-        <div className="rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white shadow-lg">
+        <div className="rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 p-6 text-white shadow-lg shadow-brand-500/20">
           <div className="flex items-center gap-3">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-2xl">
               ✓
@@ -62,7 +62,7 @@ export default async function EmployeeSuccessPage() {
             {employee.restaurant.name} ·{" "}
             <span className="num">{formatWeekRange(weekStart)}</span>
           </div>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700">
             <span className="num">{totalCells}</span>
             <span>משמרות סומנו</span>
           </div>

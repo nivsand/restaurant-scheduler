@@ -24,13 +24,13 @@ export function WeekPicker({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white p-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
       <Button variant="ghost" size="sm" onClick={() => goTo(prevSunday(weekStart))}>
         ◀ שבוע קודם
       </Button>
       <div className="text-center">
         <div className="text-xs font-medium text-slate-500">שבוע</div>
-        <div className="text-base font-semibold text-slate-900 num">
+        <div className="text-base font-bold text-slate-900 num">
           {formatWeekRange(weekStart)}
         </div>
       </div>

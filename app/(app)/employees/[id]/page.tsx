@@ -44,7 +44,7 @@ export default async function EditEmployeePage({
         <span>/</span>
         <span className="text-slate-900">{employee.name}</span>
       </div>
-      <h2 className="text-2xl font-bold text-slate-900">עריכת עובד</h2>
+      <h2 className="text-2xl font-extrabold text-slate-900">עריכת עובד</h2>
 
       <EmployeeForm
         action={updateForId}

@@ -51,7 +51,7 @@ export default async function AvailabilityPage({
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">זמינות עובדים</h2>
+        <h2 className="text-2xl font-extrabold text-slate-900">זמינות עובדים</h2>
         <p className="text-sm text-slate-500">
           קליטת הודעות זמינות לשבוע{" "}
           <span className="num">{formatWeekRange(weekStart)}</span>

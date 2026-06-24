@@ -138,7 +138,7 @@ export default async function ReviewPage({
           >
             ← חזרה לקליטה
           </Link>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900">
+          <h2 className="mt-1 text-2xl font-extrabold text-slate-900">
             סקירת זמינות
           </h2>
           <p className="text-sm text-slate-500 num">

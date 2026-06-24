@@ -27,7 +27,7 @@ export default async function EmployeesPage({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">עובדים</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900">עובדים</h2>
           <p className="text-sm text-slate-500">
             {employees.length} עובדים {showArchived ? "בארכיון" : "פעילים"}
           </p>

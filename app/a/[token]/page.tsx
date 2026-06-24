@@ -86,21 +86,22 @@ export default async function PublicAvailabilityPage({
   }
 
   return (
-    <main className={`min-h-screen bg-slate-50 ${heebo.className}`}>
-      <div className="mx-auto max-w-md p-4">
-        <div className="mb-4 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-700 p-5 text-white shadow-lg">
-          <div className="text-sm opacity-80">{employee.restaurant.name}</div>
-          <h1 className="mt-1 text-2xl font-bold">שלום {employee.name} 👋</h1>
-          <p className="mt-2 text-sm opacity-90">
+    <main className={`min-h-screen bg-navy ${heebo.className}`}>
+      <div className="mx-auto max-w-md px-4 pb-8">
+        <div className="pb-5 pt-7 text-white">
+          <div className="text-sm font-medium text-brand-300">{employee.restaurant.name}</div>
+          <h1 className="mt-2 text-2xl font-extrabold">שלום {employee.name} 👋</h1>
+          <p className="mt-2 text-sm text-white/70">
             הגישו זמינות לשבוע{" "}
-            <span className="num font-medium">
+            <span className="num font-medium text-white/90">
               {formatWeekRange(weekStart)}
             </span>
           </p>
         </div>
 
+        <div className="rounded-t-3xl bg-gray-50 px-4 pb-6 pt-5">
         {/* Week navigation */}
-        <div className="mb-3 flex items-center justify-between rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200">
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
           {hasPrev ? (
             <a
               href={weekUrl(prevWeek)}
@@ -127,7 +128,7 @@ export default async function PublicAvailabilityPage({
         </div>
 
         {week.status === "approved" ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center text-emerald-900">
+          <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5 text-center text-brand-800">
             <div className="text-3xl">📌</div>
             <h2 className="mt-2 text-lg font-bold">
               הסידור לשבוע זה כבר אושר
@@ -138,14 +139,14 @@ export default async function PublicAvailabilityPage({
               אם יש שינוי דחוף, פנו ישירות למנהל/ת.
             </p>
             {shiftCells.length > 0 && (
-              <p className="mt-3 text-xs text-emerald-700">
+              <p className="mt-3 text-xs text-brand-600">
                 הזמינות שהוגשה: <span className="num">{shiftCells.length}</span> משמרות
               </p>
             )}
           </div>
         ) : (
           <>
-            <div className="mb-3 rounded-xl bg-white px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
+            <div className="mb-3 flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs text-slate-600 shadow-sm">
               תפקיד שלך:{" "}
               <span className="font-semibold">
                 {employee.role === "kitchen"
@@ -175,6 +176,7 @@ export default async function PublicAvailabilityPage({
         <p className="mt-6 text-center text-xs text-slate-400">
           בעיה? פנו למנהל/ת המשמרת
         </p>
+        </div>
       </div>
     </main>
   );

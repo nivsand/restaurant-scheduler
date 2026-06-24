@@ -28,7 +28,7 @@ export default async function ExportIndexPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">ייצוא סידורים</h2>
+        <h2 className="text-2xl font-extrabold text-slate-900">ייצוא סידורים</h2>
         <p className="text-sm text-slate-500">
           הדפסה / PDF, ייצוא ל-Excel, או שמירה כתמונה לשליחה בוואטסאפ
         </p>

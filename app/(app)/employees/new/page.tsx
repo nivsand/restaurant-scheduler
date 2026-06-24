@@ -12,7 +12,7 @@ export default function NewEmployeePage() {
         <span>/</span>
         <span className="text-slate-900">חדש</span>
       </div>
-      <h2 className="text-2xl font-bold text-slate-900">הוספת עובד</h2>
+      <h2 className="text-2xl font-extrabold text-slate-900">הוספת עובד</h2>
 
       <EmployeeForm
         action={createEmployeeAction}

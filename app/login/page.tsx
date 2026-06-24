@@ -32,7 +32,7 @@ export default async function LoginPage({
     if (
       typeof token?.id !== "string" ||
       token.id.length === 0 ||
-      typeof token.restaurantId !== "string" ||
+      typeof token?.restaurantId !== "string" ||
       token.restaurantId.length === 0
     ) {
       redirect(clearSessionPath("/login"));
@@ -51,9 +51,15 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-slate-200">
-        <h1 className="text-2xl font-bold text-slate-900">סידור משמרות</h1>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-navy p-6">
+      <div className="pointer-events-none absolute -right-20 -top-[200px] h-[600px] w-[600px] rounded-full bg-brand-500/[0.12] blur-[80px]" />
+      <div className="pointer-events-none absolute -bottom-[150px] -left-20 h-[400px] w-[400px] rounded-full bg-brand-500/[0.06] blur-[80px]" />
+
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-10 shadow-2xl">
+        <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-[14px] bg-gradient-to-br from-brand-500 to-brand-600 text-2xl text-white shadow-md shadow-brand-500/30">
+          📋
+        </div>
+        <h1 className="text-2xl font-extrabold text-slate-900">סידור משמרות</h1>
         <p className="mt-1 text-sm text-slate-500">
           התחברות מנהל
         </p>
@@ -85,12 +91,12 @@ export default async function LoginPage({
             />
           </div>
           {sp.passwordChanged && !sp.error && (
-            <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-2 text-sm text-emerald-700">
+            <p role="status" className="rounded-xl border border-brand-200 bg-brand-50/60 p-2.5 text-sm text-brand-700">
               הסיסמה שונתה בהצלחה. התחבר/י עם הסיסמה החדשה.
             </p>
           )}
           {sp.error && (
-            <p role="alert" className="text-sm text-rose-600">
+            <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-sm text-rose-600">
               דוא״ל או סיסמה שגויים
             </p>
           )}

@@ -27,7 +27,7 @@ export default async function UsersPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">ניהול משתמשים</h2>
+        <h2 className="text-2xl font-extrabold text-slate-900">ניהול משתמשים</h2>
         <p className="text-sm text-slate-500">
           הוספה, עריכה, השבתה ומחיקה של מנהלים בחשבון
         </p>

@@ -44,7 +44,7 @@ export default async function ShiftTemplatePage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">תבנית משמרות</h2>
+        <h2 className="text-2xl font-extrabold text-slate-900">תבנית משמרות</h2>
         <p className="text-sm text-slate-500">
           הגדירו כמה עובדים נדרשים בכל משמרת. הזינו 0 כדי לסמן שהמשמרת סגורה ביום
           זה. ניתן לעקוף לשבוע ספציפי בעת יצירת סידור.

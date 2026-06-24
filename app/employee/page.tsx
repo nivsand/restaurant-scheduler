@@ -73,97 +73,102 @@ export default async function EmployeeAvailabilityPage({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-md p-4">
-        <div className="mb-4 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-700 p-5 text-white shadow-lg">
+    <main className="min-h-screen bg-navy">
+      <div className="mx-auto max-w-md px-4 pb-8">
+        {/* Dark header */}
+        <div className="pb-5 pt-7 text-white">
           <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">{employee.restaurant.name}</div>
+            <div className="text-sm font-medium text-brand-300">{employee.restaurant.name}</div>
             <EmployeeLogoutButton />
           </div>
-          <h1 className="mt-1 text-2xl font-bold">שלום {employee.name} 👋</h1>
-          <p className="mt-2 text-sm opacity-90">
+          <h1 className="mt-2 text-2xl font-extrabold">שלום {employee.name} 👋</h1>
+          <p className="mt-2 text-sm text-white/70">
             הגישו זמינות לשבוע{" "}
-            <span className="num font-medium">
+            <span className="num font-medium text-white/90">
               {formatWeekRange(weekStart)}
             </span>
           </p>
         </div>
 
-        <div className="mb-3 flex items-center justify-between rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200">
-          {hasPrev ? (
-            <a
-              href={weekUrl(prevWeek)}
-              className="text-sm text-brand-600 hover:underline"
-            >
-              ← שבוע קודם
-            </a>
-          ) : (
-            <span className="text-sm text-slate-300">← שבוע קודם</span>
-          )}
-          <span className="num text-xs text-slate-500">
-            {formatWeekRange(weekStart)}
-          </span>
-          {hasNext ? (
-            <a
-              href={weekUrl(nextWeek)}
-              className="text-sm text-brand-600 hover:underline"
-            >
-              שבוע הבא →
-            </a>
-          ) : (
-            <span className="text-sm text-slate-300">שבוע הבא →</span>
-          )}
-        </div>
-
-        {week.status === "approved" ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center text-emerald-900">
-            <div className="text-3xl">📌</div>
-            <h2 className="mt-2 text-lg font-bold">
-              הסידור לשבוע זה כבר אושר
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed">
-              כבר לא ניתן לשלוח עדכון זמינות דרך הטופס.
-              <br />
-              אם יש שינוי דחוף, פנו ישירות למנהל/ת.
-            </p>
-            {shiftCells.length > 0 && (
-              <p className="mt-3 text-xs text-emerald-700">
-                הזמינות שהוגשה: <span className="num">{shiftCells.length}</span> משמרות
-              </p>
+        {/* Light content area with rounded top */}
+        <div className="rounded-t-3xl bg-gray-50 px-4 pb-6 pt-5">
+          <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
+            {hasPrev ? (
+              <a
+                href={weekUrl(prevWeek)}
+                className="text-sm font-semibold text-brand-600 hover:underline"
+              >
+                ← שבוע קודם
+              </a>
+            ) : (
+              <span className="text-sm text-slate-300">← שבוע קודם</span>
+            )}
+            <span className="num text-xs text-slate-400">
+              {formatWeekRange(weekStart)}
+            </span>
+            {hasNext ? (
+              <a
+                href={weekUrl(nextWeek)}
+                className="text-sm font-semibold text-brand-600 hover:underline"
+              >
+                שבוע הבא →
+              </a>
+            ) : (
+              <span className="text-sm text-slate-300">שבוע הבא →</span>
             )}
           </div>
-        ) : (
-          <>
-            <div className="mb-3 rounded-xl bg-white px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
-              תפקיד שלך:{" "}
-              <span className="font-semibold">
-                {employee.role === "kitchen"
-                  ? "מטבח"
-                  : employee.role === "floor"
-                    ? "פלור"
-                    : "מטבח + פלור"}
-              </span>
-              {" "}— תוצגנה רק משמרות הרלוונטיות לך
+
+          {week.status === "approved" ? (
+            <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5 text-center text-brand-800">
+              <div className="text-3xl">📌</div>
+              <h2 className="mt-2 text-lg font-bold">
+                הסידור לשבוע זה כבר אושר
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed">
+                כבר לא ניתן לשלוח עדכון זמינות דרך הטופס.
+                <br />
+                אם יש שינוי דחוף, פנו ישירות למנהל/ת.
+              </p>
+              {shiftCells.length > 0 && (
+                <p className="mt-3 text-xs text-brand-600">
+                  הזמינות שהוגשה: <span className="num">{shiftCells.length}</span> משמרות
+                </p>
+              )}
             </div>
+          ) : (
+            <>
+              <div className="mb-3 flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs text-slate-600 shadow-sm">
+                <span className="text-base">🍽️</span>
+                תפקיד שלך:{" "}
+                <span className="font-bold">
+                  {employee.role === "kitchen"
+                    ? "מטבח"
+                    : employee.role === "floor"
+                      ? "פלור"
+                      : "מטבח + פלור"}
+                </span>
+                {" "}— תוצגנה רק משמרות הרלוונטיות לך
+              </div>
 
-            <EmployeeAvailabilityForm
-              employeeId={employee.id}
-              weekStart={formatWeekParam(weekStart)}
-              initialCells={shiftCells.map((e) => ({
-                day: e.day,
-                shiftType: e.shiftType,
-                note: e.note ?? null,
-              }))}
-              employeeRole={employee.role as "kitchen" | "floor" | "both"}
-              headcounts={headcounts}
-              initialWeekNote={weekNoteRow?.note ?? ""}
-            />
-          </>
-        )}
+              <EmployeeAvailabilityForm
+                employeeId={employee.id}
+                weekStart={formatWeekParam(weekStart)}
+                initialCells={shiftCells.map((e) => ({
+                  day: e.day,
+                  shiftType: e.shiftType,
+                  note: e.note ?? null,
+                }))}
+                employeeRole={employee.role as "kitchen" | "floor" | "both"}
+                headcounts={headcounts}
+                initialWeekNote={weekNoteRow?.note ?? ""}
+              />
+            </>
+          )}
 
-        <p className="mt-6 text-center text-xs text-slate-400">
-          בעיה? פנו למנהל/ת המשמרת
-        </p>
+          <p className="mt-6 text-center text-xs text-slate-400">
+            בעיה? פנו למנהל/ת המשמרת
+          </p>
+        </div>
       </div>
     </main>
   );

@@ -46,8 +46,8 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">
-            שלום, {currentManager.name}
+          <h2 className="text-2xl font-extrabold text-slate-900">
+            שלום, {currentManager.name} 👋
           </h2>
           <p className="text-sm text-slate-500">
             לוח בקרה · {restaurant.name}
@@ -66,22 +66,30 @@ export default async function DashboardPage() {
           value={employeeCount}
           href="/employees"
           hint="ניהול עובדים"
+          icon="👥"
+          iconBg="bg-brand-100"
         />
         <Stat
           label="משבצות בתבנית"
           value={templateCount}
           href="/shift-template"
           hint={templateCount === 0 ? "טרם הוגדרה" : "ערוך תבנית"}
+          icon="📐"
+          iconBg="bg-amber-50"
         />
         <Stat
           label="שעות מנוחה מינ׳"
           value={`${restaurant.minRestHours}`}
           hint="בין משמרת לשניה"
+          icon="⏰"
+          iconBg="bg-rose-50"
         />
         <Stat
           label="שבועות בהיסטוריה"
           value={latestWeek ? "פעיל" : "—"}
           hint={latestWeek?.status === "approved" ? "מאושר" : "טרם"}
+          icon="📅"
+          iconBg="bg-indigo-50"
         />
       </div>
 
@@ -90,7 +98,7 @@ export default async function DashboardPage() {
           <CardTitle>צעדים ראשונים</CardTitle>
         </CardHeader>
         <CardBody>
-          <ol className="space-y-3 text-sm text-slate-700">
+          <ol className="space-y-2 text-sm text-slate-700">
             <Step
               done={employeeCount > 0}
               text="הוספת עובדים ותפקיד (מטבח / פלור / שניהם)"
@@ -145,17 +153,24 @@ function Stat({
   value,
   hint,
   href,
+  icon,
+  iconBg,
 }: {
   label: string;
   value: string | number;
   hint?: string;
   href?: string;
+  icon: string;
+  iconBg: string;
 }) {
   const inner = (
     <Card className="h-full">
       <CardBody>
+        <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg ${iconBg}`}>
+          {icon}
+        </div>
         <div className="text-xs font-medium text-slate-500">{label}</div>
-        <div className="mt-2 text-3xl font-bold text-slate-900">{value}</div>
+        <div className="mt-1 text-3xl font-extrabold text-slate-900">{value}</div>
         {hint && <div className="mt-1 text-xs text-slate-400">{hint}</div>}
       </CardBody>
     </Card>
@@ -181,13 +196,13 @@ function Step({
   disabled?: boolean;
 }) {
   return (
-    <li className="flex items-center justify-between gap-4 rounded-lg border border-slate-100 px-3 py-2">
+    <li className="flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
       <div className="flex items-center gap-3">
         <span
           className={
             done
-              ? "inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white"
-              : "inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 text-slate-400"
+              ? "inline-flex h-[26px] w-[26px] items-center justify-center rounded-full bg-brand-500 text-xs text-white"
+              : "inline-flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-slate-400"
           }
         >
           {done ? "✓" : ""}

@@ -160,7 +160,7 @@ export function EmployeeAvailabilityForm({
 
   if (!anyShiftAtAll) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
         אין משמרות פעילות לתפקיד שלך השבוע. נסו שוב מאוחר יותר או פנו למנהל/ת.
       </div>
     );
@@ -215,16 +215,16 @@ export function EmployeeAvailabilityForm({
             <div
               key={d}
               className={cn(
-                "rounded-2xl border bg-white p-3",
+                "rounded-2xl border bg-white p-3 shadow-sm",
                 isClosedDay
-                  ? "border-slate-100 bg-slate-50/40"
-                  : "border-slate-200",
+                  ? "border-gray-100 bg-gray-50/40"
+                  : "border-gray-200",
               )}
             >
               <div className="mb-2 flex items-baseline justify-between">
                 <h3
                   className={cn(
-                    "text-base font-semibold",
+                    "flex items-center gap-2 text-base font-bold",
                     isClosedDay ? "text-slate-400" : "text-slate-900",
                   )}
                 >
@@ -253,9 +253,9 @@ export function EmployeeAvailabilityForm({
                             "flex flex-col items-start gap-0.5 rounded-xl border p-2.5 text-start transition-all active:scale-[0.98] w-full",
                             on
                               ? def.role === "kitchen"
-                                ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500"
-                                : "border-floor-400 bg-floor-50 text-floor-500"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
+                                ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500 shadow-sm"
+                                : "border-floor-400 bg-floor-50 text-floor-500 shadow-sm"
+                              : "border-gray-200 bg-white text-slate-700 hover:border-gray-300",
                           )}
                         >
                           <span
@@ -266,7 +266,7 @@ export function EmployeeAvailabilityForm({
                           >
                             {def.labelHe}
                           </span>
-                          <span className="num text-xs text-slate-500">
+                          <span className="num text-xs text-slate-400">
                             {def.start}-{def.end}
                             {def.isClosing && " · סגירה"}
                           </span>
@@ -281,7 +281,7 @@ export function EmployeeAvailabilityForm({
                             placeholder="הערה..."
                             maxLength={200}
                             dir="auto"
-                            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs outline-none placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+                            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs outline-none placeholder:text-slate-300 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
                           />
                         )}
                       </div>
@@ -294,9 +294,9 @@ export function EmployeeAvailabilityForm({
         })}
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-3">
-        <label className="mb-1.5 block text-sm font-semibold text-slate-900">
-          הערה כללית לשבוע
+      <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+        <label className="mb-1.5 block text-sm font-bold text-slate-900">
+          💬 הערה כללית לשבוע
         </label>
         <textarea
           value={weekNote}
@@ -305,17 +305,17 @@ export function EmployeeAvailabilityForm({
           maxLength={1000}
           dir="auto"
           rows={3}
-          className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+          className="w-full resize-none rounded-xl border-[1.5px] border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none placeholder:text-slate-300 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
         />
       </div>
 
       {error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
           {error}
         </div>
       )}
 
-      <div className="sticky bottom-0 -mx-4 border-t border-slate-200 bg-white p-3 sm:mx-0 sm:rounded-2xl sm:border">
+      <div className="sticky bottom-0 -mx-4 border-t border-gray-200 bg-white p-3 shadow-[0_-2px_8px_rgba(0,0,0,0.04)] sm:mx-0 sm:rounded-2xl sm:border sm:shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <span className="text-sm text-slate-500">
             <span className="num">{totalSelected}</span> משמרות נבחרו

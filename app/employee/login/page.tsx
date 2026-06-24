@@ -22,9 +22,15 @@ export default async function EmployeeLoginPage({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6" dir="rtl">
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-slate-200">
-        <h1 className="text-2xl font-bold text-slate-900">הגשת זמינות</h1>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-navy p-6" dir="rtl">
+      <div className="pointer-events-none absolute -right-20 -top-[200px] h-[600px] w-[600px] rounded-full bg-brand-500/[0.08] blur-[80px]" />
+      <div className="pointer-events-none absolute -bottom-[150px] -left-20 h-[400px] w-[400px] rounded-full bg-brand-500/[0.05] blur-[80px]" />
+
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-10 shadow-2xl">
+        <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-[14px] bg-gradient-to-br from-brand-500 to-brand-600 text-2xl text-white shadow-md shadow-brand-500/30">
+          ✏️
+        </div>
+        <h1 className="text-2xl font-extrabold text-slate-900">הגשת זמינות</h1>
         <p className="mt-1 text-sm text-slate-500">התחברות עובד</p>
 
         <form action={employeeLoginAction} className="mt-8 space-y-4">
@@ -53,7 +59,7 @@ export default async function EmployeeLoginPage({
             />
           </div>
           {sp.error && (
-            <p role="alert" className="text-sm text-rose-600">
+            <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-sm text-rose-600">
               פרטי התחברות שגויים
             </p>
           )}
