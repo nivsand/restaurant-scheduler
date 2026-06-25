@@ -45,13 +45,13 @@ export function PasswordField({
           aria-label={show ? "הסתר סיסמה" : "הצג סיסמה"}
           aria-pressed={show}
           aria-controls={inputId}
-          className="absolute inset-y-0 right-0 flex items-center rounded-e-lg px-3 text-slate-400 transition-colors hover:text-slate-700 focus-visible:text-slate-700"
+          className="absolute inset-y-0 right-0 flex items-center rounded-e-lg px-3 text-brown-400 transition-colors hover:text-brown-700 focus-visible:text-brown-700"
         >
           {show ? <EyeOffIcon /> : <EyeIcon />}
         </button>
       </div>
       {hint && (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs text-brown-500">
           {hint}
         </p>
       )}

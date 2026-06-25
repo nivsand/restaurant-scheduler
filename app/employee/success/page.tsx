@@ -40,7 +40,7 @@ export default async function EmployeeSuccessPage() {
   const totalCells = parsed.length;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-cream-50">
       <div className="mx-auto max-w-md p-4">
         <div className="rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 p-6 text-white shadow-lg shadow-brand-500/20">
           <div className="flex items-center gap-3">
@@ -54,11 +54,11 @@ export default async function EmployeeSuccessPage() {
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-cream-200">
+          <div className="text-xs font-medium text-brown-500">
             סיכום הזמינות שנשלחה
           </div>
-          <div className="mt-1 text-sm font-semibold text-slate-900">
+          <div className="mt-1 text-sm font-semibold text-brown-900">
             {employee.restaurant.name} ·{" "}
             <span className="num">{formatWeekRange(weekStart)}</span>
           </div>
@@ -69,7 +69,7 @@ export default async function EmployeeSuccessPage() {
         </div>
 
         {totalCells === 0 ? (
-          <div className="mt-4 rounded-2xl bg-white p-6 text-center text-sm text-slate-500 ring-1 ring-slate-200">
+          <div className="mt-4 rounded-2xl bg-white p-6 text-center text-sm text-brown-500 ring-1 ring-cream-200">
             לא סומנו משמרות. אם זו טעות, חזרו ועדכנו.
           </div>
         ) : (
@@ -80,9 +80,9 @@ export default async function EmployeeSuccessPage() {
               return (
                 <div
                   key={d}
-                  className="rounded-2xl bg-white p-3 ring-1 ring-slate-200"
+                  className="rounded-2xl bg-white p-3 ring-1 ring-cream-200"
                 >
-                  <div className="mb-2 text-sm font-semibold text-slate-900">
+                  <div className="mb-2 text-sm font-semibold text-brown-900">
                     {DAY_NAMES_HE[d as DayOfWeek]}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -130,7 +130,7 @@ export default async function EmployeeSuccessPage() {
           >
             עדכון הזמינות
           </Link>
-          <p className="text-center text-xs text-slate-400">
+          <p className="text-center text-xs text-brown-400">
             ניתן לשלוח שוב כל עוד הסידור לא אושר
           </p>
         </div>

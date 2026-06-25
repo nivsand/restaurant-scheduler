@@ -37,14 +37,14 @@ export default async function EditEmployeePage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/employees" className="hover:text-slate-700">
+      <div className="flex items-center gap-2 text-sm text-brown-500">
+        <Link href="/employees" className="hover:text-brown-700">
           עובדים
         </Link>
         <span>/</span>
-        <span className="text-slate-900">{employee.name}</span>
+        <span className="text-brown-900">{employee.name}</span>
       </div>
-      <h2 className="text-2xl font-extrabold text-slate-900">עריכת עובד</h2>
+      <h2 className="text-2xl font-extrabold text-brown-900">עריכת עובד</h2>
 
       <EmployeeForm
         action={updateForId}
@@ -74,10 +74,10 @@ export default async function EditEmployeePage({
       <Card>
         <CardBody className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-slate-900">
+            <div className="text-sm font-medium text-brown-900">
               חידוש קישור
             </div>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-brown-500">
               ייצור קישור חדש ויבטל את הקודם — שימושי אם הקישור הישן דלף.
             </p>
           </div>
@@ -107,7 +107,7 @@ export default async function EditEmployeePage({
               <Button type="submit" variant="danger">
                 העברה לארכיון
               </Button>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-brown-500">
                 עובדים בארכיון לא יופיעו ברשימת הסידור.
               </p>
             </form>

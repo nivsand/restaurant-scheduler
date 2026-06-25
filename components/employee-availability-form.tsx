@@ -160,7 +160,7 @@ export function EmployeeAvailabilityForm({
 
   if (!anyShiftAtAll) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-2xl border border-cream-200 bg-white p-6 text-center text-sm text-brown-500 shadow-sm">
         אין משמרות פעילות לתפקיד שלך השבוע. נסו שוב מאוחר יותר או פנו למנהל/ת.
       </div>
     );
@@ -217,21 +217,21 @@ export function EmployeeAvailabilityForm({
               className={cn(
                 "rounded-2xl border bg-white p-3 shadow-sm",
                 isClosedDay
-                  ? "border-gray-100 bg-gray-50/40"
-                  : "border-gray-200",
+                  ? "border-cream-200 bg-cream-50/40"
+                  : "border-cream-200",
               )}
             >
               <div className="mb-2 flex items-baseline justify-between">
                 <h3
                   className={cn(
                     "flex items-center gap-2 text-base font-bold",
-                    isClosedDay ? "text-slate-400" : "text-slate-900",
+                    isClosedDay ? "text-brown-400" : "text-brown-900",
                   )}
                 >
                   {DAY_NAMES_HE[d]}
                 </h3>
                 {isClosedDay && (
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-brown-400">
                     {d === 6
                       ? "שבת — אין משמרת לתפקיד שלך"
                       : "אין משמרת לתפקיד שלך"}
@@ -255,7 +255,7 @@ export function EmployeeAvailabilityForm({
                               ? def.role === "kitchen"
                                 ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500 shadow-sm"
                                 : "border-floor-400 bg-floor-50 text-floor-500 shadow-sm"
-                              : "border-gray-200 bg-white text-slate-700 hover:border-gray-300",
+                              : "border-cream-200 bg-white text-brown-700 hover:border-cream-300",
                           )}
                         >
                           <span
@@ -266,7 +266,7 @@ export function EmployeeAvailabilityForm({
                           >
                             {def.labelHe}
                           </span>
-                          <span className="num text-xs text-slate-400">
+                          <span className="num text-xs text-brown-400">
                             {def.start}-{def.end}
                             {def.isClosing && " · סגירה"}
                           </span>
@@ -281,7 +281,7 @@ export function EmployeeAvailabilityForm({
                             placeholder="הערה..."
                             maxLength={200}
                             dir="auto"
-                            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs outline-none placeholder:text-slate-300 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
+                            className="w-full rounded-lg border border-cream-200 bg-cream-50 px-2 py-1 text-xs outline-none placeholder:text-brown-400 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
                           />
                         )}
                       </div>
@@ -294,8 +294,8 @@ export function EmployeeAvailabilityForm({
         })}
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-        <label className="mb-1.5 block text-sm font-bold text-slate-900">
+      <div className="rounded-2xl border border-cream-200 bg-white p-3 shadow-sm">
+        <label className="mb-1.5 block text-sm font-bold text-brown-900">
           💬 הערה כללית לשבוע
         </label>
         <textarea
@@ -305,7 +305,7 @@ export function EmployeeAvailabilityForm({
           maxLength={1000}
           dir="auto"
           rows={3}
-          className="w-full resize-none rounded-xl border-[1.5px] border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none placeholder:text-slate-300 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
+          className="w-full resize-none rounded-xl border-[1.5px] border-cream-200 bg-cream-50 px-3 py-2 text-sm outline-none placeholder:text-brown-400 focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500/20"
         />
       </div>
 
@@ -315,9 +315,9 @@ export function EmployeeAvailabilityForm({
         </div>
       )}
 
-      <div className="sticky bottom-0 -mx-4 border-t border-gray-200 bg-white p-3 shadow-[0_-2px_8px_rgba(0,0,0,0.04)] sm:mx-0 sm:rounded-2xl sm:border sm:shadow-sm">
+      <div className="sticky bottom-0 -mx-4 border-t border-cream-200 bg-white p-3 shadow-[0_-2px_8px_rgba(0,0,0,0.04)] sm:mx-0 sm:rounded-2xl sm:border sm:shadow-sm">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-brown-500">
             <span className="num">{totalSelected}</span> משמרות נבחרו
           </span>
           <Button onClick={submit} disabled={isPending} size="lg">

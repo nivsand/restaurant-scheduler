@@ -14,6 +14,10 @@ export function ExportWeekButtons({ weekId }: { weekId: string }) {
     window.open(`/schedule/${weekId}/print?auto=${auto}`, "_blank", "noopener");
   }
 
+  function openWaProfile() {
+    window.open(`/schedule/${weekId}/print/whatsapp?auto=wa-profile`, "_blank", "noopener");
+  }
+
   async function downloadFallbackImage() {
     console.log("[schedule-pdf-export] client fallback=html-to-image-png start", {
       weekId,
@@ -135,6 +139,14 @@ export function ExportWeekButtons({ weekId }: { weekId: string }) {
       </Button>
       <Button variant="secondary" size="sm" onClick={() => openPrint("png")}>
         🖼 תמונה
+      </Button>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={openWaProfile}
+        title="עמוד ייצוא מיוחד עם פונט גדול לפרופיל קבוצת WhatsApp"
+      >
+        📸 פרופיל
       </Button>
       <Button
         variant="secondary"

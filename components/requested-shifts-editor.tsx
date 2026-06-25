@@ -53,8 +53,8 @@ export function RequestedShiftsEditor({
   }
 
   return (
-    <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-1.5 ring-1 ring-slate-200">
-      <span className="text-xs font-medium text-slate-700">משמרות מבוקשות:</span>
+    <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-cream-50 px-3 py-1.5 ring-1 ring-cream-200">
+      <span className="text-xs font-medium text-brown-700">משמרות מבוקשות:</span>
       <input
         type="number"
         min={0}
@@ -72,13 +72,13 @@ export function RequestedShiftsEditor({
         placeholder="—"
         dir="ltr"
         className={cn(
-          "h-7 w-14 rounded-md border border-slate-200 bg-white text-center text-sm num",
+          "h-7 w-14 rounded-md border border-cream-200 bg-white text-center text-sm num",
           "focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-300",
           isPending && "opacity-60",
         )}
       />
       {error && <span className="text-[10px] text-rose-600">{error}</span>}
-      <span className="text-[10px] text-slate-400">
+      <span className="text-[10px] text-brown-400">
         (תקרה קשיחה למנוע)
       </span>
     </div>

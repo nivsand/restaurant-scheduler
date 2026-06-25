@@ -28,15 +28,15 @@ export default async function ExportIndexPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">ייצוא סידורים</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-extrabold text-brown-900">ייצוא סידורים</h2>
+        <p className="text-sm text-brown-500">
           הדפסה / PDF, ייצוא ל-Excel, או שמירה כתמונה לשליחה בוואטסאפ
         </p>
       </div>
 
       {weeks.length === 0 ? (
         <Card>
-          <CardBody className="py-12 text-center text-sm text-slate-500">
+          <CardBody className="py-12 text-center text-sm text-brown-500">
             אין שבועות לייצוא. צרו סידור בעמוד{" "}
             <Link href="/schedule" className="text-brand-600 hover:underline">
               סידור שבועי
@@ -51,7 +51,7 @@ export default async function ExportIndexPage() {
               <CardBody className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-semibold text-slate-900 num">
+                    <span className="text-base font-semibold text-brown-900 num">
                       {formatWeekRange(w.weekStart)}
                     </span>
                     {w.status === "approved" ? (
@@ -60,7 +60,7 @@ export default async function ExportIndexPage() {
                       <Badge tone="warning">טיוטה</Badge>
                     )}
                   </div>
-                  <div className="mt-1 text-xs text-slate-500">
+                  <div className="mt-1 text-xs text-brown-500">
                     <span className="num">{w._count.assignments}</span> שיבוצים
                   </div>
                 </div>

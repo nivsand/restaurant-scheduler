@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShiftFlow - Premium SaaS Mockup (Dark Navy + Teal)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy-900: #0a1628;
+    --navy-800: #0f1f3d;
+    --navy-700: #152a4a;
+    --navy-600: #1c3a5e;
+    --navy-500: #264a73;
+    --teal-500: #14b8a6;
+    --teal-400: #2dd4bf;
+    --teal-300: #5eead4;
+    --teal-600: #0d9488;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --red-400: #f87171;
+    --green-400: #4ade80;
+    --amber-400: #fbbf24;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.2);
+    --shadow-xl: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--navy-900);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to left, transparent, var(--teal-500), transparent);
+    margin: 80px 0;
+    opacity: 0.3;
+  }
+
+  .section-label {
+    text-align: center;
+    padding: 16px;
+    background: var(--navy-700);
+    color: var(--teal-400);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    margin-bottom: 40px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ===== 1. HERO / LANDING ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(ellipse, rgba(20, 184, 166, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 60px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-logo span {
+    color: var(--teal-400);
+  }
+
+  .hero-nav-links {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    list-style: none;
+  }
+
+  .hero-nav-links a {
+    color: var(--gray-300);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .hero-nav-links a:hover {
+    color: var(--teal-400);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+    color: var(--white);
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 6px 25px rgba(20, 184, 166, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--teal-400);
+    border: 1.5px solid var(--teal-500);
+  }
+
+  .btn-outline:hover {
+    background: rgba(20, 184, 166, 0.1);
+  }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.05);
+    color: var(--gray-300);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px 80px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-text {
+    max-width: 650px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(20, 184, 166, 0.1);
+    border: 1px solid rgba(20, 184, 166, 0.2);
+    color: var(--teal-300);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .hero-title {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--gray-300) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--teal-400) 0%, var(--teal-300) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--gray-400);
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--teal-400);
+  }
+
+  .hero-stat-label {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 4px;
+  }
+
+  /* ===== 2. LOGIN ===== */
+  .login-section {
+    padding: 80px 60px;
+  }
+
+  .login-card {
+    max-width: 440px;
+    margin: 0 auto;
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-lg);
+    padding: 48px 40px;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .login-card h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .login-card p {
+    color: var(--gray-400);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-300);
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--navy-700);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    color: var(--white);
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.2s;
+    direction: rtl;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--teal-500);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+  }
+
+  .form-input::placeholder {
+    color: var(--gray-500);
+  }
+
+  .login-actions {
+    margin-top: 28px;
+  }
+
+  .login-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    font-size: 16px;
+  }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    color: var(--gray-500);
+    font-size: 13px;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ===== 3. DASHBOARD ===== */
+  .dashboard-section {
+    padding: 80px 60px;
+  }
+
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .dashboard-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .dashboard-header-date {
+    color: var(--gray-400);
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover {
+    border-color: rgba(20, 184, 166, 0.2);
+  }
+
+  .stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .stat-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .stat-card-icon.teal { background: rgba(20, 184, 166, 0.15); }
+  .stat-card-icon.amber { background: rgba(251, 191, 36, 0.15); }
+  .stat-card-icon.red { background: rgba(248, 113, 113, 0.15); }
+  .stat-card-icon.green { background: rgba(74, 222, 128, 0.15); }
+
+  .stat-card-value {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .stat-card-label {
+    font-size: 14px;
+    color: var(--gray-400);
+  }
+
+  .stat-card-change {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  .stat-card-change.up { color: var(--green-400); }
+  .stat-card-change.down { color: var(--red-400); }
+
+  .dashboard-panels {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  .panel {
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .schedule-mini-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .schedule-mini-row:last-child { border-bottom: none; }
+
+  .schedule-mini-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .schedule-mini-info {
+    flex: 1;
+  }
+
+  .schedule-mini-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .schedule-mini-shift {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-teal { background: rgba(20, 184, 166, 0.15); color: var(--teal-400); }
+  .badge-amber { background: rgba(251, 191, 36, 0.15); color: var(--amber-400); }
+  .badge-red { background: rgba(248, 113, 113, 0.15); color: var(--red-400); }
+  .badge-green { background: rgba(74, 222, 128, 0.15); color: var(--green-400); }
+
+  .alert-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .alert-item:last-child { border-bottom: none; }
+
+  .alert-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .alert-dot.red { background: var(--red-400); }
+  .alert-dot.amber { background: var(--amber-400); }
+  .alert-dot.teal { background: var(--teal-400); }
+
+  .alert-text {
+    font-size: 14px;
+    color: var(--gray-300);
+  }
+
+  .alert-time {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  /* ===== 4. EMPLOYEE AVAILABILITY FORM ===== */
+  .availability-section {
+    padding: 80px 60px;
+  }
+
+  .availability-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .availability-card {
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+  }
+
+  .availability-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .availability-card .subtitle {
+    color: var(--gray-400);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .day-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .day-row:last-child { border-bottom: none; }
+
+  .day-name {
+    width: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .day-slots {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .slot-chip {
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--gray-400);
+  }
+
+  .slot-chip.active {
+    background: rgba(20, 184, 166, 0.15);
+    border-color: var(--teal-500);
+    color: var(--teal-400);
+  }
+
+  .slot-chip.unavailable {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.3);
+    color: var(--red-400);
+  }
+
+  .availability-notes {
+    margin-top: 24px;
+  }
+
+  .availability-notes textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--navy-700);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    color: var(--white);
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+    direction: rtl;
+  }
+
+  .availability-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+  }
+
+  .availability-footer .save-note {
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+
+  /* ===== 5. WEEKLY SCHEDULE ===== */
+  .schedule-section {
+    padding: 80px 60px;
+  }
+
+  .schedule-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .schedule-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .schedule-toolbar h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .schedule-toolbar-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .schedule-week-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .week-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--navy-700);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .week-label {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .schedule-table {
+    width: 100%;
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .schedule-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .schedule-table th {
+    padding: 16px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: var(--navy-700);
+  }
+
+  .schedule-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-left: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+    min-width: 130px;
+  }
+
+  .schedule-table td:first-child {
+    border-left: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-300);
+    background: rgba(255,255,255,0.02);
+    padding: 16px 12px;
+    text-align: right;
+    min-width: 80px;
+  }
+
+  .shift-chip {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .shift-chip.morning {
+    background: rgba(20, 184, 166, 0.12);
+    color: var(--teal-400);
+    border: 1px solid rgba(20, 184, 166, 0.2);
+  }
+
+  .shift-chip.evening {
+    background: rgba(139, 92, 246, 0.12);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+  }
+
+  .shift-chip.night {
+    background: rgba(251, 191, 36, 0.12);
+    color: var(--amber-400);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+  }
+
+  .shift-chip.empty {
+    background: rgba(255,255,255,0.03);
+    color: var(--gray-500);
+    border: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  /* ===== 6. AVAILABILITY REVIEW ===== */
+  .review-section {
+    padding: 80px 60px;
+  }
+
+  .review-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .review-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .review-emp-card {
+    background: var(--navy-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .review-emp-card:hover {
+    border-color: rgba(20, 184, 166, 0.2);
+  }
+
+  .review-emp-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .review-emp-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .review-emp-name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .review-emp-role {
+    font-size: 13px;
+    color: var(--gray-400);
+  }
+
+  .review-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .review-day {
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  .review-day-label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+
+  .review-day.available {
+    background: rgba(20, 184, 166, 0.1);
+    color: var(--teal-400);
+  }
+
+  .review-day.partial {
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--amber-400);
+  }
+
+  .review-day.unavailable {
+    background: rgba(248, 113, 113, 0.08);
+    color: var(--red-400);
+  }
+
+  .review-emp-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .review-emp-footer span {
+    font-size: 13px;
+    color: var(--gray-400);
+  }
+
+  /* ===== 7. MOBILE EMPLOYEE VIEW ===== */
+  .mobile-section {
+    padding: 80px 60px;
+  }
+
+  .mobile-frame {
+    max-width: 390px;
+    margin: 0 auto;
+    background: var(--navy-800);
+    border-radius: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .mobile-notch {
+    height: 44px;
+    background: var(--navy-900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-notch-pill {
+    width: 120px;
+    height: 28px;
+    background: var(--navy-800);
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .mobile-content {
+    padding: 24px 20px 32px;
+  }
+
+  .mobile-greeting {
+    margin-bottom: 24px;
+  }
+
+  .mobile-greeting h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .mobile-greeting p {
+    font-size: 14px;
+    color: var(--gray-400);
+  }
+
+  .mobile-next-shift {
+    background: linear-gradient(135deg, var(--teal-600), var(--teal-500));
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .mobile-next-shift-label {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+
+  .mobile-next-shift h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .mobile-next-shift p {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  .mobile-week {
+    margin-bottom: 20px;
+  }
+
+  .mobile-week h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .mobile-shift-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--navy-700);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .mobile-shift-day {
+    width: 48px;
+    text-align: center;
+  }
+
+  .mobile-shift-day-name {
+    font-size: 11px;
+    color: var(--gray-400);
+    font-weight: 500;
+  }
+
+  .mobile-shift-day-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--teal-400);
+  }
+
+  .mobile-shift-details {
+    flex: 1;
+  }
+
+  .mobile-shift-role {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .mobile-shift-time {
+    font-size: 13px;
+    color: var(--gray-400);
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px 0 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 20px;
+  }
+
+  .mobile-nav-item {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+
+  .mobile-nav-item.active {
+    color: var(--teal-400);
+  }
+
+  .mobile-nav-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .hero-nav { padding: 16px 20px; }
+    .hero-nav-links { display: none; }
+    .hero-content { padding: 20px; }
+    .hero-title { font-size: 36px; }
+    .hero-subtitle { font-size: 16px; }
+    .hero-stats { gap: 24px; }
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-panels { grid-template-columns: 1fr; }
+    .login-section, .availability-section, .schedule-section, .review-section, .mobile-section, .dashboard-section { padding: 40px 20px; }
+    .schedule-table { overflow-x: auto; }
+    .review-grid { grid-template-columns: 1fr; }
+    .day-row { flex-direction: column; align-items: flex-start; }
+    .day-name { width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SECTION 1: HERO / LANDING ===== -->
+<section class="hero">
+  <nav class="hero-nav">
+    <div class="hero-logo">
+      <span>&#9671;</span> ShiftFlow
+    </div>
+    <ul class="hero-nav-links">
+      <li><a href="#">תכונות</a></li>
+      <li><a href="#">תמחור</a></li>
+      <li><a href="#">לקוחות</a></li>
+      <li><a href="#">צור קשר</a></li>
+      <li><a href="#" class="btn btn-primary" style="padding:10px 24px;">התחל בחינם</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-badge">&#10024; גרסה 2.0 עכשיו זמינה</div>
+      <h1 class="hero-title">ניהול משמרות <em>חכם</em> למסעדות</h1>
+      <p class="hero-subtitle">הפלטפורמה המובילה לתזמון צוות במסעדות, ברים וקפה. קבלו זמינות מהעובדים, בנו לוח משמרות ושתפו בקליק.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn btn-primary">התחילו תקופת ניסיון &larr;</a>
+        <a href="#" class="btn btn-outline">צפו בהדגמה</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-number">1,200+</div>
+          <div class="hero-stat-label">מסעדות פעילות</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">98%</div>
+          <div class="hero-stat-label">שביעות רצון</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">75%</div>
+          <div class="hero-stat-label">חיסכון בזמן</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 2: LOGIN ===== -->
+<section class="login-section">
+  <div class="section-label">מסך התחברות</div>
+  <div class="login-card">
+    <h2>ברוכים הבאים</h2>
+    <p>התחברו לחשבון ShiftFlow שלכם</p>
+    <div class="form-group">
+      <label class="form-label">אימייל</label>
+      <input type="email" class="form-input" placeholder="manager@restaurant.co.il" value="yossi@cafe-tel-aviv.co.il">
+    </div>
+    <div class="form-group">
+      <label class="form-label">סיסמה</label>
+      <input type="password" class="form-input" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" value="••••••••">
+    </div>
+    <div class="login-actions">
+      <button class="btn btn-primary">התחברות</button>
+    </div>
+    <div class="login-divider">או</div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;">&#128100; כניסה עם Google</button>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 3: DASHBOARD ===== -->
+<section class="dashboard-section">
+  <div class="section-label">לוח בקרה</div>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div>
+        <h2>שלום, יוסי &#128075;</h2>
+        <div class="dashboard-header-date">קפה תל אביב &middot; יום רביעי, 25 ביוני 2026</div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn btn-outline" style="padding:10px 20px;font-size:14px;">&#128276; התראות</button>
+        <button class="btn btn-primary" style="padding:10px 20px;font-size:14px;">&#43; משמרת חדשה</button>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon teal">&#128101;</div>
+        </div>
+        <div class="stat-card-value">14</div>
+        <div class="stat-card-label">עובדים פעילים</div>
+        <div class="stat-card-change up">&#9650; +2 החודש</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon amber">&#128197;</div>
+        </div>
+        <div class="stat-card-value">42</div>
+        <div class="stat-card-label">משמרות השבוע</div>
+        <div class="stat-card-change up">&#9650; 100% מאוישות</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon green">&#9989;</div>
+        </div>
+        <div class="stat-card-value">11</div>
+        <div class="stat-card-label">הגישו זמינות</div>
+        <div class="stat-card-change down">&#9660; חסרים 3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon red">&#9888;</div>
+        </div>
+        <div class="stat-card-value">2</div>
+        <div class="stat-card-label">בעיות לטיפול</div>
+      </div>
+    </div>
+
+    <div class="dashboard-panels">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">משמרות היום</span>
+          <a href="#" class="btn btn-ghost" style="padding:6px 14px;font-size:13px;">כל המשמרות</a>
+        </div>
+        <div class="schedule-mini-row">
+          <div class="schedule-mini-avatar" style="background:rgba(20,184,166,0.15);color:var(--teal-400);">דנ</div>
+          <div class="schedule-mini-info">
+            <div class="schedule-mini-name">דניאל כהן</div>
+            <div class="schedule-mini-shift">בוקר &middot; 07:00 - 15:00</div>
+          </div>
+          <span class="badge badge-teal">מלצר</span>
+        </div>
+        <div class="schedule-mini-row">
+          <div class="schedule-mini-avatar" style="background:rgba(139,92,246,0.15);color:#a78bfa;">מי</div>
+          <div class="schedule-mini-info">
+            <div class="schedule-mini-name">מיכל לוי</div>
+            <div class="schedule-mini-shift">בוקר &middot; 07:00 - 15:00</div>
+          </div>
+          <span class="badge badge-teal">ברמנ/ית</span>
+        </div>
+        <div class="schedule-mini-row">
+          <div class="schedule-mini-avatar" style="background:rgba(251,191,36,0.15);color:var(--amber-400);">אי</div>
+          <div class="schedule-mini-info">
+            <div class="schedule-mini-name">איתן מזרחי</div>
+            <div class="schedule-mini-shift">ערב &middot; 16:00 - 00:00</div>
+          </div>
+          <span class="badge badge-amber">שף</span>
+        </div>
+        <div class="schedule-mini-row">
+          <div class="schedule-mini-avatar" style="background:rgba(74,222,128,0.15);color:var(--green-400);">נע</div>
+          <div class="schedule-mini-info">
+            <div class="schedule-mini-name">נעמה ברק</div>
+            <div class="schedule-mini-shift">ערב &middot; 16:00 - 00:00</div>
+          </div>
+          <span class="badge badge-green">מארחת</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">התראות</span>
+          <span class="badge badge-red">2 חדשות</span>
+        </div>
+        <div class="alert-item">
+          <div class="alert-dot red"></div>
+          <div>
+            <div class="alert-text">רונית ביטלה משמרת יום שישי ערב</div>
+            <div class="alert-time">לפני 15 דקות</div>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-dot amber"></div>
+          <div>
+            <div class="alert-text">3 עובדים טרם הגישו זמינות לשבוע הבא</div>
+            <div class="alert-time">לפני שעה</div>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-dot teal"></div>
+          <div>
+            <div class="alert-text">עומר אישר החלפת משמרת עם דניאל</div>
+            <div class="alert-time">לפני 3 שעות</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 4: EMPLOYEE AVAILABILITY FORM ===== -->
+<section class="availability-section">
+  <div class="section-label">טופס זמינות</div>
+  <div class="availability-container">
+    <div class="availability-card">
+      <h2>הגשת זמינות</h2>
+      <p class="subtitle">שבוע 29 ביוני - 5 ביולי 2026</p>
+
+      <div class="day-row">
+        <div class="day-name">ראשון</div>
+        <div class="day-slots">
+          <span class="slot-chip active">בוקר</span>
+          <span class="slot-chip active">צהריים</span>
+          <span class="slot-chip">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">שני</div>
+        <div class="day-slots">
+          <span class="slot-chip active">בוקר</span>
+          <span class="slot-chip">צהריים</span>
+          <span class="slot-chip active">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">שלישי</div>
+        <div class="day-slots">
+          <span class="slot-chip">בוקר</span>
+          <span class="slot-chip active">צהריים</span>
+          <span class="slot-chip active">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">רביעי</div>
+        <div class="day-slots">
+          <span class="slot-chip active">בוקר</span>
+          <span class="slot-chip active">צהריים</span>
+          <span class="slot-chip active">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">חמישי</div>
+        <div class="day-slots">
+          <span class="slot-chip unavailable">בוקר</span>
+          <span class="slot-chip">צהריים</span>
+          <span class="slot-chip active">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">שישי</div>
+        <div class="day-slots">
+          <span class="slot-chip active">בוקר</span>
+          <span class="slot-chip active">צהריים</span>
+          <span class="slot-chip unavailable">ערב</span>
+        </div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">שבת</div>
+        <div class="day-slots">
+          <span class="slot-chip unavailable">בוקר</span>
+          <span class="slot-chip unavailable">צהריים</span>
+          <span class="slot-chip unavailable">ערב</span>
+        </div>
+      </div>
+
+      <div class="availability-notes">
+        <label class="form-label">הערות</label>
+        <textarea class="form-input" placeholder="הערות נוספות...">יש לי מבחן ביום חמישי בבוקר, מעדיפה ערבים בסוף השבוע</textarea>
+      </div>
+
+      <div class="availability-footer">
+        <span class="save-note">&#128338; נשמר אוטומטית</span>
+        <button class="btn btn-primary">שליחת זמינות</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 5: WEEKLY SCHEDULE ===== -->
+<section class="schedule-section">
+  <div class="section-label">לוח משמרות שבועי</div>
+  <div class="schedule-container">
+    <div class="schedule-toolbar">
+      <h2>לוח משמרות</h2>
+      <div class="schedule-toolbar-actions">
+        <button class="btn btn-ghost">&#128438; ייצוא</button>
+        <button class="btn btn-outline">&#128260; שכפל שבוע</button>
+        <button class="btn btn-primary">&#128221; פרסום</button>
+      </div>
+    </div>
+
+    <div class="schedule-week-nav">
+      <div class="week-arrow">&rarr;</div>
+      <span class="week-label">22 - 28 ביוני 2026</span>
+      <div class="week-arrow">&larr;</div>
+    </div>
+
+    <div class="schedule-table">
+      <table>
+        <thead>
+          <tr>
+            <th>משמרת</th>
+            <th>ראשון<br><small>22/6</small></th>
+            <th>שני<br><small>23/6</small></th>
+            <th>שלישי<br><small>24/6</small></th>
+            <th>רביעי<br><small>25/6</small></th>
+            <th>חמישי<br><small>26/6</small></th>
+            <th>שישי<br><small>27/6</small></th>
+            <th>שבת<br><small>28/6</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>בוקר<br><small style="color:var(--gray-500)">07:00-15:00</small></td>
+            <td><span class="shift-chip morning">דניאל כ.</span><span class="shift-chip morning">מיכל ל.</span></td>
+            <td><span class="shift-chip morning">נעמה ב.</span><span class="shift-chip morning">עומר ש.</span></td>
+            <td><span class="shift-chip morning">דניאל כ.</span><span class="shift-chip morning">רונית א.</span></td>
+            <td><span class="shift-chip morning">מיכל ל.</span><span class="shift-chip morning">אלון ד.</span></td>
+            <td><span class="shift-chip morning">נעמה ב.</span><span class="shift-chip morning">מיכל ל.</span></td>
+            <td><span class="shift-chip morning">עומר ש.</span><span class="shift-chip morning">דניאל כ.</span></td>
+            <td><span class="shift-chip empty">&#43; הוספה</span></td>
+          </tr>
+          <tr>
+            <td>ערב<br><small style="color:var(--gray-500)">16:00-00:00</small></td>
+            <td><span class="shift-chip evening">איתן מ.</span><span class="shift-chip evening">שירה ג.</span></td>
+            <td><span class="shift-chip evening">רונית א.</span><span class="shift-chip evening">אלון ד.</span></td>
+            <td><span class="shift-chip evening">איתן מ.</span><span class="shift-chip evening">נעמה ב.</span></td>
+            <td><span class="shift-chip evening">שירה ג.</span><span class="shift-chip evening">עומר ש.</span></td>
+            <td><span class="shift-chip evening">דניאל כ.</span><span class="shift-chip evening">רונית א.</span></td>
+            <td><span class="shift-chip evening">איתן מ.</span><span class="shift-chip evening">שירה ג.</span><span class="shift-chip evening">אלון ד.</span></td>
+            <td><span class="shift-chip empty">&#43; הוספה</span></td>
+          </tr>
+          <tr>
+            <td>לילה<br><small style="color:var(--gray-500)">00:00-07:00</small></td>
+            <td><span class="shift-chip night">אלון ד.</span></td>
+            <td><span class="shift-chip night">עומר ש.</span></td>
+            <td><span class="shift-chip night">שירה ג.</span></td>
+            <td><span class="shift-chip night">איתן מ.</span></td>
+            <td><span class="shift-chip night">אלון ד.</span></td>
+            <td><span class="shift-chip night">עומר ש.</span><span class="shift-chip night">שירה ג.</span></td>
+            <td><span class="shift-chip empty">&#43; הוספה</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 6: AVAILABILITY REVIEW ===== -->
+<section class="review-section">
+  <div class="section-label">סקירת זמינות</div>
+  <div class="review-container">
+    <div class="review-header">
+      <h2>סקירת זמינות עובדים</h2>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span class="badge badge-green">11 הגישו</span>
+        <span class="badge badge-red">3 חסרים</span>
+        <button class="btn btn-outline" style="padding:8px 16px;font-size:13px;">&#128172; שלח תזכורת</button>
+      </div>
+    </div>
+
+    <div class="review-grid">
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(20,184,166,0.15);color:var(--teal-400);">דנ</div>
+          <div>
+            <div class="review-emp-name">דניאל כהן</div>
+            <div class="review-emp-role">מלצר</div>
+          </div>
+          <span class="badge badge-green" style="margin-right:auto;">הוגש</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day available"><span class="review-day-label">א</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ב</span>&#10003;</div>
+          <div class="review-day partial"><span class="review-day-label">ג</span>&#189;</div>
+          <div class="review-day available"><span class="review-day-label">ד</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ה</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ו</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ש</span>&#10007;</div>
+        </div>
+        <div class="review-emp-footer">
+          <span>זמינות: 85%</span>
+          <span style="color:var(--teal-400)">6 מתוך 7 ימים</span>
+        </div>
+      </div>
+
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(139,92,246,0.15);color:#a78bfa;">מי</div>
+          <div>
+            <div class="review-emp-name">מיכל לוי</div>
+            <div class="review-emp-role">ברמנ/ית</div>
+          </div>
+          <span class="badge badge-green" style="margin-right:auto;">הוגש</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day available"><span class="review-day-label">א</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ב</span>&#10007;</div>
+          <div class="review-day available"><span class="review-day-label">ג</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ד</span>&#10003;</div>
+          <div class="review-day partial"><span class="review-day-label">ה</span>&#189;</div>
+          <div class="review-day available"><span class="review-day-label">ו</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ש</span>&#10007;</div>
+        </div>
+        <div class="review-emp-footer">
+          <span>זמינות: 71%</span>
+          <span style="color:var(--teal-400)">5 מתוך 7 ימים</span>
+        </div>
+      </div>
+
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(251,191,36,0.15);color:var(--amber-400);">אי</div>
+          <div>
+            <div class="review-emp-name">איתן מזרחי</div>
+            <div class="review-emp-role">שף</div>
+          </div>
+          <span class="badge badge-green" style="margin-right:auto;">הוגש</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day available"><span class="review-day-label">א</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ב</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ג</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ד</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ה</span>&#10003;</div>
+          <div class="review-day partial"><span class="review-day-label">ו</span>&#189;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ש</span>&#10007;</div>
+        </div>
+        <div class="review-emp-footer">
+          <span>זמינות: 92%</span>
+          <span style="color:var(--teal-400)">6 מתוך 7 ימים</span>
+        </div>
+      </div>
+
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(248,113,113,0.15);color:var(--red-400);">רו</div>
+          <div>
+            <div class="review-emp-name">רונית אברהם</div>
+            <div class="review-emp-role">מלצרית</div>
+          </div>
+          <span class="badge badge-red" style="margin-right:auto;">חסר</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">א</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ב</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ג</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ד</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ה</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ו</span>-</div>
+          <div class="review-day" style="opacity:0.3"><span class="review-day-label">ש</span>-</div>
+        </div>
+        <div class="review-emp-footer">
+          <span style="color:var(--red-400);">טרם הוגש</span>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:12px;">&#128172; תזכורת</button>
+        </div>
+      </div>
+
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(74,222,128,0.15);color:var(--green-400);">נע</div>
+          <div>
+            <div class="review-emp-name">נעמה ברק</div>
+            <div class="review-emp-role">מארחת</div>
+          </div>
+          <span class="badge badge-green" style="margin-right:auto;">הוגש</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day partial"><span class="review-day-label">א</span>&#189;</div>
+          <div class="review-day available"><span class="review-day-label">ב</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ג</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ד</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ה</span>&#10007;</div>
+          <div class="review-day available"><span class="review-day-label">ו</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ש</span>&#10007;</div>
+        </div>
+        <div class="review-emp-footer">
+          <span>זמינות: 64%</span>
+          <span style="color:var(--teal-400)">4.5 מתוך 7 ימים</span>
+        </div>
+      </div>
+
+      <div class="review-emp-card">
+        <div class="review-emp-header">
+          <div class="review-emp-avatar" style="background:rgba(20,184,166,0.15);color:var(--teal-400);">עו</div>
+          <div>
+            <div class="review-emp-name">עומר שמעון</div>
+            <div class="review-emp-role">מלצר / בר</div>
+          </div>
+          <span class="badge badge-green" style="margin-right:auto;">הוגש</span>
+        </div>
+        <div class="review-days">
+          <div class="review-day available"><span class="review-day-label">א</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ב</span>&#10003;</div>
+          <div class="review-day unavailable"><span class="review-day-label">ג</span>&#10007;</div>
+          <div class="review-day available"><span class="review-day-label">ד</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ה</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ו</span>&#10003;</div>
+          <div class="review-day available"><span class="review-day-label">ש</span>&#10003;</div>
+        </div>
+        <div class="review-emp-footer">
+          <span>זמינות: 85%</span>
+          <span style="color:var(--teal-400)">6 מתוך 7 ימים</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SECTION 7: MOBILE EMPLOYEE VIEW ===== -->
+<section class="mobile-section">
+  <div class="section-label">תצוגת מובייל - עובד</div>
+  <div class="mobile-frame">
+    <div class="mobile-notch">
+      <div class="mobile-notch-pill"></div>
+    </div>
+    <div class="mobile-content">
+      <div class="mobile-greeting">
+        <h3>היי דניאל &#128075;</h3>
+        <p>קפה תל אביב</p>
+      </div>
+
+      <div class="mobile-next-shift">
+        <div class="mobile-next-shift-label">המשמרת הבאה שלך</div>
+        <h4>היום, ערב</h4>
+        <p>16:00 - 00:00 &middot; מלצר</p>
+      </div>
+
+      <div class="mobile-week">
+        <h4>השבוע שלך</h4>
+        <div class="mobile-shift-item">
+          <div class="mobile-shift-day">
+            <div class="mobile-shift-day-name">ראשון</div>
+            <div class="mobile-shift-day-num">22</div>
+          </div>
+          <div class="mobile-shift-details">
+            <div class="mobile-shift-role">מלצר - בוקר</div>
+            <div class="mobile-shift-time">07:00 - 15:00</div>
+          </div>
+          <span class="badge badge-teal">מאושר</span>
+        </div>
+        <div class="mobile-shift-item">
+          <div class="mobile-shift-day">
+            <div class="mobile-shift-day-name">שלישי</div>
+            <div class="mobile-shift-day-num">24</div>
+          </div>
+          <div class="mobile-shift-details">
+            <div class="mobile-shift-role">מלצר - בוקר</div>
+            <div class="mobile-shift-time">07:00 - 15:00</div>
+          </div>
+          <span class="badge badge-teal">מאושר</span>
+        </div>
+        <div class="mobile-shift-item">
+          <div class="mobile-shift-day">
+            <div class="mobile-shift-day-name">חמישי</div>
+            <div class="mobile-shift-day-num">26</div>
+          </div>
+          <div class="mobile-shift-details">
+            <div class="mobile-shift-role">מלצר - ערב</div>
+            <div class="mobile-shift-time">16:00 - 00:00</div>
+          </div>
+          <span class="badge badge-amber">ממתין</span>
+        </div>
+        <div class="mobile-shift-item">
+          <div class="mobile-shift-day">
+            <div class="mobile-shift-day-name">שישי</div>
+            <div class="mobile-shift-day-num">27</div>
+          </div>
+          <div class="mobile-shift-details">
+            <div class="mobile-shift-role">מלצר - בוקר</div>
+            <div class="mobile-shift-time">07:00 - 15:00</div>
+          </div>
+          <span class="badge badge-teal">מאושר</span>
+        </div>
+      </div>
+
+      <div class="mobile-bottom-nav">
+        <div class="mobile-nav-item active">
+          <div class="mobile-nav-icon">&#127968;</div>
+          בית
+        </div>
+        <div class="mobile-nav-item">
+          <div class="mobile-nav-icon">&#128197;</div>
+          משמרות
+        </div>
+        <div class="mobile-nav-item">
+          <div class="mobile-nav-icon">&#128340;</div>
+          זמינות
+        </div>
+        <div class="mobile-nav-item">
+          <div class="mobile-nav-icon">&#128100;</div>
+          פרופיל
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DESIGN NOTES ===== -->
+<section style="padding:80px 60px;max-width:800px;margin:0 auto;">
+  <div class="section-label">הערות עיצוב</div>
+  <div class="panel" style="direction:ltr;text-align:left;">
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;color:var(--teal-400);">Option 1: Premium SaaS — Dark Navy + Teal</h3>
+
+    <p style="color:var(--gray-300);margin-bottom:16px;"><strong>Target audience:</strong> Tech-savvy restaurant owners, chain managers, and upscale hospitality businesses looking for a modern, professional tool.</p>
+
+    <p style="color:var(--gray-300);margin-bottom:16px;"><strong>Strengths:</strong></p>
+    <ul style="color:var(--gray-400);margin-bottom:16px;padding-right:20px;">
+      <li>Premium, trustworthy feel — dark themes signal "serious software"</li>
+      <li>Teal accent is energetic yet professional</li>
+      <li>Clean data visualization with strong information hierarchy</li>
+      <li>Easy on eyes during long management sessions</li>
+      <li>Differentiates from typical "friendly" hospitality tools</li>
+    </ul>
+
+    <p style="color:var(--gray-300);margin-bottom:16px;"><strong>Weaknesses:</strong></p>
+    <ul style="color:var(--gray-400);margin-bottom:16px;padding-right:20px;">
+      <li>May feel too "corporate" or "techie" for small family cafés</li>
+      <li>Dark themes can be less inviting for first-time users</li>
+      <li>Might intimidate non-technical restaurant owners</li>
+    </ul>
+
+    <p style="color:var(--gray-300);"><strong>Best for:</strong> Selling to chains, upscale restaurants, bar groups, and tech-forward food businesses. Commands higher price perception.</p>
+  </div>
+</section>
+
+</body>
+</html>

@@ -410,3 +410,121 @@ export async function listBlocksAction(weekId: string): Promise<
     employeeName: b.employee.name,
   }));
 }
+
+// ─── Clone week ────────────────────────────────────────────────────────────
+
+// targetDateStr: any YYYY-MM-DD date inside the target week. Snapped to Sunday
+// server-side so it matches stored weekStart values.
+export async function cloneWeekAction(
+  sourceWeekId: string,
+  targetDateStr: string,
+  force = false,
+): Promise<{ conflict: true } | { success: true; targetWeekId: string }> {
+  const session = await auth();
+  if (!session?.user?.restaurantId) throw new Error("לא מחובר");
+  const restaurantId = session.user.restaurantId;
+  const managerId = session.user.id as string;
+
+  const sourceWeek = await prisma.week.findFirst({
+    where: { id: sourceWeekId, restaurantId },
+  });
+  if (!sourceWeek) throw new Error("שבוע מקור לא נמצא");
+
+  const { parseWeekStartParam } = await import("@/lib/week");
+  const targetWeekStart = parseWeekStartParam(targetDateStr);
+
+  const existingTarget = await prisma.week.findUnique({
+    where: { restaurantId_weekStart: { restaurantId, weekStart: targetWeekStart } },
+  });
+
+  if (existingTarget) {
+    const existingCount = await prisma.scheduleAssignment.count({
+      where: { weekId: existingTarget.id, employeeId: { not: null } },
+    });
+    if (existingCount > 0 && !force) {
+      return { conflict: true };
+    }
+  }
+
+  const [sourceAssignments, sourceNotes, sourceOverrides] = await Promise.all([
+    prisma.scheduleAssignment.findMany({ where: { weekId: sourceWeekId } }),
+    prisma.scheduleNote.findMany({ where: { weekId: sourceWeekId } }),
+    prisma.weekOverride.findMany({ where: { weekId: sourceWeekId } }),
+  ]);
+
+  const targetWeekId = await prisma.$transaction(async (tx) => {
+    let targetId: string;
+
+    if (existingTarget) {
+      await tx.scheduleAssignment.deleteMany({ where: { weekId: existingTarget.id } });
+      await tx.scheduleNote.deleteMany({ where: { weekId: existingTarget.id } });
+      await tx.weekOverride.deleteMany({ where: { weekId: existingTarget.id } });
+      await tx.week.update({
+        where: { id: existingTarget.id },
+        data: { status: "draft", approvedAt: null },
+      });
+      targetId = existingTarget.id;
+    } else {
+      const created = await tx.week.create({
+        data: { restaurantId, weekStart: targetWeekStart, status: "draft" },
+      });
+      targetId = created.id;
+    }
+
+    if (sourceAssignments.length > 0) {
+      await tx.scheduleAssignment.createMany({
+        data: sourceAssignments.map((a) => ({
+          weekId: targetId,
+          day: a.day,
+          shiftType: a.shiftType,
+          slotIndex: a.slotIndex,
+          employeeId: a.employeeId,
+          locked: false,
+        })),
+      });
+    }
+
+    if (sourceNotes.length > 0) {
+      await tx.scheduleNote.createMany({
+        data: sourceNotes.map((n) => ({
+          weekId: targetId,
+          day: n.day,
+          kind: n.kind,
+          content: n.content,
+        })),
+      });
+    }
+
+    if (sourceOverrides.length > 0) {
+      await tx.weekOverride.createMany({
+        data: sourceOverrides.map((o) => ({
+          weekId: targetId,
+          day: o.day,
+          shiftType: o.shiftType,
+          headcount: o.headcount,
+        })),
+      });
+    }
+
+    await tx.auditLog.create({
+      data: {
+        weekId: targetId,
+        managerId,
+        action: "clone_week",
+        payload: JSON.stringify({
+          sourceWeekId,
+          assignmentCount: sourceAssignments.filter((a) => a.employeeId).length,
+          notesCount: sourceNotes.length,
+        }),
+      },
+    });
+
+    return targetId;
+  });
+
+  revalidatePath(`/schedule/${targetWeekId}`);
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
+
+  return { success: true, targetWeekId };
+}

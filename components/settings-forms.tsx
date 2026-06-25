@@ -55,7 +55,7 @@ export function ProfileForm({
           required
           placeholder="לדוגמה: שם מלא"
         />
-        <p className="text-xs text-slate-500">יוצג בדאשבורד ובהיסטוריית פעולות</p>
+        <p className="text-xs text-brown-500">יוצג בדאשבורד ובהיסטוריית פעולות</p>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="profile-email">דוא״ל לכניסה</Label>
@@ -98,7 +98,7 @@ export function RestaurantForm({ defaultName }: { defaultName: string }) {
           dir="auto"
           placeholder="לדוגמה: המסעדה"
         />
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-brown-500">
           יוצג בדאשבורד, בסידור העבודה ובדפי הזמינות
         </p>
       </div>

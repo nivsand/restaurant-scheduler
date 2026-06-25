@@ -11,7 +11,7 @@ type Tone =
   | "brand";
 
 const tones: Record<Tone, string> = {
-  neutral: "bg-slate-100 text-slate-700",
+  neutral: "bg-warm-100 text-brown-700",
   kitchen: "bg-kitchen-100 text-kitchen-500",
   floor: "bg-floor-100 text-floor-500",
   warning: "bg-amber-50 text-amber-700 border border-amber-200/60",

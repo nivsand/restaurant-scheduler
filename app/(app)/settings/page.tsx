@@ -32,8 +32,8 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">הגדרות</h2>
-        <p className="text-sm text-slate-500">ניהול חשבון המנהל/ת</p>
+        <h2 className="text-2xl font-extrabold text-brown-900">הגדרות</h2>
+        <p className="text-sm text-brown-500">ניהול חשבון המנהל/ת</p>
       </div>
 
       <Card>

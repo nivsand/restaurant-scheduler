@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { SHIFT_DEFS, ShiftType, isShiftAllowedOnDay, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
 import { cn } from "@/lib/utils";
+import { roleBadge } from "@/lib/role-labels";
+import { CloneWeekDialog } from "@/components/clone-week-dialog";
 
 export default async function ScheduleEditorPage({
   params,
@@ -199,11 +201,11 @@ export default async function ScheduleEditorPage({
         <div>
           <Link
             href="/schedule"
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-brown-500 hover:text-brown-700"
           >
             ← סידור
           </Link>
-          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-slate-900">
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-brown-900">
             סידור שבועי
             {isApproved ? (
               <Badge tone="success">מאושר</Badge>
@@ -211,15 +213,18 @@ export default async function ScheduleEditorPage({
               <Badge tone="warning">טיוטה</Badge>
             )}
           </h2>
-          <p className="text-sm text-slate-500 num">
+          <p className="text-sm text-brown-500 num">
             {formatWeekRange(week.weekStart)}
           </p>
         </div>
-        {hasAssignments && (
-          <Link href={`/schedule/${weekId}/print`}>
-            <Button variant="secondary">📄 תצוגת הדפסה / ייצוא</Button>
-          </Link>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <CloneWeekDialog sourceWeekId={weekId} />
+          {hasAssignments && (
+            <Link href={`/schedule/${weekId}/print`}>
+              <Button variant="secondary">📄 הדפסה / ייצוא</Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       <WeekPicker weekStart={week.weekStart} basePath="/schedule" />
@@ -283,13 +288,13 @@ export default async function ScheduleEditorPage({
                     key={i}
                     className="flex items-center justify-between rounded-md bg-white px-2 py-1.5"
                   >
-                    <span className="text-slate-700">
+                    <span className="text-brown-700">
                       <span className="font-medium">
                         {DAY_NAMES_HE[e.day as DayOfWeek]}
                       </span>{" "}
                       · {def?.labelHe}
                     </span>
-                    <span className="num text-slate-400">#{e.slotIndex + 1}</span>
+                    <span className="num text-brown-400">#{e.slotIndex + 1}</span>
                   </li>
                 );
               })}
@@ -303,7 +308,7 @@ export default async function ScheduleEditorPage({
           <div className="min-w-0 space-y-5">
             {availabilityRows.length > 0 && (
               <section className="space-y-2">
-                <h3 className="text-base font-semibold text-slate-900">
+                <h3 className="text-base font-semibold text-brown-900">
                   זמינות כללית להשוואה
                 </h3>
                 <AvailabilitySummaryGrid
@@ -343,29 +348,29 @@ export default async function ScheduleEditorPage({
             {/* RTL: first <th> renders rightmost; last <th> renders leftmost. */}
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-navy text-xs font-semibold text-white">
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                <tr className="bg-brown-800 text-xs font-semibold text-white">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     עובד
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     מבוקש
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     שובץ
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     בוקר
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     ערב
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     סגירות
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     סופ״ש
                   </th>
-                  <th className="border border-slate-200 px-3 py-2 text-center">
+                  <th className="border border-cream-200 px-3 py-2 text-center">
                     הערות
                   </th>
                 </tr>
@@ -384,12 +389,15 @@ export default async function ScheduleEditorPage({
                       notes.push("שובץ לסגירה למרות העדפה");
                     return (
                       <tr key={e.id} className="hover:bg-brand-50/40">
-                        <td className="border border-slate-200 px-3 py-2 text-center font-medium text-slate-900">
-                          {e.name}
+                        <td className="border border-cream-200 px-3 py-2 text-center font-medium text-brown-900">
+                          <div>{e.name}</div>
+                          <div className="text-[10px] font-normal text-brown-400">
+                            {roleBadge(e.role)}
+                          </div>
                         </td>
                         <td
                           className={cn(
-                            "border border-slate-200 px-3 py-2 text-center num",
+                            "border border-cream-200 px-3 py-2 text-center num",
                             req != null && s.total === req && "text-emerald-600",
                             req != null && s.total < req && "text-amber-600",
                             req != null && s.total > req && "text-rose-600",
@@ -397,22 +405,22 @@ export default async function ScheduleEditorPage({
                         >
                           {req != null ? req : "—"}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-center font-semibold num">
+                        <td className="border border-cream-200 px-3 py-2 text-center font-semibold num">
                           {s.total}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-center num">
+                        <td className="border border-cream-200 px-3 py-2 text-center num">
                           {s.mornings || "—"}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-center num">
+                        <td className="border border-cream-200 px-3 py-2 text-center num">
                           {s.evenings || "—"}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-center num">
+                        <td className="border border-cream-200 px-3 py-2 text-center num">
                           {s.closings || "—"}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-center num">
+                        <td className="border border-cream-200 px-3 py-2 text-center num">
                           {s.weekends || "—"}
                         </td>
-                        <td className="border border-slate-200 px-3 py-2 text-start text-xs text-slate-500">
+                        <td className="border border-cream-200 px-3 py-2 text-start text-xs text-brown-500">
                           {notes.length > 0 ? notes.join(" · ") : "—"}
                         </td>
                       </tr>
@@ -425,7 +433,7 @@ export default async function ScheduleEditorPage({
       )}
 
       {lastGen && hasAssignments && (
-        <div className="text-center text-xs text-slate-400">
+        <div className="text-center text-xs text-brown-400">
           נוצר לאחרונה:{" "}
           {new Intl.DateTimeFormat("he-IL", {
             day: "numeric",
@@ -449,8 +457,8 @@ function MiniStat({
   tone?: "success" | "danger";
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-center shadow-sm">
-      <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+    <div className="rounded-xl border border-cream-200 bg-white px-3 py-2.5 text-center shadow-sm">
+      <div className="text-[10px] font-bold uppercase tracking-wide text-brown-400">
         {label}
       </div>
       <div
@@ -458,7 +466,7 @@ function MiniStat({
           "mt-1 text-xl font-extrabold num",
           tone === "danger" && "text-rose-600",
           tone === "success" && "text-brand-600",
-          !tone && "text-slate-900",
+          !tone && "text-brown-900",
         )}
       >
         {value}
@@ -478,21 +486,21 @@ function MotivationPanel({
 }) {
   return (
     <aside
-      className="h-fit rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm"
+      className="h-fit rounded-2xl border border-cream-200 bg-white p-4 text-left shadow-sm"
       dir="ltr"
     >
       <div className="space-y-3">
-        <p className="text-sm font-bold text-slate-900">
+        <p className="text-sm font-bold text-brown-900">
           Great schedules make great shifts ✨
         </p>
-        <p className="text-xs leading-5 text-slate-500">
+        <p className="text-xs leading-5 text-brown-500">
           You're doing amazing. Almost there, keep going!
         </p>
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-          <div className="text-[10px] font-bold uppercase text-slate-400">
+        <div className="rounded-xl border border-cream-200 bg-cream-50 p-3">
+          <div className="text-[10px] font-bold uppercase text-brown-400">
             Coverage
           </div>
-          <div className="mt-1 text-xl font-extrabold text-slate-900 num">
+          <div className="mt-1 text-xl font-extrabold text-brown-900 num">
             {filledSlots}/{totalSlots}
           </div>
           <div

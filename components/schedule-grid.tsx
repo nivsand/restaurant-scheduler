@@ -109,13 +109,13 @@ export function ScheduleGrid({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th className="border border-slate-400 bg-slate-100 p-2 text-center font-bold text-slate-700">
+            <th className="border border-brown-400 bg-cream-100 p-2 text-center font-bold text-brown-700">
               משמרת
             </th>
             {DAYS.map((d) => (
               <th
                 key={d}
-                className="min-w-[110px] border border-slate-400 bg-slate-100 p-2 text-center font-bold text-slate-700"
+                className="min-w-[110px] border border-brown-400 bg-cream-100 p-2 text-center font-bold text-brown-700"
               >
                 {DAY_NAMES_HE[d]}
               </th>
@@ -130,7 +130,7 @@ export function ScheduleGrid({
               <tr key={st}>
                 <td
                   className={cn(
-                    "whitespace-nowrap border border-slate-400 p-2 text-center font-semibold",
+                    "whitespace-nowrap border border-brown-400 p-2 text-center font-semibold",
                     theme.labelClass,
                   )}
                 >
@@ -172,7 +172,7 @@ export function ScheduleGrid({
               <tr key={kind}>
                 <td
                   className={cn(
-                    "whitespace-nowrap border border-slate-400 p-2 text-center font-semibold",
+                    "whitespace-nowrap border border-brown-400 p-2 text-center font-semibold",
                     theme.labelClass,
                   )}
                 >
@@ -184,7 +184,7 @@ export function ScheduleGrid({
                     <td
                       key={d}
                       className={cn(
-                        "border border-slate-400 p-1 align-middle",
+                        "border border-brown-400 p-1 align-middle",
                         theme.cellClass,
                       )}
                     >

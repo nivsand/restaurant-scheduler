@@ -77,7 +77,7 @@ export function EditableNoteCell({
       disabled={isPending}
       className={cn(
         "w-full resize-none bg-transparent text-center text-xs leading-tight outline-none transition-all",
-        "placeholder:text-slate-300/70 focus:bg-white/70 focus:ring-1 focus:ring-brand-300 rounded-sm",
+        "placeholder:text-brown-400/70 focus:bg-white/70 focus:ring-1 focus:ring-brand-300 rounded-sm",
         isPending && "opacity-60",
       )}
       style={{ minHeight: "3rem" }}

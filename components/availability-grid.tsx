@@ -67,11 +67,11 @@ export function AvailabilityGrid({
       <table className="min-w-[420px] border-collapse text-xs">
         <thead>
           <tr>
-            <th className="p-1 text-start font-medium text-slate-500"></th>
+            <th className="p-1 text-start font-medium text-brown-500"></th>
             {DAYS.map((d) => (
               <th
                 key={d}
-                className="min-w-[36px] p-1 text-center font-medium text-slate-600"
+                className="min-w-[36px] p-1 text-center font-medium text-brown-600"
               >
                 {DAY_NAMES_HE_SHORT[d]}
               </th>
@@ -83,7 +83,7 @@ export function AvailabilityGrid({
             const def = SHIFT_DEFS[st];
             return (
               <tr key={st}>
-                <td className="whitespace-nowrap p-1 text-start text-slate-600">
+                <td className="whitespace-nowrap p-1 text-start text-brown-600">
                   <span className="inline-flex items-center gap-1">
                     <span
                       className={cn(
@@ -114,8 +114,8 @@ export function AvailabilityGrid({
                         }
                         className={cn(
                           "h-7 w-9 rounded-md text-xs transition-all",
-                          !allowed && "bg-slate-100 text-slate-300",
-                          allowed && !row && "border border-slate-200 hover:bg-slate-50",
+                          !allowed && "bg-cream-100 text-brown-400",
+                          allowed && !row && "border border-cream-200 hover:bg-cream-50",
                           allowed && row && cellClass(row),
                           readOnly && "cursor-default",
                         )}

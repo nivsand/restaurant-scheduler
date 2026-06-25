@@ -99,25 +99,25 @@ export function ReassignMenu({
   return (
     <>
       <div
-        className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center"
+        className="fixed inset-0 z-40 flex items-end justify-center bg-brown-900/40 p-4 sm:items-center"
         onClick={onClose}
       >
         <div
           className="w-full max-w-md rounded-2xl bg-white shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="border-b border-slate-100 p-4">
-            <h3 className="text-base font-semibold text-slate-900">
+          <div className="border-b border-cream-200 p-4">
+            <h3 className="text-base font-semibold text-brown-900">
               שיבוץ למשבצת
             </h3>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-brown-500">
               לחיצה על עובד תקבע אותו לשיבוץ ידני (נעול)
             </p>
           </div>
 
           <div className="max-h-[60vh] overflow-y-auto p-4">
             {!explanation && (
-              <div className="py-8 text-center text-sm text-slate-400">
+              <div className="py-8 text-center text-sm text-brown-400">
                 טוען...
               </div>
             )}
@@ -137,12 +137,12 @@ export function ReassignMenu({
                 )}
 
                 {/* Eligible — green/normal */}
-                <div className="mb-1 text-xs font-medium text-slate-500">
+                <div className="mb-1 text-xs font-medium text-brown-500">
                   זמינים ({eligible.length})
                 </div>
                 <ul className="space-y-1">
                   {eligible.length === 0 && (
-                    <li className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+                    <li className="rounded-lg bg-cream-50 px-3 py-2 text-xs text-brown-500">
                       אין עובדים זמינים — שקלו להוסיף שיבוץ ידני מהרשימה למטה
                     </li>
                   )}
@@ -156,11 +156,11 @@ export function ReassignMenu({
                           "flex flex-1 items-center justify-between rounded-lg border px-3 py-2 text-start text-sm transition-colors",
                           r.employeeId === currentEmployeeId
                             ? "border-brand-400 bg-brand-50 text-brand-800"
-                            : "border-slate-200 bg-white hover:bg-slate-50",
+                            : "border-cream-200 bg-white hover:bg-cream-50",
                         )}
                       >
                         <span className="font-medium">{r.employeeName}</span>
-                        <span className="flex items-center gap-2 text-xs text-slate-500">
+                        <span className="flex items-center gap-2 text-xs text-brown-500">
                           <span>{r.currentAssignments} שיבוצים</span>
                           {r.confidence != null && (
                             <span className="num">
@@ -174,7 +174,7 @@ export function ReassignMenu({
                         onClick={() => block(r.employeeId)}
                         disabled={isPending}
                         title="חסום ממשמרת זו"
-                        className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs text-rose-600 hover:bg-rose-50"
+                        className="rounded-lg border border-cream-200 bg-white px-2 py-2 text-xs text-rose-600 hover:bg-rose-50"
                       >
                         🚫
                       </button>
@@ -223,7 +223,7 @@ export function ReassignMenu({
                     <button
                       type="button"
                       onClick={() => setShowHardBlocked((s) => !s)}
-                      className="mb-1 text-xs text-slate-500 hover:text-slate-700"
+                      className="mb-1 text-xs text-brown-500 hover:text-brown-700"
                     >
                       {showHardBlocked ? "הסתר" : "הצג"} לא ניתן לשבץ (
                       {hardBlocked.length}) ▾
@@ -236,13 +236,13 @@ export function ReassignMenu({
                           return (
                             <li
                               key={r.employeeId}
-                              className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
+                              className="flex items-center justify-between rounded-lg bg-cream-50 px-3 py-2 text-sm"
                             >
-                              <span className="text-slate-600">
+                              <span className="text-brown-600">
                                 {r.employeeName}
                               </span>
                               <span className="flex items-center gap-2">
-                                <span className="text-xs text-slate-400">
+                                <span className="text-xs text-brown-400">
                                   {r.reason}
                                 </span>
                                 {isManagerBlock && (
@@ -250,7 +250,7 @@ export function ReassignMenu({
                                     type="button"
                                     onClick={() => unblock(r.employeeId)}
                                     disabled={isPending}
-                                    className="rounded border border-slate-200 px-1.5 py-0.5 text-[10px] text-brand-600 hover:bg-brand-50"
+                                    className="rounded border border-cream-200 px-1.5 py-0.5 text-[10px] text-brand-600 hover:bg-brand-50"
                                   >
                                     בטל חסימה
                                   </button>
@@ -267,7 +267,7 @@ export function ReassignMenu({
             )}
           </div>
 
-          <div className="border-t border-slate-100 p-3 text-end">
+          <div className="border-t border-cream-200 p-3 text-end">
             <Button variant="ghost" size="sm" onClick={onClose}>
               סגור
             </Button>
@@ -278,7 +278,7 @@ export function ReassignMenu({
       {/* Soft-override confirmation dialog */}
       {confirming && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-brown-900/60 p-4"
           onClick={() => setConfirming(null)}
         >
           <div
@@ -289,14 +289,14 @@ export function ReassignMenu({
               <span className="text-xl">⚠</span>
               <h4 className="font-semibold">אישור שיבוץ עם אזהרה</h4>
             </div>
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-brown-700">
               לשבץ את <span className="font-medium">{confirming.employeeName}</span>{" "}
               למשמרת זו?
             </p>
             <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
               {confirming.reason}
             </p>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-brown-500">
               השיבוץ יישמר ויינעל, וייכלל בייצוא ובהדפסה.
             </p>
             <div className="mt-4 flex justify-end gap-2">

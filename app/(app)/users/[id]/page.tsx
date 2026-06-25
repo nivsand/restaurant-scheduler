@@ -41,11 +41,11 @@ export default async function EditManagerPage({
         <div>
           <Link
             href="/users"
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-brown-500 hover:text-brown-700"
           >
             ← ניהול משתמשים
           </Link>
-          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-slate-900">
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-brown-900">
             {manager.name}
             {manager.active ? (
               <Badge tone="neutral">פעיל</Badge>
@@ -78,12 +78,12 @@ export default async function EditManagerPage({
                 className="text-start"
               />
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2 text-sm text-brown-700">
               <input
                 type="checkbox"
                 name="isAdmin"
                 defaultChecked={manager.isAdmin}
-                className="h-4 w-4 rounded border-slate-300"
+                className="h-4 w-4 rounded border-brown-400"
               />
               הרשאת מנהל-על (גישה לניהול משתמשים)
             </label>
@@ -118,7 +118,7 @@ export default async function EditManagerPage({
                 dir="ltr"
                 className="text-start"
               />
-              <p className="text-xs text-slate-500">8 תווים לפחות</p>
+              <p className="text-xs text-brown-500">8 תווים לפחות</p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirmPassword">אישור סיסמה חדשה</Label>

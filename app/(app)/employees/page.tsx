@@ -27,8 +27,8 @@ export default async function EmployeesPage({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900">עובדים</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="text-2xl font-extrabold text-brown-900">עובדים</h2>
+          <p className="text-sm text-brown-500">
             {employees.length} עובדים {showArchived ? "בארכיון" : "פעילים"}
           </p>
         </div>
@@ -53,7 +53,7 @@ export default async function EmployeesPage({
 
       {employees.length === 0 ? (
         <Card>
-          <CardBody className="py-12 text-center text-sm text-slate-500">
+          <CardBody className="py-12 text-center text-sm text-brown-500">
             אין עובדים {showArchived ? "בארכיון" : "פעילים"}.
             {!showArchived && (
               <div className="mt-4">
@@ -68,8 +68,8 @@ export default async function EmployeesPage({
         <Card>
           <div className="overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-start">
-                <tr className="text-slate-500">
+              <thead className="bg-cream-50 text-start">
+                <tr className="text-brown-500">
                   <th className="px-5 py-3 text-start font-medium">שם</th>
                   <th className="px-5 py-3 text-start font-medium">תפקיד</th>
                   <th className="px-5 py-3 text-start font-medium">משמרות</th>
@@ -77,22 +77,22 @@ export default async function EmployeesPage({
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-cream-200">
                 {employees.map((e) => (
-                  <tr key={e.id} className="hover:bg-slate-50">
-                    <td className="px-5 py-3 font-medium text-slate-900">
+                  <tr key={e.id} className="hover:bg-cream-50">
+                    <td className="px-5 py-3 font-medium text-brown-900">
                       {e.name}
                     </td>
                     <td className="px-5 py-3">
                       <RoleBadge role={e.role} />
                     </td>
-                    <td className="px-5 py-3 text-slate-600">
+                    <td className="px-5 py-3 text-brown-600">
                       {e.minShifts != null || e.maxShifts != null ? (
                         <span className="num">
                           {e.minShifts ?? "—"} - {e.maxShifts ?? "—"}
                         </span>
                       ) : (
-                        <span className="text-slate-400">לא הוגדר</span>
+                        <span className="text-brown-400">לא הוגדר</span>
                       )}
                     </td>
                     <td className="px-5 py-3">

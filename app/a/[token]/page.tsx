@@ -86,22 +86,22 @@ export default async function PublicAvailabilityPage({
   }
 
   return (
-    <main className={`min-h-screen bg-navy ${heebo.className}`}>
+    <main className={`min-h-screen bg-warm-50 ${heebo.className}`}>
       <div className="mx-auto max-w-md px-4 pb-8">
-        <div className="pb-5 pt-7 text-white">
-          <div className="text-sm font-medium text-brand-300">{employee.restaurant.name}</div>
-          <h1 className="mt-2 text-2xl font-extrabold">שלום {employee.name} 👋</h1>
-          <p className="mt-2 text-sm text-white/70">
+        <div className="pb-5 pt-7">
+          <div className="text-sm font-medium text-brand-600">{employee.restaurant.name}</div>
+          <h1 className="mt-2 text-2xl font-extrabold text-brown-900">שלום {employee.name} 👋</h1>
+          <p className="mt-2 text-sm text-brown-500">
             הגישו זמינות לשבוע{" "}
-            <span className="num font-medium text-white/90">
+            <span className="num font-medium text-brown-700">
               {formatWeekRange(weekStart)}
             </span>
           </p>
         </div>
 
-        <div className="rounded-t-3xl bg-gray-50 px-4 pb-6 pt-5">
+        <div className="rounded-t-3xl bg-cream-50 px-4 pb-6 pt-5">
         {/* Week navigation */}
-        <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-cream-200 bg-white px-4 py-2.5 shadow-sm">
           {hasPrev ? (
             <a
               href={weekUrl(prevWeek)}
@@ -110,9 +110,9 @@ export default async function PublicAvailabilityPage({
               ← שבוע קודם
             </a>
           ) : (
-            <span className="text-sm text-slate-300">← שבוע קודם</span>
+            <span className="text-sm text-brown-400">← שבוע קודם</span>
           )}
-          <span className="num text-xs text-slate-500">
+          <span className="num text-xs text-brown-500">
             {formatWeekRange(weekStart)}
           </span>
           {hasNext ? (
@@ -123,7 +123,7 @@ export default async function PublicAvailabilityPage({
               שבוע הבא →
             </a>
           ) : (
-            <span className="text-sm text-slate-300">שבוע הבא →</span>
+            <span className="text-sm text-brown-400">שבוע הבא →</span>
           )}
         </div>
 
@@ -146,7 +146,7 @@ export default async function PublicAvailabilityPage({
           </div>
         ) : (
           <>
-            <div className="mb-3 flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs text-slate-600 shadow-sm">
+            <div className="mb-3 flex items-center gap-2 rounded-xl border border-cream-200 bg-white px-4 py-2.5 text-xs text-brown-600 shadow-sm">
               תפקיד שלך:{" "}
               <span className="font-semibold">
                 {employee.role === "kitchen"
@@ -173,7 +173,7 @@ export default async function PublicAvailabilityPage({
           </>
         )}
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-brown-400">
           בעיה? פנו למנהל/ת המשמרת
         </p>
         </div>

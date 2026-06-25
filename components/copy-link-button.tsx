@@ -15,7 +15,7 @@ export function CopyLinkButton({ path }: { path: string }) {
         value={fullUrl}
         dir="ltr"
         onFocus={(e) => e.currentTarget.select()}
-        className="h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 text-start"
+        className="h-10 flex-1 rounded-lg border border-cream-200 bg-cream-50 px-3 text-sm text-brown-700 text-start"
       />
       <Button
         type="button"

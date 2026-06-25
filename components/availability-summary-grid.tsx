@@ -38,17 +38,17 @@ export function AvailabilitySummaryGrid({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="bg-slate-50">
-            <th className="sticky start-0 z-10 border border-slate-100 bg-slate-50 p-2 text-start font-medium text-slate-600">
+          <tr className="bg-cream-50">
+            <th className="sticky start-0 z-10 border border-cream-200 bg-cream-50 p-2 text-start font-medium text-brown-600">
               משמרת
             </th>
             {DAYS.map((d) => (
               <th
                 key={d}
-                className="min-w-[110px] border border-slate-100 p-2 text-center font-medium text-slate-700"
+                className="min-w-[110px] border border-cream-200 p-2 text-center font-medium text-brown-700"
               >
                 {DAY_NAMES_HE[d]}
               </th>
@@ -71,7 +71,7 @@ export function AvailabilitySummaryGrid({
             }
             return (
               <tr key={st}>
-                <td className="sticky start-0 z-10 whitespace-nowrap border border-slate-100 bg-white p-2 text-start align-top">
+                <td className="sticky start-0 z-10 whitespace-nowrap border border-cream-200 bg-white p-2 text-start align-top">
                   <div className="flex items-center gap-1.5">
                     <span
                       className={cn(
@@ -82,10 +82,10 @@ export function AvailabilitySummaryGrid({
                       )}
                     />
                     <div>
-                      <div className="font-medium text-slate-900">
+                      <div className="font-medium text-brown-900">
                         {def.labelHe}
                       </div>
-                      <div className="num text-[10px] text-slate-400">
+                      <div className="num text-[10px] text-brown-400">
                         {def.start}-{def.end}
                       </div>
                     </div>
@@ -99,13 +99,13 @@ export function AvailabilitySummaryGrid({
                     <td
                       key={d}
                       className={cn(
-                        "border border-slate-100 p-1.5 align-top",
-                        isClosed && "bg-slate-50",
+                        "border border-cream-200 p-1.5 align-top",
+                        isClosed && "bg-cream-50",
                         def.isClosing && !isClosed && "bg-amber-50/40",
                       )}
                     >
                       {isClosed ? (
-                        <div className="py-1 text-center text-[11px] text-slate-300">
+                        <div className="py-1 text-center text-[11px] text-brown-400">
                           סגור
                         </div>
                       ) : (
@@ -128,7 +128,7 @@ export function AvailabilitySummaryGrid({
                           )}
                           <div className="flex flex-wrap gap-1">
                             {cells.length === 0 ? (
-                              <span className="text-[11px] text-slate-300">
+                              <span className="text-[11px] text-brown-400">
                                 —
                               </span>
                             ) : (
@@ -143,7 +143,7 @@ export function AvailabilitySummaryGrid({
                                         ? "bg-kitchen-50 text-kitchen-500"
                                         : c.employeeRole === "floor"
                                           ? "bg-floor-50 text-floor-500"
-                                          : "bg-slate-100 text-slate-700",
+                                          : "bg-cream-100 text-brown-700",
                                   )}
                                   title={
                                     [

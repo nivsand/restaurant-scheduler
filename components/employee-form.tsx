@@ -62,7 +62,7 @@ export function EmployeeForm({
               {(["kitchen", "floor", "both"] as const).map((role) => (
                 <label
                   key={role}
-                  className="flex cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-700"
+                  className="flex cursor-pointer items-center justify-center rounded-lg border border-cream-200 bg-white px-3 py-2 text-sm font-medium has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-700"
                 >
                   <input
                     type="radio"
@@ -108,7 +108,7 @@ export function EmployeeForm({
 
       <Card>
         <CardBody className="space-y-3">
-          <h3 className="text-sm font-semibold text-slate-900">העדפות</h3>
+          <h3 className="text-sm font-semibold text-brown-900">העדפות</h3>
           <Toggle
             name="onlyMornings"
             label="רק משמרות בוקר"
@@ -192,15 +192,15 @@ function Toggle({
 }) {
   const isControlled = checked !== undefined;
   return (
-    <label className="flex cursor-pointer items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 px-3 py-2 hover:bg-slate-50">
-      <span className="text-sm text-slate-700">{label}</span>
+    <label className="flex cursor-pointer items-center justify-between rounded-lg border border-cream-200 bg-cream-50/50 px-3 py-2 hover:bg-cream-50">
+      <span className="text-sm text-brown-700">{label}</span>
       <input
         type="checkbox"
         name={name}
         {...(isControlled
           ? { checked, onChange: (e) => onChange?.(e.target.checked) }
           : { defaultChecked })}
-        className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-slate-200 transition-colors checked:bg-brand-500 relative before:absolute before:top-0.5 before:start-0.5 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition-transform checked:before:translate-x-[-1rem] rtl:checked:before:translate-x-4"
+        className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-warm-200 transition-colors checked:bg-brand-500 relative before:absolute before:top-0.5 before:start-0.5 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition-transform checked:before:translate-x-[-1rem] rtl:checked:before:translate-x-4"
       />
     </label>
   );

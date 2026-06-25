@@ -160,16 +160,16 @@ export default async function PrintSchedulePage({
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900 print:bg-white">
+    <main className="min-h-screen bg-white text-brown-900 print:bg-white">
       {isPdfMode && (
         <style dangerouslySetInnerHTML={{ __html: PDF_PAGE_ISOLATION_CSS }} />
       )}
       {/* Toolbar — hidden during print, hidden in captured PNG */}
-      <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 print:hidden" data-no-export>
+      <div className="border-b border-cream-200 bg-cream-50 px-4 py-3 print:hidden" data-no-export>
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-2">
           <Link
             href={`/schedule/${weekId}`}
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-brown-500 hover:text-brown-700"
           >
             ← חזרה לעריכה
           </Link>
@@ -180,10 +180,10 @@ export default async function PrintSchedulePage({
       <div className="mx-auto max-w-[1400px] p-6 print:p-3" dir="rtl">
         {/* Schedule area — PDF and PNG export this same visual grid. */}
         <div id="schedule-area" className="bg-white">
-          <div className="mb-3 flex items-end justify-between border-b-4 border-slate-300 pb-2">
+          <div className="mb-3 flex items-end justify-between border-b-4 border-brown-400 pb-2">
             <div>
               <h1 className="text-2xl font-bold">{week.restaurant.name}</h1>
-              <p className="mt-0.5 text-sm text-slate-600">
+              <p className="mt-0.5 text-sm text-brown-600">
                 סידור עבודה שבועי ·{" "}
                 <span className="num font-medium">
                   {formatWeekRange(week.weekStart)}
@@ -222,29 +222,29 @@ export default async function PrintSchedulePage({
           <h3 className="mb-2 text-sm font-bold">סיכום לפי עובד</h3>
           <table className="w-full border-collapse text-[11px]">
             <thead>
-              <tr className="bg-slate-100">
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+              <tr className="bg-cream-100">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   עובד
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   מבוקש
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   שובץ
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   בוקר
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   ערב
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   סגירות
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   סופ״ש
                 </th>
-                <th className="border-2 border-slate-400 px-2 py-1 text-center font-bold">
+                <th className="border-2 border-brown-400 px-2 py-1 text-center font-bold">
                   הערות
                 </th>
               </tr>
@@ -261,28 +261,28 @@ export default async function PrintSchedulePage({
                   if (c.noClosings && c.closings > 0) notes.push("סגירה למרות העדפה");
                   return (
                     <tr key={eid}>
-                      <td className="border border-slate-400 px-2 py-1 text-center font-medium">
+                      <td className="border border-brown-400 px-2 py-1 text-center font-medium">
                         {c.name}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num">
+                      <td className="border border-brown-400 px-2 py-1 text-center num">
                         {req != null ? req : "—"}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num font-semibold">
+                      <td className="border border-brown-400 px-2 py-1 text-center num font-semibold">
                         {c.total}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num">
+                      <td className="border border-brown-400 px-2 py-1 text-center num">
                         {c.mornings || "—"}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num">
+                      <td className="border border-brown-400 px-2 py-1 text-center num">
                         {c.evenings || "—"}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num">
+                      <td className="border border-brown-400 px-2 py-1 text-center num">
                         {c.closings || "—"}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-center num">
+                      <td className="border border-brown-400 px-2 py-1 text-center num">
                         {c.weekends || "—"}
                       </td>
-                      <td className="border border-slate-400 px-2 py-1 text-start text-[10px] text-slate-600">
+                      <td className="border border-brown-400 px-2 py-1 text-start text-[10px] text-brown-600">
                         {notes.length > 0 ? notes.join(" · ") : "—"}
                       </td>
                     </tr>
@@ -290,7 +290,7 @@ export default async function PrintSchedulePage({
                 })}
             </tbody>
           </table>
-          <div className="mt-3 text-[11px] text-slate-500">
+          <div className="mt-3 text-[11px] text-brown-500">
             <p>
               מקרא:
               <span className="ms-2 inline-block h-2.5 w-2.5 rounded bg-orange-200 align-middle" />{" "}
@@ -304,7 +304,7 @@ export default async function PrintSchedulePage({
               <span className="inline-block h-2.5 w-2.5 rounded bg-rose-200 align-middle" />{" "}
               סגור
             </p>
-            <p className="mt-2 text-[10px] text-slate-400">
+            <p className="mt-2 text-[10px] text-brown-400">
               נוצר:{" "}
               <span className="num">
                 {new Intl.DateTimeFormat("he-IL").format(new Date())}

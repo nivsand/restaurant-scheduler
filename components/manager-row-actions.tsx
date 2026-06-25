@@ -81,15 +81,15 @@ export function ManagerRowActions({
 
       {confirmingDelete && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-brown-900/60 p-4"
           onClick={() => setConfirmingDelete(false)}
         >
           <div
             className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="font-semibold text-slate-900">מחיקת משתמש</h4>
-            <p className="mt-2 text-sm text-slate-600">
+            <h4 className="font-semibold text-brown-900">מחיקת משתמש</h4>
+            <p className="mt-2 text-sm text-brown-600">
               הפעולה תמחק את חשבון המנהל/ת לצמיתות. אם ברצונך לשמור את היסטוריית
               הפעולות, השתמש/י ב״השבת״ במקום.
             </p>

@@ -134,14 +134,14 @@ export default async function ReviewPage({
         <div>
           <Link
             href={`/availability?week=${encodeURIComponent(formatWeekParam(week.weekStart))}`}
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-brown-500 hover:text-brown-700"
           >
             ← חזרה לקליטה
           </Link>
-          <h2 className="mt-1 text-2xl font-extrabold text-slate-900">
+          <h2 className="mt-1 text-2xl font-extrabold text-brown-900">
             סקירת זמינות
           </h2>
-          <p className="text-sm text-slate-500 num">
+          <p className="text-sm text-brown-500 num">
             {formatWeekRange(week.weekStart)}
           </p>
         </div>
@@ -172,7 +172,7 @@ export default async function ReviewPage({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>טבלת זמינות כללית</CardTitle>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-brown-500">
               שורות = משמרות · עמודות = ימים · תאים = עובדים זמינים
             </span>
           </CardHeader>
@@ -213,7 +213,7 @@ export default async function ReviewPage({
 
       {employeesWithData.length === 0 ? (
         <Card>
-          <CardBody className="py-12 text-center text-sm text-slate-500">
+          <CardBody className="py-12 text-center text-sm text-brown-500">
             עדיין אין נתוני זמינות לשבוע זה.
           </CardBody>
         </Card>
@@ -254,7 +254,7 @@ export default async function ReviewPage({
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div>
                     <CardTitle>{emp.name}</CardTitle>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-brown-500">
                       <Badge
                         tone={
                           emp.role === "kitchen"
@@ -350,10 +350,10 @@ export default async function ReviewPage({
                     />
                     {latest && (
                       <div className="lg:min-w-[200px]">
-                        <div className="mb-1 text-xs font-medium text-slate-500">
+                        <div className="mb-1 text-xs font-medium text-brown-500">
                           {latest.source === "form" ? "פירוט מהטופס" : "ההודעה המקורית"}
                         </div>
-                        <pre className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
+                        <pre className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-lg bg-cream-50 p-3 text-xs leading-relaxed text-brown-700">
                           {latest.content}
                         </pre>
                       </div>
@@ -376,8 +376,8 @@ export default async function ReviewPage({
         </div>
       )}
 
-      <div className="rounded-2xl bg-white p-4 text-xs text-slate-500 ring-1 ring-slate-100">
-        <div className="mb-2 font-medium text-slate-700">מקרא צבעים</div>
+      <div className="rounded-2xl bg-white p-4 text-xs text-brown-500 ring-1 ring-cream-200">
+        <div className="mb-2 font-medium text-brown-700">מקרא צבעים</div>
         <div className="flex flex-wrap gap-3">
           <Legend tone="bg-emerald-500" label="ביטחון גבוה (85%+)" />
           <Legend tone="bg-amber-400" label="ביטחון בינוני (60-85%)" />
@@ -402,15 +402,15 @@ function Stat({
   tone?: "success" | "danger";
 }) {
   return (
-    <div className="rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
-      <div className="text-xs text-slate-500">{label}</div>
+    <div className="rounded-2xl bg-white px-4 py-3 ring-1 ring-cream-200">
+      <div className="text-xs text-brown-500">{label}</div>
       <div
         className={`mt-1 text-xl font-bold ${
           tone === "danger"
             ? "text-rose-600"
             : tone === "success"
               ? "text-emerald-600"
-              : "text-slate-900"
+              : "text-brown-900"
         } num`}
       >
         {value}

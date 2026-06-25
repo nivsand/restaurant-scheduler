@@ -14,8 +14,11 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
 
   function openPrint(auto: "png") {
     setError(null);
-    const url = `/schedule/${weekId}/print?auto=${auto}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(`/schedule/${weekId}/print?auto=${auto}`, "_blank", "noopener,noreferrer");
+  }
+
+  function openWaProfile() {
+    window.open(`/schedule/${weekId}/print/whatsapp?auto=wa-profile`, "_blank", "noopener,noreferrer");
   }
 
   async function downloadFallbackImage() {
@@ -128,14 +131,14 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+    <div className="rounded-2xl border border-cream-200 bg-white p-3 sm:p-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-base">📤</span>
-        <h3 className="text-sm font-semibold text-slate-900">
+        <h3 className="text-sm font-semibold text-brown-900">
           ייצוא ושיתוף
         </h3>
       </div>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Button
           onClick={downloadPdf}
           variant="secondary"
@@ -151,7 +154,16 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
           className="justify-start"
         >
           <span className="text-base">🖼</span>
-          <span>תמונה ל-WhatsApp</span>
+          <span>תמונה רגילה</span>
+        </Button>
+        <Button
+          onClick={openWaProfile}
+          variant="secondary"
+          className="justify-start"
+          title="פותח עמוד ייצוא מיוחד עם פונט גדול לפרופיל קבוצת WhatsApp"
+        >
+          <span className="text-base">📸</span>
+          <span>פרופיל WhatsApp</span>
         </Button>
         <Button
           onClick={downloadExcel}
@@ -168,8 +180,8 @@ export function ScheduleExportRow({ weekId }: { weekId: string }) {
           {error}
         </div>
       )}
-      <p className="mt-2 text-[11px] text-slate-400">
-        ה-PDF נוצר מהתצוגה המעוצבת; התמונה נפתחת בלשונית נקייה.
+      <p className="mt-2 text-[11px] text-brown-400">
+        &quot;פרופיל WhatsApp&quot; — תמונה מרובעת ברזולוציה גבוהה, מתאימה לתמונת קבוצה.
       </p>
     </div>
   );

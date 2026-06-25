@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design 3C — Warm Sunset + Mobile-First</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/*
+  3C: WARM SUNSET + MOBILE-FIRST
+  Coral-pink primary, warm amber secondary, creamy backgrounds.
+  Mobile-first bottom navigation bar. Elevated shadow cards with warm tones.
+  Progress indicators on employee form. Feels like a friendly mobile app.
+  Optimized for phone screens with thumb-zone bottom nav.
+*/
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --coral:#F43F5E;--coral-dark:#E11D48;--coral-light:#FB7185;--coral-bg:#FFF1F2;--coral-bg2:#FFE4E6;
+  --amber:#F59E0B;--amber-dark:#D97706;--amber-light:#FCD34D;--amber-bg:#FFFBEB;--amber-bg2:#FEF3C7;
+  --pink:#EC4899;--pink-bg:#FDF2F8;
+  --green:#10B981;--green-bg:#D1FAE5;
+  --cream:#FFFAF5;--warm-white:#FFFCFA;
+  --white:#FFFFFF;--gray-50:#FAF9F7;--gray-100:#F5F4F2;--gray-200:#E8E5E0;
+  --gray-300:#D6D1CA;--gray-400:#A89E94;--gray-500:#78716C;--gray-600:#57534E;
+  --gray-700:#44403C;--gray-900:#1C1917;
+  --shadow:0 2px 8px rgba(28,25,23,.06);--shadow-md:0 4px 16px rgba(28,25,23,.08);
+  --shadow-lg:0 12px 40px rgba(28,25,23,.12);--shadow-warm:0 4px 16px rgba(244,63,94,.12)
+}
+body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--gray-900);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.design-notes{background:linear-gradient(135deg,#E11D48,#F43F5E,#FB923C);color:white;padding:28px;text-align:center;font-size:13px}
+.design-notes h2{font-size:20px;margin-bottom:6px}
+.design-notes p{max-width:560px;margin:0 auto;opacity:.9}
+.section-label{background:var(--gray-900);color:var(--coral-light);text-align:center;padding:12px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+
+/* LOGIN */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,var(--coral-bg) 0%,var(--amber-bg) 40%,var(--pink-bg) 100%)}
+.login-card{width:100%;max-width:420px;background:var(--white);border-radius:28px;padding:44px 32px;box-shadow:var(--shadow-lg)}
+.login-brand{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.login-logo{width:54px;height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;color:white;font-size:26px;box-shadow:var(--shadow-warm)}
+.login-logo.coral{background:linear-gradient(135deg,var(--coral),var(--coral-dark))}
+.login-logo.amber{background:linear-gradient(135deg,var(--amber),var(--amber-dark))}
+.login-card h1{font-size:26px;font-weight:900;color:var(--gray-900)}
+.login-card .subtitle{font-size:14px;color:var(--gray-500)}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+.form-group input{width:100%;padding:14px 16px;border:2px solid var(--gray-200);border-radius:16px;font-size:15px;font-family:'Heebo',sans-serif;background:var(--cream);color:var(--gray-900);direction:ltr;text-align:left;transition:all .2s}
+.form-group input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 4px rgba(244,63,94,.1);background:white}
+.btn-primary{width:100%;padding:14px;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s;margin-top:4px;color:white}
+.btn-coral{background:linear-gradient(135deg,var(--coral),var(--coral-dark));box-shadow:0 4px 16px rgba(244,63,94,.3)}
+.btn-coral:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(244,63,94,.4)}
+.btn-amber{background:linear-gradient(135deg,var(--amber),var(--amber-dark));box-shadow:0 4px 16px rgba(245,158,11,.3)}
+.error-msg{background:var(--coral-bg);color:var(--coral-dark);padding:10px 14px;border-radius:12px;font-size:13px;border:1px solid var(--coral-bg2)}
+
+/* APP SHELL — BOTTOM NAV FOR MOBILE */
+.app-shell{min-height:100vh;background:var(--cream);display:flex;flex-direction:column}
+.app-topbar{height:56px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.app-topbar-brand{display:flex;align-items:center;gap:10px}
+.app-topbar-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--coral),var(--coral-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:white}
+.app-topbar-text{font-size:14px;font-weight:700;color:var(--gray-900)}
+.app-topbar-sub{font-size:11px;color:var(--gray-400)}
+.app-topbar-user{display:flex;align-items:center;gap:8px}
+.app-topbar-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--amber),var(--amber-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700}
+.btn-ghost{padding:6px 10px;background:transparent;border:none;border-radius:8px;font-size:12px;font-family:'Heebo',sans-serif;color:var(--gray-500);cursor:pointer}
+
+.main-content{flex:1;max-width:1100px;margin:0 auto;padding:24px 20px;width:100%}
+
+/* BOTTOM NAV */
+.bottom-nav{position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--gray-200);display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));box-shadow:0 -2px 8px rgba(0,0,0,.04);z-index:100}
+.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-size:10px;font-weight:500;color:var(--gray-400);padding:4px 12px;border-radius:8px;transition:color .15s}
+.bottom-nav a .nav-icon{font-size:20px}
+.bottom-nav a.active{color:var(--coral)}
+.bottom-nav a:hover{color:var(--coral-light)}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:20px;box-shadow:var(--shadow-md);overflow:hidden}
+.card-header{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:17px;font-weight:700;color:var(--gray-900)}
+.card-body{padding:14px 22px 22px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px}
+@media(min-width:768px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:var(--white);border-radius:20px;padding:22px;text-align:center;box-shadow:var(--shadow-md);position:relative;overflow:hidden;transition:transform .15s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px}
+.stat-card:nth-child(1)::after{background:var(--coral)}
+.stat-card:nth-child(2)::after{background:var(--amber)}
+.stat-card:nth-child(3)::after{background:var(--pink)}
+.stat-card:nth-child(4)::after{background:var(--green)}
+.stat-emoji{font-size:30px;margin-bottom:8px}
+.stat-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px}
+.stat-value{font-size:32px;font-weight:900;color:var(--gray-900)}
+.stat-hint{font-size:11px;color:var(--gray-400);margin-top:4px}
+
+.step-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-radius:16px;margin-bottom:10px;background:var(--cream);transition:background .15s}
+.step-item:hover{background:var(--coral-bg)}
+.step-check{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.step-check.done{background:linear-gradient(135deg,var(--green),#059669);color:white;box-shadow:0 2px 8px rgba(16,185,129,.25)}
+.step-check.pending{border:2px dashed var(--gray-300);color:var(--gray-400)}
+.step-text{flex:1;font-size:14px;color:var(--gray-700)}
+.btn-sm{padding:7px 16px;background:var(--coral-bg);border:none;border-radius:12px;font-size:13px;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--coral-dark);font-weight:600;white-space:nowrap}
+.btn-sm:hover{background:var(--coral-bg2)}
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-success{background:var(--green-bg);color:#065F46}
+.badge-warning{background:var(--amber-bg);color:#92400E}
+.badge-danger{background:var(--coral-bg);color:var(--coral-dark)}
+
+/* EMPLOYEE — PROGRESS BAR */
+.employee-page{min-height:100vh;background:linear-gradient(180deg,var(--coral) 0%,var(--coral-bg) 200px,var(--cream) 350px)}
+.employee-container{max-width:480px;margin:0 auto;padding:16px}
+.employee-header{padding:28px 8px 20px;color:white}
+.employee-header .rest-name{font-size:13px;opacity:.8}
+.employee-header h1{font-size:26px;font-weight:900;margin-top:6px}
+.employee-header .week-info{font-size:14px;opacity:.9;margin-top:6px}
+
+/* PROGRESS */
+.progress-bar{background:var(--white);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow-md)}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:8px}
+.progress-track{height:10px;background:var(--gray-100);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--amber));border-radius:5px;transition:width .4s}
+.progress-hint{font-size:11px;color:var(--gray-400);margin-top:6px;text-align:center}
+
+.week-nav{display:flex;align-items:center;justify-content:space-between;background:var(--white);border-radius:14px;padding:10px 16px;margin-bottom:14px;font-size:13px;box-shadow:var(--shadow)}
+.week-nav a{color:var(--coral);text-decoration:none;font-weight:600}
+.week-nav .current{font-size:12px;color:var(--gray-400)}
+
+.day-section{background:var(--white);border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-md)}
+.day-header{padding:14px 18px;font-weight:700;font-size:15px;color:var(--gray-900);display:flex;align-items:center;gap:8px}
+.day-dot{width:10px;height:10px;border-radius:50%;background:var(--coral)}
+.day-header.weekend .day-dot{background:var(--amber)}
+.shift-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--gray-100)}
+.shift-info{display:flex;align-items:center;gap:12px}
+.shift-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.shift-icon.morning{background:var(--amber-bg2)}
+.shift-icon.evening{background:var(--pink-bg)}
+.shift-icon.closing{background:#E0E7FF}
+.shift-name{font-size:14px;color:var(--gray-900);font-weight:600}
+.shift-time{font-size:12px;color:var(--gray-400)}
+.toggle{width:52px;height:30px;background:var(--gray-200);border-radius:15px;position:relative;cursor:pointer;transition:background .2s}
+.toggle.active{background:var(--coral)}
+.toggle::after{content:'';position:absolute;top:3px;right:3px;width:24px;height:24px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.toggle.active::after{transform:translateX(-22px)}
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--coral),var(--coral-dark));color:white;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;margin-top:16px;box-shadow:0 4px 20px rgba(244,63,94,.3);display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* SCHEDULE */
+.mini-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+@media(min-width:768px){.mini-stats{grid-template-columns:repeat(4,1fr)}}
+.mini-stat{background:var(--white);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--shadow)}
+.mini-stat-label{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px}
+.mini-stat-value{font-size:24px;font-weight:800;margin-top:4px;color:var(--gray-900)}
+.text-success{color:var(--green)}
+.text-danger{color:var(--coral)}
+.schedule-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--white);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-md)}
+.schedule-table th{background:linear-gradient(135deg,var(--coral),var(--coral-dark));color:white;padding:14px 12px;font-size:13px;font-weight:600;text-align:center}
+.schedule-table td{padding:10px 8px;font-size:12px;text-align:center;border-bottom:1px solid var(--gray-100);border-left:1px solid var(--gray-100)}
+.schedule-table td:last-child{border-left:none}
+.schedule-table tr:last-child td{border-bottom:none}
+.schedule-table tr:hover td{background:var(--coral-bg)}
+.schedule-table .shift-label{font-weight:700;color:var(--gray-700);text-align:right;background:var(--cream);font-size:12px;white-space:nowrap}
+.emp-chip{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;margin:2px;white-space:nowrap;font-weight:500}
+.emp-chip.kitchen{background:var(--amber-bg);color:#92400E;border:1px solid var(--amber-light)}
+.emp-chip.floor{background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7}
+.empty-slot{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:2px dashed var(--coral-light);border-radius:50%;margin:2px;color:var(--coral);font-size:14px}
+
+@media(max-width:768px){.schedule-table th,.schedule-table td{padding:8px 4px;font-size:10px}.emp-chip{font-size:10px;padding:2px 6px}}
+</style>
+</head>
+<body>
+
+<div class="design-notes">
+  <h2>3C: Warm Sunset + Mobile-First</h2>
+  <p>Coral pink + amber sunset palette. Bottom navigation bar for thumb-zone access. Progress bar on availability form shows completion. Larger touch targets, rounder cards. Feels like a native mobile app.</p>
+</div>
+
+<!-- 1. MANAGER LOGIN -->
+<div class="section-label">1. Manager Login</div>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-logo coral">📋</div>
+      <div><h1>סידור משמרות</h1><p class="subtitle">התחברות מנהל</p></div>
+    </div>
+    <form onsubmit="return false">
+      <div class="form-group"><label>דוא״ל</label><input type="email" placeholder="manager@restaurant.com"></div>
+      <div class="form-group"><label>סיסמה</label><input type="password" placeholder="••••••••"></div>
+      <div class="error-msg" style="margin-bottom:16px">דוא״ל או סיסמה שגויים</div>
+      <button class="btn-primary btn-coral">התחבר</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. EMPLOYEE LOGIN -->
+<div class="section-label">2. Employee Login</div>
+<div class="login-page" style="background:linear-gradient(160deg,var(--amber-bg) 0%,var(--coral-bg) 50%,var(--pink-bg) 100%)">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-logo amber">✏️</div>
+      <div><h1>הגשת זמינות</h1><p class="subtitle">התחברות עובד</p></div>
+    </div>
+    <form onsubmit="return false">
+      <div class="form-group"><label>אימייל / שם משתמש</label><input type="text" placeholder="your@email.com"></div>
+      <div class="form-group"><label>סיסמה</label><input type="password" placeholder="••••••••"></div>
+      <button class="btn-primary btn-amber">התחבר</button>
+    </form>
+  </div>
+</div>
+
+<!-- 3. EMPLOYEE AVAILABILITY -->
+<div class="section-label">3. Employee Availability</div>
+<div class="employee-page">
+  <div class="employee-container">
+    <div class="employee-header">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="rest-name">הבר של יוסי</span>
+        <button class="btn-ghost" style="color:rgba(255,255,255,.7);font-size:12px">התנתק</button>
+      </div>
+      <h1>שלום נועה 👋</h1>
+      <p class="week-info">הגישו זמינות לשבוע 22.06 – 28.06</p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-label"><span>התקדמות מילוי</span><span>5 / 14 משמרות</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:36%"></div></div>
+      <div class="progress-hint">סמנו את כל המשמרות שאתם זמינים אליהן</div>
+    </div>
+
+    <div class="week-nav">
+      <a href="#">← שבוע קודם</a>
+      <span class="current">22.06 – 28.06</span>
+      <a href="#">שבוע הבא →</a>
+    </div>
+
+    <div style="background:var(--white);border-radius:14px;padding:10px 16px;margin-bottom:14px;font-size:13px;color:var(--gray-600);display:flex;align-items:center;gap:8px;box-shadow:var(--shadow)">
+      <span style="font-size:16px">🍽️</span> תפקיד שלך: <strong>פלור</strong> — תוצגנה רק משמרות הרלוונטיות לך
+    </div>
+
+    <div class="day-section">
+      <div class="day-header"><span class="day-dot"></span> ראשון 22.06</div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon morning">☀️</div><div><div class="shift-name">בוקר פלור</div><div class="shift-time">07:00 – 15:00</div></div></div><div class="toggle active"></div></div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon evening">🌙</div><div><div class="shift-name">ערב פלור</div><div class="shift-time">15:00 – 23:00</div></div></div><div class="toggle"></div></div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon closing">🔒</div><div><div class="shift-name">סגירה פלור</div><div class="shift-time">18:00 – 02:00</div></div></div><div class="toggle active"></div></div>
+    </div>
+    <div class="day-section">
+      <div class="day-header"><span class="day-dot"></span> שני 23.06</div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon morning">☀️</div><div><div class="shift-name">בוקר פלור</div><div class="shift-time">07:00 – 15:00</div></div></div><div class="toggle"></div></div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon evening">🌙</div><div><div class="shift-name">ערב פלור</div><div class="shift-time">15:00 – 23:00</div></div></div><div class="toggle active"></div></div>
+    </div>
+    <div class="day-section">
+      <div class="day-header weekend"><span class="day-dot"></span> שישי 27.06</div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon morning">☀️</div><div><div class="shift-name">בוקר פלור</div><div class="shift-time">07:00 – 15:00</div></div></div><div class="toggle active"></div></div>
+      <div class="shift-row"><div class="shift-info"><div class="shift-icon evening">🌙</div><div><div class="shift-name">ערב פלור</div><div class="shift-time">15:00 – 23:00</div></div></div><div class="toggle active"></div></div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label style="font-size:14px;font-weight:600;color:var(--gray-700)">💬 הערות לשבוע</label>
+      <textarea style="width:100%;padding:12px 16px;border:2px solid var(--gray-200);border-radius:16px;font-size:14px;font-family:'Heebo',sans-serif;min-height:80px;background:var(--cream);resize:vertical" placeholder="למשל: ביום רביעי אני יכולה רק עד 22:00"></textarea>
+    </div>
+    <button class="btn-submit">✅ שלח זמינות</button>
+    <p style="text-align:center;font-size:12px;color:var(--gray-400);margin-top:18px">בעיה? פנו למנהל/ת המשמרת</p>
+  </div>
+</div>
+
+<!-- 4. WEEKLY SCHEDULE -->
+<div class="section-label">4. Weekly Schedule</div>
+<div class="app-shell">
+  <div class="app-topbar">
+    <div class="app-topbar-brand"><div class="app-topbar-icon">📋</div><div><div class="app-topbar-text">סידור משמרות</div><div class="app-topbar-sub">הבר של יוסי</div></div></div>
+    <div class="app-topbar-user"><span style="font-size:13px;color:var(--gray-700);font-weight:600">דני</span><div class="app-topbar-avatar">ד</div></div>
+  </div>
+  <div class="main-content">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px">
+      <div>
+        <h2 style="font-size:22px;font-weight:900;display:flex;align-items:center;gap:8px">סידור שבועי <span class="badge badge-warning">טיוטה</span></h2>
+        <div style="font-size:13px;color:var(--gray-500)">22.06 – 28.06</div>
+      </div>
+      <button class="btn-sm" style="font-size:13px;padding:8px 16px">📄 הדפסה / ייצוא</button>
+    </div>
+    <div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-label">סה״כ משבצות</div><div class="mini-stat-value">42</div></div>
+      <div class="mini-stat"><div class="mini-stat-label">מאויש</div><div class="mini-stat-value text-success">38/42</div></div>
+      <div class="mini-stat"><div class="mini-stat-label">ריק</div><div class="mini-stat-value text-danger">4</div></div>
+      <div class="mini-stat"><div class="mini-stat-label">נעול ידנית</div><div class="mini-stat-value">6</div></div>
+    </div>
+    <table class="schedule-table">
+      <thead><tr><th>משמרת</th><th>ראשון</th><th>שני</th><th>שלישי</th><th>רביעי</th><th>חמישי</th><th>שישי</th><th>שבת</th></tr></thead>
+      <tbody>
+        <tr><td class="shift-label">☀️ בוקר מטבח</td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">אלון</span><span class="emp-chip kitchen">מיכל</span></td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">אלון</span><span class="emp-chip kitchen">מיכל</span></td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">אלון</span></td><td><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">מיכל</span></td></tr>
+        <tr><td class="shift-label">☀️ בוקר פלור</td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">שירה</span><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">שירה</span><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">שירה</span></td><td><span class="emp-chip floor">טל</span><span class="empty-slot">+</span></td><td><span class="emp-chip floor">עמית</span><span class="empty-slot">+</span></td></tr>
+        <tr><td class="shift-label">🌙 ערב מטבח</td><td><span class="emp-chip kitchen">מיכל</span><span class="emp-chip kitchen">אלון</span></td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">אלון</span><span class="emp-chip kitchen">מיכל</span></td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">מיכל</span><span class="emp-chip kitchen">אלון</span></td><td><span class="emp-chip kitchen">יוסי</span><span class="emp-chip kitchen">דנה</span></td><td><span class="emp-chip kitchen">אלון</span><span class="empty-slot">+</span></td></tr>
+        <tr><td class="shift-label">🌙 ערב פלור</td><td><span class="emp-chip floor">שירה</span><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">שירה</span><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">שירה</span><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">שירה</span><span class="empty-slot">+</span></td></tr>
+        <tr><td class="shift-label">🔒 סגירה פלור</td><td><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span></td><td><span class="emp-chip floor">שירה</span></td><td><span class="emp-chip floor">טל</span></td><td><span class="emp-chip floor">עמית</span></td><td><span class="emp-chip floor">נועה</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <nav class="bottom-nav">
+    <a href="#"><span class="nav-icon">📊</span>בקרה</a>
+    <a href="#"><span class="nav-icon">👥</span>עובדים</a>
+    <a href="#"><span class="nav-icon">📅</span>זמינות</a>
+    <a href="#" class="active"><span class="nav-icon">🗓️</span>סידור</a>
+    <a href="#"><span class="nav-icon">⚙️</span>הגדרות</a>
+  </nav>
+</div>
+
+<!-- 5. DASHBOARD -->
+<div class="section-label">5. Manager Dashboard</div>
+<div class="app-shell">
+  <div class="app-topbar">
+    <div class="app-topbar-brand"><div class="app-topbar-icon">📋</div><div><div class="app-topbar-text">סידור משמרות</div><div class="app-topbar-sub">הבר של יוסי</div></div></div>
+    <div class="app-topbar-user"><span style="font-size:13px;color:var(--gray-700);font-weight:600">דני</span><div class="app-topbar-avatar">ד</div></div>
+  </div>
+  <div class="main-content">
+    <div style="margin-bottom:22px"><h2 style="font-size:24px;font-weight:900">שלום, דני 👋</h2><p style="font-size:13px;color:var(--gray-500)">לוח בקרה · הבר של יוסי</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-emoji">👥</div><div class="stat-label">עובדים פעילים</div><div class="stat-value">8</div><div class="stat-hint">ניהול עובדים</div></div>
+      <div class="stat-card"><div class="stat-emoji">📐</div><div class="stat-label">משבצות בתבנית</div><div class="stat-value">42</div><div class="stat-hint">ערוך תבנית</div></div>
+      <div class="stat-card"><div class="stat-emoji">⏰</div><div class="stat-label">שעות מנוחה מינ׳</div><div class="stat-value">10</div><div class="stat-hint">בין משמרת לשניה</div></div>
+      <div class="stat-card"><div class="stat-emoji">📅</div><div class="stat-label">סטטוס</div><div class="stat-value">פעיל</div><div class="stat-hint">מאושר</div></div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><div class="card-title">צעדים ראשונים</div></div>
+      <div class="card-body">
+        <div class="step-item"><div style="display:flex;align-items:center;gap:12px"><div class="step-check done">✓</div><span class="step-text">הוספת עובדים ותפקיד</span></div><button class="btn-sm">ניהול עובדים</button></div>
+        <div class="step-item"><div style="display:flex;align-items:center;gap:12px"><div class="step-check done">✓</div><span class="step-text">הגדרת תבנית משמרות שבועית</span></div><button class="btn-sm">פתח תבנית</button></div>
+        <div class="step-item"><div style="display:flex;align-items:center;gap:12px"><div class="step-check done">✓</div><span class="step-text">קליטת זמינות עובדים</span></div><button class="btn-sm">קלוט זמינות</button></div>
+        <div class="step-item"><div style="display:flex;align-items:center;gap:12px"><div class="step-check pending"></div><span class="step-text">יצירת סידור אוטומטי</span></div><button class="btn-sm">פתח סידור</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">היסטוריית שבועות</div></div>
+      <div class="card-body"><p style="font-size:13px;color:var(--gray-600)">השבוע האחרון: 22.06.2026 · סטטוס: <span class="badge badge-success">מאושר</span></p></div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <a href="#" class="active"><span class="nav-icon">📊</span>בקרה</a>
+    <a href="#"><span class="nav-icon">👥</span>עובדים</a>
+    <a href="#"><span class="nav-icon">📅</span>זמינות</a>
+    <a href="#"><span class="nav-icon">🗓️</span>סידור</a>
+    <a href="#"><span class="nav-icon">⚙️</span>הגדרות</a>
+  </nav>
+</div>
+
+</body>
+</html>

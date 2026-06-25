@@ -24,7 +24,7 @@ export async function ShareFormCard({
         <CardTitle>{label ?? "קישור אישי לטופס זמינות"}</CardTitle>
       </CardHeader>
       <CardBody className="space-y-4">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-brown-500">
           העובד פותח את הקישור, ממלא משמרות, ושולח. אין צורך בסיסמה.
         </p>
 
@@ -61,8 +61,8 @@ export async function ShareFormCard({
         )}
 
         {!publicUrl && (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-            <div className="mb-1 font-semibold text-slate-900">
+          <div className="rounded-xl border border-cream-200 bg-cream-50 p-3 text-xs text-brown-600">
+            <div className="mb-1 font-semibold text-brown-900">
               איך להפעיל את הקישור עבור כולם?
             </div>
             <ul className="list-disc space-y-0.5 ps-5">
@@ -124,8 +124,8 @@ function Section({
         : "border-brand-200 bg-brand-50/40";
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
-      <div className="text-sm font-semibold text-slate-900">{title}</div>
-      <p className="mb-2 text-xs text-slate-600">{description}</p>
+      <div className="text-sm font-semibold text-brown-900">{title}</div>
+      <p className="mb-2 text-xs text-brown-600">{description}</p>
       {children}
     </div>
   );

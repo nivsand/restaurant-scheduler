@@ -78,7 +78,9 @@
       "Bash(/usr/bin/curl -s -o /dev/null -w \"%{http_code}\" \"https://restaurant-scheduler.vercel.app/login\")",
       "Bash(/usr/bin/curl -s -L -o /dev/null -w \"%{http_code}\" \"https://restaurant-scheduler-5p0yirxcb-niv-s-projects3.vercel.app/login\")",
       "Bash(rtk npm *)",
-      "Bash(rtk next *)"
+      "Bash(rtk next *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(node_modules/.bin/next build *)"
     ]
   }
 }

@@ -11,7 +11,7 @@ export function CopyableLink({ url }: { url: string }) {
         value={url}
         dir="ltr"
         onFocus={(e) => e.currentTarget.select()}
-        className="h-9 flex-1 truncate rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700 text-start"
+        className="h-9 flex-1 truncate rounded-lg border border-cream-200 bg-white px-2 text-xs text-brown-700 text-start"
       />
       <button
         type="button"
@@ -24,7 +24,7 @@ export function CopyableLink({ url }: { url: string }) {
             /* clipboard blocked — manager can still select-and-copy */
           }
         }}
-        className="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50"
+        className="inline-flex h-9 items-center rounded-lg border border-cream-200 bg-white px-3 text-xs font-medium text-brown-700 hover:bg-cream-50"
       >
         {copied ? "הועתק ✓" : "העתק"}
       </button>

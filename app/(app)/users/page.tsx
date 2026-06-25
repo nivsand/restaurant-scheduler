@@ -27,8 +27,8 @@ export default async function UsersPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">ניהול משתמשים</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-extrabold text-brown-900">ניהול משתמשים</h2>
+        <p className="text-sm text-brown-500">
           הוספה, עריכה, השבתה ומחיקה של מנהלים בחשבון
         </p>
       </div>
@@ -36,8 +36,8 @@ export default async function UsersPage() {
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-slate-500">
+            <thead className="bg-cream-50">
+              <tr className="text-brown-500">
                 <th className="px-5 py-3 text-start font-medium">שם</th>
                 <th className="px-5 py-3 text-start font-medium">דוא״ל</th>
                 <th className="px-5 py-3 text-start font-medium">הרשאה</th>
@@ -45,20 +45,20 @@ export default async function UsersPage() {
                 <th className="px-5 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-cream-200">
               {managers.map((m) => {
                 const isSelf = m.id === caller.id;
                 return (
-                  <tr key={m.id} className="hover:bg-slate-50">
-                    <td className="px-5 py-3 font-medium text-slate-900">
+                  <tr key={m.id} className="hover:bg-cream-50">
+                    <td className="px-5 py-3 font-medium text-brown-900">
                       {m.name}
                       {isSelf && (
-                        <span className="ms-1 text-xs text-slate-400">
+                        <span className="ms-1 text-xs text-brown-400">
                           (את/ה)
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-slate-600" dir="ltr">
+                    <td className="px-5 py-3 text-brown-600" dir="ltr">
                       <span className="num">{m.email}</span>
                     </td>
                     <td className="px-5 py-3">
@@ -125,15 +125,15 @@ export default async function UsersPage() {
                 dir="ltr"
                 className="text-start"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-brown-500">
                 8 תווים לפחות. המנהל/ת יוכל/תוכל לשנות בהמשך ב״הגדרות״.
               </p>
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2 text-sm text-brown-700">
               <input
                 type="checkbox"
                 name="isAdmin"
-                className="h-4 w-4 rounded border-slate-300"
+                className="h-4 w-4 rounded border-brown-400"
               />
               הרשאת מנהל-על (גישה לניהול משתמשים)
             </label>

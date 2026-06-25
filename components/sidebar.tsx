@@ -47,6 +47,11 @@ const items: NavItemWithGate[] = [
     icon: <PrintIcon />,
   },
   {
+    href: "/analytics",
+    label: "אנליטיקס",
+    icon: <AnalyticsIcon />,
+  },
+  {
     href: "/users",
     label: "ניהול משתמשים",
     icon: <UserCogIcon />,
@@ -69,20 +74,20 @@ export function Sidebar({
   const pathname = usePathname();
   const visibleItems = items.filter((item) => !item.adminOnly || isAdmin);
   return (
-    <aside className="hidden w-64 shrink-0 border-s border-navy-700/30 bg-navy md:flex md:flex-col">
+    <aside className="hidden w-64 shrink-0 border-s border-brown-700/20 bg-navy md:flex md:flex-col">
       <div className="px-5 py-6">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-md shadow-brand-500/30">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-terracotta text-white shadow-md shadow-brand-500/30">
             <ScheduleIcon />
           </span>
           <div>
             <div className="text-sm font-bold text-white">סידור משמרות</div>
-            <div className="text-xs text-slate-400">{restaurantName || ""}</div>
+            <div className="text-xs text-brown-400">{restaurantName || ""}</div>
           </div>
         </div>
       </div>
       <div className="px-4 pb-1">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">ניווט</div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-brown-400">ניווט</div>
       </div>
       <nav className="flex-1 px-3 pb-6">
         {visibleItems.map((item) => {
@@ -102,7 +107,7 @@ export function Sidebar({
                 <span
                   className={cn(
                     "transition-colors",
-                    active ? "text-brand-400" : "text-slate-400",
+                    active ? "text-brand-400" : "text-brown-400",
                   )}
                 >
                   {item.icon}
@@ -110,7 +115,7 @@ export function Sidebar({
                 {item.label}
               </span>
               {item.comingSoon && (
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-brown-400">
                   בקרוב
                 </span>
               )}
@@ -181,6 +186,16 @@ function UserCogIcon() {
       <circle cx="10" cy="7" r="4" />
       <circle cx="18" cy="15" r="3" />
       <path d="M18 11.5v1M18 17.5v1M21 13.2l-.9.5M15.9 16.3l-.9.5M21 16.8l-.9-.5M15.9 13.7l-.9-.5" />
+    </svg>
+  );
+}
+function AnalyticsIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18" />
+      <path d="M18 17V9" />
+      <path d="M13 17V5" />
+      <path d="M8 17v-3" />
     </svg>
   );
 }

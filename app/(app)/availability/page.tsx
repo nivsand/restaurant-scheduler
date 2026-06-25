@@ -14,6 +14,7 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { roleBadge } from "@/lib/role-labels";
 
 export default async function AvailabilityPage({
   searchParams,
@@ -48,17 +49,121 @@ export default async function AvailabilityPage({
     summary.set(r.employeeId, { rows: cur.rows + 1, conf: cur.conf + r.confidence });
   }
 
+  // Per-employee availability status
+  const employeesWithAvailability = new Set(
+    parsedRows
+      .filter((r) => r.shiftType !== WEEK_NOTE_SHIFT_TYPE)
+      .map((r) => r.employeeId),
+  );
+
+  const submittedCount = employees.filter((e) =>
+    employeesWithAvailability.has(e.id),
+  ).length;
+  const missingCount = employees.length - submittedCount;
+  const missingEmployees = employees.filter(
+    (e) => !employeesWithAvailability.has(e.id),
+  );
+
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">זמינות עובדים</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-extrabold text-brown-900">זמינות עובדים</h2>
+        <p className="text-sm text-brown-500">
           קליטת הודעות זמינות לשבוע{" "}
           <span className="num">{formatWeekRange(weekStart)}</span>
         </p>
       </div>
 
       <WeekPicker weekStart={weekStart} basePath="/availability" />
+
+      {/* Availability status summary */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>סטטוס הגשת זמינות</CardTitle>
+          <div className="flex items-center gap-2">
+            <Badge tone="success">{submittedCount} הגישו</Badge>
+            {missingCount > 0 && (
+              <Badge tone="danger">{missingCount} חסרים</Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="mb-3">
+            <div className="flex items-center gap-3">
+              <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-cream-200">
+                <div
+                  className="h-full rounded-full bg-brand-500 transition-all"
+                  style={{
+                    width: employees.length > 0
+                      ? `${(submittedCount / employees.length) * 100}%`
+                      : "0%",
+                  }}
+                />
+              </div>
+              <span className="text-sm font-bold text-brown-700 num">
+                {submittedCount}/{employees.length}
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            {employees.map((e) => {
+              const submitted = employeesWithAvailability.has(e.id);
+              return (
+                <div
+                  key={e.id}
+                  className="flex items-center justify-between rounded-lg border border-cream-200 px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-brown-800">
+                      {e.name}
+                    </span>
+                    <span className="text-[11px] text-brown-400">
+                      {roleBadge(e.role)}
+                    </span>
+                  </div>
+                  {submitted ? (
+                    <Badge tone="success">✅ הוגש</Badge>
+                  ) : (
+                    <Badge tone="danger">❌ חסר</Badge>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* Chase missing employees */}
+      {missingEmployees.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50/40">
+          <CardHeader>
+            <CardTitle className="text-amber-900">
+              📞 {missingEmployees.length} עובדים טרם הגישו זמינות
+            </CardTitle>
+          </CardHeader>
+          <CardBody>
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {missingEmployees.map((e) => (
+                <div
+                  key={e.id}
+                  className="flex items-center justify-between rounded-lg border border-amber-200 bg-white px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-brown-900">{e.name}</span>
+                    <span className="text-[11px] text-brown-400">{roleBadge(e.role)}</span>
+                  </div>
+                  <Link href={`/employees/${e.id}`} className="text-xs text-brand-600 hover:underline">
+                    קישור →
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-amber-700">
+              לחץ על &quot;קישור&quot; לצפייה בדף העובד ושליחת הקישור האישי שלהם.
+            </p>
+          </CardBody>
+        </Card>
+      )}
 
       <PasteIngest
         weekStart={formatWeekParam(weekStart)}
@@ -84,7 +189,7 @@ export default async function AvailabilityPage({
           </CardHeader>
           <CardBody>
             {submissions.length === 0 ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-brown-500">
                 טרם נקלטו הגשות. הדבק/י הודעות למעלה או שלח/י קישור אישי לעובד.
               </p>
             ) : (
@@ -105,13 +210,20 @@ export default async function AvailabilityPage({
                     return (
                       <li
                         key={s.id}
-                        className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2"
+                        className="flex items-center justify-between rounded-xl border border-cream-200 bg-cream-50/50 px-3 py-2"
                       >
                         <div>
-                          <div className="text-sm font-medium text-slate-900">
-                            {s.employee?.name ?? "(לא מתויג)"}
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-brown-900">
+                              {s.employee?.name ?? "(לא מתויג)"}
+                            </span>
+                            {s.employee?.role && (
+                              <span className="text-[11px] text-brown-400">
+                                {roleBadge(s.employee.role)}
+                              </span>
+                            )}
                           </div>
-                          <div className="mt-0.5 text-xs text-slate-500">
+                          <div className="mt-0.5 text-xs text-brown-500">
                             {s.source === "form" ? "טופס" : "הדבקה"} ·{" "}
                             {new Intl.DateTimeFormat("he-IL", {
                               day: "numeric",
@@ -147,16 +259,21 @@ export default async function AvailabilityPage({
             <CardTitle>קישורים אישיים לעובדים</CardTitle>
           </CardHeader>
           <CardBody>
-            <p className="mb-3 text-xs text-slate-500">
+            <p className="mb-3 text-xs text-brown-500">
               שלח/י לעובדים את הקישור האישי שלהם — הם ימלאו טופס מובייל ידידותי.
             </p>
             <ul className="space-y-1.5">
               {employees.map((e) => (
                 <li
                   key={e.id}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border border-cream-200 px-3 py-2 text-sm"
                 >
-                  <span className="text-slate-700">{e.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-brown-700">{e.name}</span>
+                    <span className="text-[11px] text-brown-400">
+                      {roleBadge(e.role)}
+                    </span>
+                  </div>
                   <Link
                     href={`/employees/${e.id}`}
                     className="text-xs text-brand-600 hover:underline"

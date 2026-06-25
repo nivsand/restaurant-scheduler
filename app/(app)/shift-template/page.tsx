@@ -44,8 +44,8 @@ export default async function ShiftTemplatePage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900">תבנית משמרות</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-extrabold text-brown-900">תבנית משמרות</h2>
+        <p className="text-sm text-brown-500">
           הגדירו כמה עובדים נדרשים בכל משמרת. הזינו 0 כדי לסמן שהמשמרת סגורה ביום
           זה. ניתן לעקוף לשבוע ספציפי בעת יצירת סידור.
         </p>
@@ -54,24 +54,24 @@ export default async function ShiftTemplatePage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>מטריצה שבועית</CardTitle>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-brown-500">
             <LegendDot tone="kitchen" /> מטבח &nbsp;
             <LegendDot tone="floor" /> פלור &nbsp;
-            <span className="text-slate-400">0 = סגור</span>
+            <span className="text-brown-400">0 = סגור</span>
           </div>
         </CardHeader>
         <CardBody className="overflow-x-auto p-0">
           <form action={saveTemplateAction}>
             <table className="w-full min-w-[760px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="p-3 text-start font-medium text-slate-600">
+                <tr className="border-b border-cream-200 bg-cream-50">
+                  <th className="p-3 text-start font-medium text-brown-600">
                     משמרת
                   </th>
                   {DAYS.map((d) => (
                     <th
                       key={d}
-                      className="p-3 text-center font-medium text-slate-700"
+                      className="p-3 text-center font-medium text-brown-700"
                     >
                       {DAY_NAMES_HE[d]}
                     </th>
@@ -84,7 +84,7 @@ export default async function ShiftTemplatePage() {
                   return (
                     <tr
                       key={st}
-                      className="border-b border-slate-100 hover:bg-slate-50/40"
+                      className="border-b border-cream-200 hover:bg-cream-50/40"
                     >
                       <td className="p-3">
                         <div className="flex items-center gap-2">
@@ -97,10 +97,10 @@ export default async function ShiftTemplatePage() {
                             )}
                           />
                           <div>
-                            <div className="font-medium text-slate-900">
+                            <div className="font-medium text-brown-900">
                               {def.labelHe}
                             </div>
-                            <div className="text-xs text-slate-500 num">
+                            <div className="text-xs text-brown-500 num">
                               {def.start}-{def.end}
                               {def.isClosing && " · סגירה"}
                             </div>
@@ -121,8 +121,8 @@ export default async function ShiftTemplatePage() {
                               className={cn(
                                 "h-10 w-14 rounded-lg border bg-white text-center text-sm font-medium focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200",
                                 value === 0
-                                  ? "border-slate-100 text-slate-300"
-                                  : "border-slate-200 text-slate-900",
+                                  ? "border-cream-200 text-brown-400"
+                                  : "border-cream-200 text-brown-900",
                               )}
                               title={value === 0 ? "0 = סגור ליום זה" : undefined}
                             />
@@ -132,12 +132,12 @@ export default async function ShiftTemplatePage() {
                     </tr>
                   );
                 })}
-                <tr className="border-t-2 border-slate-200 bg-slate-50">
-                  <td className="p-3 font-medium text-slate-600">סה״כ ליום</td>
+                <tr className="border-t-2 border-cream-200 bg-cream-50">
+                  <td className="p-3 font-medium text-brown-600">סה״כ ליום</td>
                   {DAYS.map((d) => (
                     <td
                       key={d}
-                      className="p-3 text-center font-semibold text-slate-700 num"
+                      className="p-3 text-center font-semibold text-brown-700 num"
                     >
                       {dayTotals[d]}
                     </td>
@@ -145,7 +145,7 @@ export default async function ShiftTemplatePage() {
                 </tr>
               </tbody>
             </table>
-            <div className="flex justify-end gap-2 border-t border-slate-100 p-4">
+            <div className="flex justify-end gap-2 border-t border-cream-200 p-4">
               <Button type="submit">שמור תבנית</Button>
             </div>
           </form>
@@ -173,7 +173,7 @@ export default async function ShiftTemplatePage() {
                 dir="ltr"
                 className="w-32 text-start"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-brown-500">
                 ברירת מחדל: 11 שעות (לפי תקנות העבודה). אפשר לעקוף ידנית בעת
                 יצירת הסידור.
               </p>

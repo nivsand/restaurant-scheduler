@@ -53,7 +53,7 @@ export function ScheduleCell({
     return (
       <td
         className={cn(
-          "border border-slate-300 p-1 text-center text-xs font-semibold",
+          "border border-brown-400 p-1 text-center text-xs font-semibold",
           closedTint,
         )}
       >
@@ -90,8 +90,8 @@ export function ScheduleCell({
 
   if (showFridayFloorSplit) {
     return (
-      <td className={cn("border border-slate-300 align-middle p-1", cellTint)}>
-        <div className="divide-y divide-slate-400/40">
+      <td className={cn("border border-brown-400 align-middle p-1", cellTint)}>
+        <div className="divide-y divide-brown-400/40">
           {chips.map((chip, idx) => (
             <div
               key={chip.slotIndex}
@@ -103,7 +103,7 @@ export function ScheduleCell({
                 onClick={() => setOpenSlotIdx(chip.slotIndex)}
                 className="min-w-0 flex-1 text-center"
               >
-                <span className="block truncate font-semibold text-slate-900">
+                <span className="block truncate font-semibold text-brown-900">
                   {chip.employeeName}
                 </span>
               </button>
@@ -113,10 +113,10 @@ export function ScheduleCell({
                   value={fridayFloorSplitTimes![idx]}
                   onChange={(e) => setSplitTime(idx as 0 | 1, e.target.value)}
                   disabled={isPending}
-                  className="num w-[4.5rem] shrink-0 rounded border border-slate-300 bg-white/70 px-0.5 text-[10px]"
+                  className="num w-[4.5rem] shrink-0 rounded border border-brown-400 bg-white/70 px-0.5 text-[10px]"
                 />
               ) : (
-                <span className="num shrink-0 text-[10px] text-slate-600">
+                <span className="num shrink-0 text-[10px] text-brown-600">
                   ({fridayFloorSplitTimes![idx]})
                 </span>
               )}
@@ -143,7 +143,7 @@ export function ScheduleCell({
   return (
     <td
       className={cn(
-        "border border-slate-300 align-middle p-1",
+        "border border-brown-400 align-middle p-1",
         cellTint,
       )}
     >
@@ -178,14 +178,14 @@ export function ScheduleCell({
                 className={cn(
                   "block truncate",
                   chip.employeeName
-                    ? "font-semibold text-slate-900"
+                    ? "font-semibold text-brown-900"
                     : "font-medium",
                 )}
               >
                 {chip.employeeName ?? "— ריק —"}
               </span>
               {chip.employeeName && chip.note && (
-                <span className="mt-0.5 block truncate text-[10px] font-normal leading-tight text-slate-500">
+                <span className="mt-0.5 block truncate text-[10px] font-normal leading-tight text-brown-500">
                   {chip.note}
                 </span>
               )}
@@ -199,7 +199,7 @@ export function ScheduleCell({
                   "shrink-0 rounded px-1 text-[10px] transition-opacity",
                   chip.locked
                     ? "text-brand-600 opacity-100"
-                    : "text-slate-300 opacity-0 group-hover:opacity-100",
+                    : "text-brown-400 opacity-0 group-hover:opacity-100",
                 )}
                 title={chip.locked ? "נעול — לחץ לביטול" : "נעל שיבוץ"}
               >
@@ -212,7 +212,7 @@ export function ScheduleCell({
           <button
             type="button"
             onClick={() => setOpenSlotIdx(0)}
-            className="block w-full rounded-md py-0.5 text-center text-xs text-slate-400 hover:bg-white/60"
+            className="block w-full rounded-md py-0.5 text-center text-xs text-brown-400 hover:bg-white/60"
           >
             +
           </button>

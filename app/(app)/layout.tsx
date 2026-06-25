@@ -7,6 +7,7 @@ import {
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
+import { MobileNav } from "@/components/mobile-nav";
 
 export default async function AppLayout({
   children,
@@ -29,8 +30,9 @@ export default async function AppLayout({
       <Sidebar restaurantName={restaurantName} isAdmin={manager.isAdmin} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar managerName={managerName} />
-        <main className="flex-1 overflow-x-auto p-6">{children}</main>
+        <main className="flex-1 overflow-x-auto bg-cream-50 p-4 pb-20 md:p-6 md:pb-6">{children}</main>
       </div>
+      <MobileNav />
     </div>
   );
 }

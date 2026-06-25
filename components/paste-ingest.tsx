@@ -73,7 +73,7 @@ export function PasteIngest({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>הדבקת הודעות מ-WhatsApp</CardTitle>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-brown-500">
           ערבל הודעות מרובות, בלוק לכל עובד, שורה ריקה בין בלוקים
         </span>
       </CardHeader>
@@ -94,7 +94,7 @@ export function PasteIngest({
             זיהוי בלוקים
           </Button>
           {blocks.length > 0 && (
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-brown-500">
               {blocks.length} בלוקים זוהו
             </span>
           )}
@@ -105,7 +105,7 @@ export function PasteIngest({
             {blocks.map((b, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-slate-200 bg-slate-50/50 p-3"
+                className="rounded-xl border border-cream-200 bg-cream-50/50 p-3"
               >
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <select
@@ -113,7 +113,7 @@ export function PasteIngest({
                     onChange={(e) =>
                       updateBlock(i, { employeeId: e.target.value })
                     }
-                    className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm focus:border-brand-500 focus:outline-none"
+                    className="h-9 rounded-lg border border-cream-200 bg-white px-2 text-sm focus:border-brand-500 focus:outline-none"
                   >
                     <option value="">בחר עובד...</option>
                     {employees.map((emp) => (
@@ -125,18 +125,18 @@ export function PasteIngest({
                   <button
                     type="button"
                     onClick={() => removeBlock(i)}
-                    className="text-xs text-slate-500 hover:text-rose-600"
+                    className="text-xs text-brown-500 hover:text-rose-600"
                   >
                     הסר
                   </button>
                 </div>
-                <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-slate-700">
+                <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-brown-700">
                   {b.content}
                 </pre>
               </div>
             ))}
 
-            <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
+            <div className="flex justify-end gap-2 border-t border-cream-200 pt-3">
               <Button
                 onClick={submit}
                 disabled={

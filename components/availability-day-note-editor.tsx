@@ -64,13 +64,13 @@ export function AvailabilityShiftNoteEditor({
   const orderedDays = ([...DAYS] as number[]).filter((d) => byDay.has(d));
 
   return (
-    <div className="mt-3 space-y-3 border-t border-slate-100 pt-3">
-      <p className="text-xs font-medium text-slate-500">
+    <div className="mt-3 space-y-3 border-t border-cream-200 pt-3">
+      <p className="text-xs font-medium text-brown-500">
         הערות לפי משמרת (מופיעות בסידור)
       </p>
       {orderedDays.map((day) => (
         <div key={day} className="space-y-1.5">
-          <p className="text-[11px] font-semibold text-slate-600">
+          <p className="text-[11px] font-semibold text-brown-600">
             {DAY_NAMES_HE[day as keyof typeof DAY_NAMES_HE]}
           </p>
           {byDay.get(day)!.map(({ shiftType }) => {
@@ -78,7 +78,7 @@ export function AvailabilityShiftNoteEditor({
             const key = `${day}:${shiftType}`;
             return (
               <label key={shiftType} className="flex items-center gap-2">
-                <span className="w-28 shrink-0 text-[11px] text-slate-500">
+                <span className="w-28 shrink-0 text-[11px] text-brown-500">
                   {def?.labelHe ?? shiftType}
                 </span>
                 <input
@@ -95,7 +95,7 @@ export function AvailabilityShiftNoteEditor({
                   disabled={isPending}
                   maxLength={200}
                   dir="auto"
-                  className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs outline-none transition placeholder:text-slate-300 focus:border-brand-400 focus:ring-1 focus:ring-brand-200 disabled:opacity-60"
+                  className="min-w-0 flex-1 rounded-md border border-cream-200 bg-white px-2 py-1 text-xs outline-none transition placeholder:text-brown-400 focus:border-brand-400 focus:ring-1 focus:ring-brand-200 disabled:opacity-60"
                 />
               </label>
             );

@@ -115,7 +115,7 @@ export function ScheduleControls({
       </div>
 
       {lastRun && (
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-brown-500">
           הסידור נוצר מתוך <span className="num">{lastRun.trials}</span> ניסיונות
           {lastRun.emptySlots > 0 ? (
             <>

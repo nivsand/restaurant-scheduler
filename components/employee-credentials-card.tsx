@@ -59,13 +59,13 @@ export function EmployeeCredentialsCard({
       </CardHeader>
       <CardBody className="space-y-3">
         {!hasEmail ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-brown-500">
             יש להגדיר אימייל/שם משתמש בטופס למעלה לפני הגדרת סיסמה.
           </p>
         ) : (
           <>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-600">סטטוס:</span>
+              <span className="text-brown-600">סטטוס:</span>
               {hasPassword ? (
                 <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
                   סיסמה מוגדרת
@@ -118,7 +118,7 @@ export function EmployeeCredentialsCard({
             {msg.text}
           </p>
         )}
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-brown-400">
           עובדים מתחברים דרך /employee/login עם האימייל והסיסמה שהוגדרו כאן.
         </p>
       </CardBody>
