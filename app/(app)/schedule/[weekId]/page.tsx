@@ -63,7 +63,9 @@ export default async function ScheduleEditorPage({
   // Headcounts: template overridden by week overrides
   const headMap = new Map<string, number>();
   for (const t of templates) headMap.set(`${t.day}:${t.shiftType}`, t.headcount);
-  for (const o of week.overrides) headMap.set(`${o.day}:${o.shiftType}`, o.headcount);
+  for (const o of week.overrides) {
+    if (o.headcount > 0) headMap.set(`${o.day}:${o.shiftType}`, o.headcount);
+  }
 
   const headcounts = Array.from(headMap.entries()).map(([k, headcount]) => {
     const [day, shiftType] = k.split(":");

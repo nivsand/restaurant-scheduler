@@ -59,7 +59,7 @@ export async function loadEngineInput(
     headcountMap.set(`${t.day}:${t.shiftType}`, t.headcount);
   }
   for (const o of week.overrides) {
-    headcountMap.set(`${o.day}:${o.shiftType}`, o.headcount);
+    if (o.headcount > 0) headcountMap.set(`${o.day}:${o.shiftType}`, o.headcount);
   }
 
   const slots: SlotDef[] = [];
