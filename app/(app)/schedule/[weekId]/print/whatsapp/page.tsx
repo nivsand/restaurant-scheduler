@@ -3,8 +3,10 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
-import { SHIFT_DEFS, ShiftType, ALL_SHIFT_TYPES } from "@/lib/shifts";
+import { ALL_SHIFT_TYPES, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
 import { DAYS, DAY_NAMES_HE_SHORT, DayOfWeek } from "@/lib/days";
+import { themeForShift, NOTE_THEME, NOTE_LABELS_HE } from "@/lib/grid-theme";
+import { NOTE_KINDS } from "@/components/schedule-grid";
 import { cn } from "@/lib/utils";
 import { WaProfilePrintControls } from "@/components/wa-profile-print-controls";
 
@@ -22,42 +24,51 @@ export default async function WhatsappProfilePage({
 
   const week = await prisma.week.findFirst({
     where: { id: weekId, restaurantId },
-    include: { restaurant: true },
+    include: { restaurant: true, overrides: true },
   });
   if (!week) notFound();
 
-  const [employees, assignments] = await Promise.all([
-    prisma.employee.findMany({
-      where: { restaurantId, archived: false },
-      orderBy: { name: "asc" },
-    }),
+  const [templates, assignments, scheduleNotes] = await Promise.all([
+    prisma.shiftTemplate.findMany({ where: { restaurantId } }),
     prisma.scheduleAssignment.findMany({
       where: { weekId, employeeId: { not: null } },
-      include: { employee: { select: { name: true, role: true } } },
+      include: { employee: { select: { name: true } } },
     }),
+    prisma.scheduleNote.findMany({ where: { weekId } }),
   ]);
 
-  // Build lookup: shiftType → day → sorted names
-  type CellEntry = { name: string; role: string };
-  const grid = new Map<string, Map<number, CellEntry[]>>();
-  for (const st of ALL_SHIFT_TYPES) grid.set(st, new Map());
-
-  for (const a of assignments) {
-    if (!a.employeeId || !a.employee) continue;
-    const dayMap = grid.get(a.shiftType);
-    if (!dayMap) continue;
-    const list = dayMap.get(a.day) ?? [];
-    list.push({ name: a.employee.name, role: a.employee.role });
-    dayMap.set(a.day, list);
+  // Effective headcount per (day, shiftType) — template default, overridden per-week.
+  const headMap = new Map<string, number>();
+  for (const t of templates) headMap.set(`${t.day}:${t.shiftType}`, t.headcount);
+  for (const o of week.overrides) {
+    if (o.headcount > 0) headMap.set(`${o.day}:${o.shiftType}`, o.headcount);
   }
 
-  // Keep only shift types that have at least one assignment in this week
+  // Assigned employee names per (day, shiftType), ordered by slot.
+  const assignMap = new Map<string, string[]>();
+  for (const a of [...assignments].sort((x, y) => x.slotIndex - y.slotIndex)) {
+    if (!a.employee) continue;
+    const key = `${a.day}:${a.shiftType}`;
+    const list = assignMap.get(key) ?? [];
+    list.push(a.employee.name);
+    assignMap.set(key, list);
+  }
+
+  const noteMap = new Map<string, string>();
+  for (const n of scheduleNotes) {
+    if (!n.content.trim()) continue;
+    noteMap.set(`${n.day}:${n.kind}`, n.content);
+  }
+
+  // Only rows with real content this week — same rule the editor uses.
   const activeShiftTypes = ALL_SHIFT_TYPES.filter((st) =>
-    DAYS.some((d) => (grid.get(st)?.get(d)?.length ?? 0) > 0),
+    DAYS.some((d) => (headMap.get(`${d}:${st}`) ?? 0) > 0),
+  );
+  const activeNoteKinds = NOTE_KINDS.filter((kind) =>
+    DAYS.some((d) => noteMap.has(`${d}:${kind}`)),
   );
 
-  const employeeCount = employees.length;
-  const assignedCount = new Set(assignments.map((a) => a.employeeId)).size;
+  const hasContent = activeShiftTypes.length > 0 || activeNoteKinds.length > 0;
 
   return (
     <main className="min-h-screen bg-white" dir="rtl">
@@ -75,136 +86,150 @@ export default async function WhatsappProfilePage({
         <WaProfilePrintControls weekId={weekId} />
       </div>
 
-      {/* Schedule area — this is captured */}
-      <div
-        id="wa-schedule"
-        className="bg-white p-8"
-        style={{ fontFamily: "'Arial', 'Helvetica', sans-serif" }}
-      >
-        {/* Header */}
-        <div className="mb-6 border-b-4 border-gray-900 pb-4">
-          <h1 className="text-4xl font-black text-gray-900 leading-tight">
+      {/* Schedule area — this is captured. No hardcoded height: grows with content. */}
+      <div id="wa-schedule" className="bg-white p-8">
+        {/* Header — restaurant name + week range only */}
+        <div className="mb-6 border-b-4 border-brown-400 pb-3">
+          <h1 className="text-4xl font-black text-brown-900 leading-tight">
             {week.restaurant.name}
           </h1>
-          <p className="mt-1 text-2xl font-bold text-gray-600 num">
+          <p className="mt-1 text-xl font-bold text-brown-600 num">
             {formatWeekRange(week.weekStart)}
           </p>
-          <div className="mt-2 flex items-center gap-3 text-base font-semibold text-gray-500">
-            <span>{assignedCount} עובדים משובצים</span>
-            {week.status === "approved" && (
-              <span className="rounded-full bg-emerald-600 px-3 py-0.5 text-sm font-bold text-white">
-                ✓ מאושר
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Schedule grid */}
-        {activeShiftTypes.length === 0 ? (
-          <p className="py-12 text-center text-2xl font-bold text-gray-400">
+        {!hasContent ? (
+          <p className="py-12 text-center text-2xl font-bold text-brown-400">
             אין שיבוצים לשבוע זה
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table
-              className="w-full border-collapse"
-              style={{ borderSpacing: 0 }}
-            >
-              <thead>
-                <tr>
-                  {/* Shift label column */}
-                  <th className="border-2 border-gray-900 bg-gray-900 px-3 py-3 text-right text-base font-black text-white w-32">
-                    משמרת
+          <table className="w-full border-collapse" style={{ borderSpacing: 0 }}>
+            <thead>
+              <tr>
+                <th className="w-28 border-2 border-brown-400 bg-cream-100 px-3 py-4 text-center text-lg font-black text-brown-700">
+                  משמרת
+                </th>
+                {DAYS.map((day) => (
+                  <th
+                    key={day}
+                    className={cn(
+                      "border-2 border-brown-400 px-2 py-4 text-center text-2xl font-black",
+                      day === 5 || day === 6
+                        ? "bg-brand-100 text-brand-800"
+                        : "bg-cream-100 text-brown-700",
+                    )}
+                  >
+                    {DAY_NAMES_HE_SHORT[day as DayOfWeek]}
                   </th>
-                  {DAYS.map((day) => (
-                    <th
-                      key={day}
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {activeShiftTypes.map((st) => {
+                const def = SHIFT_DEFS[st as ShiftType];
+                if (!def) return null;
+                const theme = themeForShift(st as ShiftType);
+                return (
+                  <tr key={st}>
+                    <td
                       className={cn(
-                        "border-2 border-gray-900 px-2 py-3 text-center text-2xl font-black",
-                        day === 5 || day === 6
-                          ? "bg-amber-100 text-amber-900"
-                          : "bg-gray-800 text-white",
+                        "border-2 border-brown-400 px-3 py-4 text-center",
+                        theme.labelClass,
                       )}
                     >
-                      {DAY_NAMES_HE_SHORT[day as DayOfWeek]}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {activeShiftTypes.map((st, rowIdx) => {
-                  const def = SHIFT_DEFS[st as ShiftType];
-                  if (!def) return null;
-                  const isEven = rowIdx % 2 === 0;
-                  return (
-                    <tr key={st}>
-                      <td
-                        className={cn(
-                          "border-2 border-gray-900 px-3 py-3",
-                          isEven ? "bg-gray-100" : "bg-gray-50",
-                        )}
-                      >
-                        <div className="text-sm font-black text-gray-900 leading-tight">
-                          {def.labelHe}
-                        </div>
-                        <div className="text-xs font-bold text-gray-500 num">
-                          {def.start}–{def.end}
-                        </div>
-                      </td>
-                      {DAYS.map((day) => {
-                        const entries = grid.get(st)?.get(day) ?? [];
+                      <div className="text-lg font-black leading-tight">
+                        {def.labelHe}
+                      </div>
+                      <div className="text-sm font-bold opacity-80 num">
+                        {def.start}–{def.end}
+                      </div>
+                    </td>
+                    {DAYS.map((day) => {
+                      const headCount = headMap.get(`${day}:${st}`) ?? 0;
+                      if (headCount === 0) {
                         return (
                           <td
                             key={day}
                             className={cn(
-                              "border-2 border-gray-900 px-2 py-2 text-center align-top",
-                              entries.length === 0
-                                ? "bg-gray-50"
-                                : def.role === "kitchen"
-                                  ? isEven
-                                    ? "bg-orange-50"
-                                    : "bg-orange-100/60"
-                                  : isEven
-                                    ? "bg-sky-50"
-                                    : "bg-sky-100/60",
+                              "border-2 border-brown-400 px-2 py-4 text-center text-base font-bold",
+                              theme.closedClass,
                             )}
                           >
-                            {entries.length === 0 ? (
-                              <span className="text-xl font-bold text-gray-300">—</span>
-                            ) : (
-                              <div className="space-y-1">
-                                {entries.map((e, i) => (
-                                  <div
-                                    key={i}
-                                    className="text-base font-black text-gray-900 leading-tight"
-                                  >
-                                    {e.name}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                            סגור
                           </td>
                         );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+                      }
+                      const names = assignMap.get(`${day}:${st}`) ?? [];
+                      return (
+                        <td
+                          key={day}
+                          className={cn(
+                            "border-2 border-brown-400 px-2 py-3 text-center align-middle",
+                            theme.cellClass,
+                          )}
+                        >
+                          {names.length === 0 ? (
+                            <span className="text-xl font-bold text-brown-400">—</span>
+                          ) : (
+                            <div className="space-y-1">
+                              {names.map((name, i) => (
+                                <div
+                                  key={i}
+                                  className="text-xl font-black text-brown-900 leading-tight"
+                                >
+                                  {name}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
 
-        {/* Footer */}
-        <div className="mt-4 flex items-center justify-between text-sm font-semibold text-gray-400">
-          <span>{employeeCount} עובדים</span>
-          <span className="num">
-            {new Intl.DateTimeFormat("he-IL", {
-              day: "numeric",
-              month: "numeric",
-              year: "numeric",
-            }).format(new Date())}
-          </span>
-        </div>
+              {activeNoteKinds.map((kind) => {
+                const theme = NOTE_THEME[kind];
+                return (
+                  <tr key={kind}>
+                    <td
+                      className={cn(
+                        "border-2 border-brown-400 px-3 py-4 text-center",
+                        theme.labelClass,
+                      )}
+                    >
+                      <div className="text-lg font-black leading-tight">
+                        {NOTE_LABELS_HE[kind]}
+                      </div>
+                    </td>
+                    {DAYS.map((day) => {
+                      const content = noteMap.get(`${day}:${kind}`) ?? "";
+                      return (
+                        <td
+                          key={day}
+                          className={cn(
+                            "border-2 border-brown-400 px-2 py-3 text-center align-middle",
+                            theme.cellClass,
+                          )}
+                        >
+                          {content ? (
+                            <span className="text-base font-bold leading-snug text-brown-900">
+                              {content}
+                            </span>
+                          ) : (
+                            <span className="text-xl font-bold text-brown-400">—</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Instructions below capture area */}

@@ -40,7 +40,7 @@ export interface ScheduleNote {
   content: string;
 }
 
-const NOTE_KINDS: NoteKind[] = ["event", "shift_manager", "hours"];
+export const NOTE_KINDS: NoteKind[] = ["event", "shift_manager", "hours"];
 
 export function ScheduleGrid({
   areaId = "schedule-area",
