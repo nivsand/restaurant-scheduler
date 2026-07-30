@@ -209,7 +209,13 @@ export async function toggleAvailabilityAction(payloadJson: string) {
     });
     if (!emp) throw new Error("עובד לא נמצא");
     const def = SHIFT_DEFS[shiftType as ShiftType];
-    if (emp.role !== "both" && def.role !== emp.role) {
+    // Shift Manager is a separate capability, gated by emp.shiftManager, not
+    // by Floor/Kitchen role — def.role="shift_manager" never equals emp.role.
+    if (def.role === "shift_manager") {
+      if (!emp.shiftManager) {
+        throw new Error(`${emp.name} אינו/ה מסומן/ת כמנהל/ת משמרת`);
+      }
+    } else if (emp.role !== "both" && def.role !== emp.role) {
       throw new Error(
         `התפקיד של ${emp.name} לא תואם למשמרת זו (${def.role})`,
       );

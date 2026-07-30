@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { DAYS } from "@/lib/days";
 
 // All weeks are Sunday-anchored at 00:00 in the app timezone. Vercel runs in
 // UTC, so week math must not depend on the server process timezone.
@@ -153,9 +154,29 @@ export async function getOrCreateWeek(
       status: existing.status,
     };
   }
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+    select: { defaultHoursText: true },
+  });
+
   const created = await prisma.week.create({
     data: { restaurantId, weekStart: normalized, status: "draft" },
   });
+
+  // Seed the "Hours" note row from the restaurant's default text — this is
+  // copied once at creation time; editing it afterwards only affects this
+  // week and never writes back to the restaurant-level default.
+  const defaultHoursText = restaurant?.defaultHoursText?.trim();
+  if (defaultHoursText) {
+    await prisma.scheduleNote.createMany({
+      data: DAYS.map((day) => ({
+        weekId: created.id,
+        day,
+        kind: "hours",
+        content: defaultHoursText,
+      })),
+    });
+  }
 
   return {
     id: created.id,

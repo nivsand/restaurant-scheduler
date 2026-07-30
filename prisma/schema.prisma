@@ -28,11 +28,15 @@ model Restaurant {
   closingsCount      Int      @default(2)  // how many closings per evening (A + B)
   fairnessWindowDays Int      @default(28) // rolling history window for fairness math
   maxConsecutiveDays Int      @default(6)  // labor-law-style cap on days in a row
+  // Prefilled into a new week's ScheduleNote(kind="hours") rows at creation
+  // time only — editing a week's Hours note afterwards does not touch this.
+  defaultHoursText   String   @default("סוגרים ב־23:30\n(מטבח ב־22:30)")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   managers       Manager[]
   employees      Employee[]
+  shiftHours     ShiftHours[]
   shiftTemplate  ShiftTemplate[]
   weeks          Week[]
 }
@@ -62,6 +66,9 @@ model Employee {
   restaurantId    String
   name            String
   role            String   @default("both")
+  // Additional capability, independent of role — an employee can be
+  // Floor/Kitchen/Both AND also a Shift Manager.
+  shiftManager    Boolean  @default(false)
   // soft preferences — engine treats as constraints unless manager overrides
   maxShifts       Int?
   minShifts       Int?
@@ -99,6 +106,24 @@ model ShiftTemplate {
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@unique([restaurantId, day, shiftType])
+}
+
+// Editable start/end hours per (restaurant, shift type) — overrides the
+// hardcoded defaults in lib/shifts.ts SHIFT_DEFS. endsNextDay is derived
+// automatically (end <= start) whenever a row is saved, not user-set.
+// Backfilled for every existing restaurant so nothing changes until a
+// manager edits a row from the Shift Template page.
+model ShiftHours {
+  id           String  @id @default(cuid())
+  restaurantId String
+  shiftType    String
+  start        String
+  end          String
+  endsNextDay  Boolean @default(false)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([restaurantId, shiftType])
 }
 
 // A scheduling week. weekStart is the Sunday at 00:00 local time.

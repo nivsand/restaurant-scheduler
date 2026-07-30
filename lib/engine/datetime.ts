@@ -2,14 +2,15 @@
 // anchor. Handles shifts that cross midnight (`endsNextDay`).
 
 import { DayOfWeek } from "@/lib/days";
-import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { ShiftType, ShiftDefsMap } from "@/lib/shifts";
 
 export function slotDateTimes(
   weekStart: Date,
   day: DayOfWeek,
   shiftType: ShiftType,
+  shiftDefs: ShiftDefsMap,
 ): { start: Date; end: Date } {
-  const def = SHIFT_DEFS[shiftType];
+  const def = shiftDefs[shiftType];
   const start = new Date(weekStart);
   start.setHours(0, 0, 0, 0);
   start.setDate(start.getDate() + day);

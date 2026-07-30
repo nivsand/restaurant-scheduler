@@ -12,6 +12,7 @@ import {
 } from "@/lib/week";
 import { EmployeeAvailabilityForm } from "@/components/employee-availability-form";
 import { WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 
 const heebo = Heebo({
   subsets: ["latin", "hebrew"],
@@ -54,7 +55,7 @@ export default async function PublicAvailabilityPage({
 
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
 
-  const [existing, templates, weekOverrides] = await Promise.all([
+  const [existing, templates, weekOverrides, shiftDefs] = await Promise.all([
     prisma.parsedAvailability.findMany({
       where: { weekId: week.id, employeeId: employee.id },
     }),
@@ -62,6 +63,7 @@ export default async function PublicAvailabilityPage({
       where: { restaurantId: employee.restaurantId },
     }),
     prisma.weekOverride.findMany({ where: { weekId: week.id } }),
+    loadShiftDefs(employee.restaurantId),
   ]);
 
   // Template headcount per (day, shiftType) — used to hide closed combos on the form.
@@ -167,8 +169,10 @@ export default async function PublicAvailabilityPage({
                 note: e.note ?? null,
               }))}
               employeeRole={employee.role as "kitchen" | "floor" | "both"}
+              employeeShiftManager={employee.shiftManager}
               headcounts={headcounts}
               initialWeekNote={weekNoteRow?.note ?? ""}
+              shiftDefs={shiftDefs}
             />
           </>
         )}

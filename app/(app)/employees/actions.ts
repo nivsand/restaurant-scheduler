@@ -11,6 +11,7 @@ import { randomToken } from "@/lib/utils";
 const employeeSchema = z.object({
   name: z.string().trim().min(1, "שם חובה"),
   role: z.enum(["kitchen", "floor", "both"]),
+  shiftManager: z.coerce.boolean().optional().default(false),
   email: z.string().trim().toLowerCase().max(120).optional().nullable(),
   maxShifts: z.coerce.number().int().min(0).max(14).optional().nullable(),
   minShifts: z.coerce.number().int().min(0).max(14).optional().nullable(),
@@ -27,6 +28,7 @@ function parseFormBooleans(formData: FormData): Record<string, boolean> {
     onlyEvenings: formData.get("onlyEvenings") === "on",
     noClosings: formData.get("noClosings") === "on",
     weekendOk: formData.get("weekendOk") === "on",
+    shiftManager: formData.get("shiftManager") === "on",
   };
 }
 
@@ -65,6 +67,7 @@ export async function createEmployeeAction(formData: FormData) {
       restaurantId,
       name: data.name,
       role: data.role,
+      shiftManager: data.shiftManager,
       email: emailVal,
       maxShifts: data.maxShifts,
       minShifts: data.minShifts,
@@ -121,6 +124,7 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
     data: {
       name: data.name,
       role: data.role,
+      shiftManager: data.shiftManager,
       email: emailVal,
       maxShifts: data.maxShifts,
       minShifts: data.minShifts,

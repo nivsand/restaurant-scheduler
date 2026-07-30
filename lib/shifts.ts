@@ -1,5 +1,11 @@
 // Shift type catalog. Times are in HH:MM 24h. `endsNextDay` means it crosses midnight.
 // `category` controls which template column a shift belongs to.
+//
+// start/end/endsNextDay here are DEFAULTS ONLY — actual per-restaurant hours
+// are editable from the Shift Template page (ShiftHours table) and resolved
+// via lib/shift-hours.ts loadShiftDefs(). role/labelHe/isClosing are fixed
+// metadata, not configurable. Everywhere that displays or schedules against
+// shift hours should use the resolved map, not this static catalog directly.
 
 import { DayOfWeek } from "./days";
 
@@ -12,6 +18,7 @@ export const SHIFT_TYPES = {
   EVENING_FLOOR_17: "EVENING_FLOOR_17",
   CLOSING_A_19: "CLOSING_A_19",
   CLOSING_B_20: "CLOSING_B_20",
+  SHIFT_MANAGER: "SHIFT_MANAGER",
 } as const;
 
 export type ShiftType = (typeof SHIFT_TYPES)[keyof typeof SHIFT_TYPES];
@@ -20,7 +27,9 @@ export interface ShiftDef {
   id: ShiftType;
   label: string;
   labelHe: string;
-  role: "kitchen" | "floor";
+  // "shift_manager" is an additional capability, not a Floor/Kitchen role —
+  // eligibility for it is gated by Employee.shiftManager, not Employee.role.
+  role: "kitchen" | "floor" | "shift_manager";
   start: string;
   end: string;
   endsNextDay: boolean;
@@ -88,9 +97,40 @@ export const SHIFT_DEFS: Record<ShiftType, ShiftDef> = {
     endsNextDay: true,
     isClosing: true,
   },
+  SHIFT_MANAGER: {
+    id: "SHIFT_MANAGER",
+    label: "Shift Manager",
+    labelHe: "מנהל/ת משמרת",
+    role: "shift_manager",
+    start: "16:00",
+    end: "23:30",
+    endsNextDay: false,
+    isClosing: false,
+  },
 };
 
 export const ALL_SHIFT_TYPES = Object.keys(SHIFT_DEFS) as ShiftType[];
+
+// ─── Per-restaurant resolved hours ─────────────────────────────────────────
+
+export type ShiftDefsMap = Record<ShiftType, ShiftDef>;
+
+// Merges ShiftHours rows (DB overrides) over the static SHIFT_DEFS defaults.
+// Any shift type missing a row (e.g. a brand-new restaurant, or one created
+// before backfill) falls back to the hardcoded default — never throws.
+export function mergeShiftHours(
+  rows: Array<{ shiftType: string; start: string; end: string; endsNextDay: boolean }>,
+): ShiftDefsMap {
+  const overrides = new Map(rows.map((r) => [r.shiftType, r]));
+  const out = {} as ShiftDefsMap;
+  for (const st of ALL_SHIFT_TYPES) {
+    const o = overrides.get(st);
+    out[st] = o
+      ? { ...SHIFT_DEFS[st], start: o.start, end: o.end, endsNextDay: o.endsNextDay }
+      : SHIFT_DEFS[st];
+  }
+  return out;
+}
 
 // Sentinel "shiftType" used to store a free-text general weekly note on the
 // employee availability form. Stored as a ParsedAvailability row (day 0,

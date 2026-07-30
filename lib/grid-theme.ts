@@ -28,6 +28,11 @@ const GREEN: RowTheme = {
   labelClass: "bg-emerald-300 text-emerald-950",
   closedClass: "bg-rose-300 text-rose-800",
 };
+const PURPLE: RowTheme = {
+  cellClass: "bg-purple-200",
+  labelClass: "bg-purple-300 text-purple-950",
+  closedClass: "bg-rose-300 text-rose-800",
+};
 
 export function themeForShift(st: ShiftType): RowTheme {
   switch (st) {
@@ -40,6 +45,8 @@ export function themeForShift(st: ShiftType): RowTheme {
     case "CLOSING_A_19":
     case "CLOSING_B_20":
       return GREEN;
+    case "SHIFT_MANAGER":
+      return PURPLE;
     default:
       return GREEN;
   }
@@ -51,10 +58,6 @@ export const NOTE_THEME = {
     cellClass: "bg-violet-200",
     labelClass: "bg-violet-300 text-violet-950",
   },
-  shift_manager: {
-    cellClass: "bg-purple-200",
-    labelClass: "bg-purple-300 text-purple-950",
-  },
   hours: {
     cellClass: "bg-emerald-100",
     labelClass: "bg-emerald-200 text-emerald-900",
@@ -63,6 +66,5 @@ export const NOTE_THEME = {
 
 export const NOTE_LABELS_HE: Record<keyof typeof NOTE_THEME, string> = {
   event: "אירועים",
-  shift_manager: "מנהל/ת משמרת",
   hours: "שעות",
 };

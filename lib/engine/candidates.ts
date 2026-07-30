@@ -3,7 +3,7 @@
 // assignment AND by the "why isn't X here?" UI panel.
 
 import { DayOfWeek } from "@/lib/days";
-import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { SHIFT_DEFS, ShiftType, ShiftDefsMap } from "@/lib/shifts";
 import {
   AvailabilityRow,
   AssignmentState,
@@ -34,6 +34,7 @@ export function checkEligibility(
   availability: AvailabilityRow[],
   state: AssignmentState,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   blocks?: ReadonlyArray<{ employeeId: string; day: number; shiftType: string }>,
@@ -56,7 +57,13 @@ export function checkEligibility(
   }
 
   // 1. Role match — HARD. A kitchen employee cannot fill a floor slot, ever.
-  if (emp.role !== "both" && slot.role !== emp.role) {
+  // Shift Manager is a separate capability (not part of role): gated purely
+  // by emp.shiftManager, independent of the employee's Floor/Kitchen role.
+  if (slot.role === "shift_manager") {
+    if (!emp.shiftManager) {
+      return { eligible: false, reason: "אינו/ה מנהל/ת משמרת", severity: "hard" };
+    }
+  } else if (emp.role !== "both" && slot.role !== emp.role) {
     return { eligible: false, reason: "תפקיד לא תואם", severity: "hard" };
   }
 
@@ -111,9 +118,9 @@ export function checkEligibility(
   }
 
   // 6. Rest hours. SOFT (manager may override with confirmation).
-  const slotTimes = slotDateTimes(weekStart, slot.day, slot.shiftType);
+  const slotTimes = slotDateTimes(weekStart, slot.day, slot.shiftType, shiftDefs);
   for (const other of empAssigns) {
-    const otherTimes = slotDateTimes(weekStart, other.day, other.shiftType);
+    const otherTimes = slotDateTimes(weekStart, other.day, other.shiftType, shiftDefs);
     const gap = restGapHours(otherTimes, slotTimes);
     if (gap < minRestHours) {
       return {
@@ -172,13 +179,14 @@ export function eligibleCandidatesRelaxedCaps(
   availability: AvailabilityRow[],
   state: AssignmentState,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   blocks?: ReadonlyArray<{ employeeId: string; day: number; shiftType: string }>,
 ): Array<{ employee: EmployeeProfile; confidence: number }> {
   const out: Array<{ employee: EmployeeProfile; confidence: number }> = [];
   for (const emp of employees) {
-    const r = checkEligibility(emp, slot, availability, state, weekStart, minRestHours, maxConsecutiveDays, blocks);
+    const r = checkEligibility(emp, slot, availability, state, weekStart, shiftDefs, minRestHours, maxConsecutiveDays, blocks);
     if (r.eligible) {
       out.push({ employee: emp, confidence: r.confidence });
       continue;
@@ -188,7 +196,7 @@ export function eligibleCandidatesRelaxedCaps(
     if (!isCapBlock) continue;
     // Re-check with caps removed — if eligible, include them
     const empNoCap: EmployeeProfile = { ...emp, requestedShifts: null, maxShifts: null };
-    const r2 = checkEligibility(empNoCap, slot, availability, state, weekStart, minRestHours, maxConsecutiveDays, blocks);
+    const r2 = checkEligibility(empNoCap, slot, availability, state, weekStart, shiftDefs, minRestHours, maxConsecutiveDays, blocks);
     if (r2.eligible) {
       out.push({ employee: emp, confidence: r2.confidence });
     }
@@ -204,6 +212,7 @@ export function eligibleCandidates(
   availability: AvailabilityRow[],
   state: AssignmentState,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   blocks?: ReadonlyArray<{ employeeId: string; day: number; shiftType: string }>,
@@ -216,6 +225,7 @@ export function eligibleCandidates(
       availability,
       state,
       weekStart,
+      shiftDefs,
       minRestHours,
       maxConsecutiveDays,
       blocks,

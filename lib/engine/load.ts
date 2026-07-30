@@ -10,6 +10,7 @@ import {
   ShiftType,
   isShiftAllowedOnDay,
 } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { fetchHistorySnapshot } from "./history";
 import { seedFromString } from "./random";
 import {
@@ -101,6 +102,7 @@ export async function loadEngineInput(
     id: e.id,
     name: e.name,
     role: e.role as "kitchen" | "floor" | "both",
+    shiftManager: e.shiftManager,
     maxShifts: e.maxShifts,
     minShifts: e.minShifts,
     requestedShifts: requestedByEmp.get(e.id) ?? null,
@@ -138,6 +140,9 @@ export async function loadEngineInput(
     week.restaurant.fairnessWindowDays,
   );
 
+  // ── Effective per-shift-type hours ──────────────────────────────────────
+  const shiftDefs = await loadShiftDefs(restaurantId);
+
   // ── Seed ───────────────────────────────────────────────────────────────
   const seed = overrideSeed ?? seedFromString(weekId);
 
@@ -150,6 +155,7 @@ export async function loadEngineInput(
       fairnessWindowDays: week.restaurant.fairnessWindowDays,
       maxConsecutiveDays: week.restaurant.maxConsecutiveDays,
     },
+    shiftDefs,
     slots,
     employees: empProfiles,
     availability: availRows,

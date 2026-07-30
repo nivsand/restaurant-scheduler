@@ -306,6 +306,7 @@ export async function explainSlotAction(
       input.availability,
       state,
       input.weekStart,
+      input.shiftDefs,
       input.restaurant.minRestHours,
       input.restaurant.maxConsecutiveDays,
       input.blocks,

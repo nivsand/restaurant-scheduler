@@ -15,6 +15,7 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SHIFT_DEFS, ShiftType, isShiftAllowedOnDay, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
 import { cn } from "@/lib/utils";
 import { roleBadge } from "@/lib/role-labels";
@@ -39,7 +40,7 @@ export default async function ScheduleEditorPage({
   });
   if (!week) notFound();
 
-  const [templates, employees, assignments, parsed, lastGen, scheduleNotes] =
+  const [templates, employees, assignments, parsed, lastGen, scheduleNotes, shiftDefs] =
     await Promise.all([
       prisma.shiftTemplate.findMany({ where: { restaurantId } }),
       prisma.employee.findMany({
@@ -58,6 +59,7 @@ export default async function ScheduleEditorPage({
         orderBy: { createdAt: "desc" },
       }),
       prisma.scheduleNote.findMany({ where: { weekId } }),
+      loadShiftDefs(restaurantId),
     ]);
 
   // Headcounts: template overridden by week overrides
@@ -157,7 +159,7 @@ export default async function ScheduleEditorPage({
       evenings: 0,
     };
     stats.total += 1;
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     if (def?.isClosing) stats.closings += 1;
     // Weekend = Friday (5) or Saturday (6). Must match the print page and the
     // Excel export, which both count Fri+Sat (previously this counted Friday
@@ -316,6 +318,7 @@ export default async function ScheduleEditorPage({
                 <AvailabilitySummaryGrid
                   rows={availabilityRows}
                   headcounts={headMap}
+                  shiftDefs={shiftDefs}
                 />
               </section>
             )}
@@ -330,6 +333,7 @@ export default async function ScheduleEditorPage({
                 content: n.content,
               }))}
               readOnly={isApproved}
+              shiftDefs={shiftDefs}
             />
           </div>
 

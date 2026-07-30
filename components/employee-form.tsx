@@ -9,6 +9,7 @@ import { Card, CardBody } from "@/components/ui/card";
 export interface EmployeeFormValues {
   name: string;
   role: "kitchen" | "floor" | "both";
+  shiftManager: boolean;
   email: string | null;
   maxShifts: number | null;
   minShifts: number | null;
@@ -76,6 +77,12 @@ export function EmployeeForm({
               ))}
             </div>
           </Field>
+
+          <Toggle
+            name="shiftManager"
+            label="מנהל/ת משמרת (יכולת נוספת)"
+            defaultChecked={!!initial?.shiftManager}
+          />
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="מינ׳ משמרות בשבוע">

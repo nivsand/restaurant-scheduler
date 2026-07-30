@@ -8,7 +8,8 @@ import {
   getOrCreateWeek,
 } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
-import { ALL_SHIFT_TYPES, SHIFT_DEFS, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { ALL_SHIFT_TYPES, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { cn } from "@/lib/utils";
 
 const heebo = Heebo({
@@ -36,6 +37,7 @@ export default async function AvailabilitySuccessPage({
 
   const weekStart = defaultActiveWeekStart();
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
+  const shiftDefs = await loadShiftDefs(employee.restaurantId);
 
   // Pull everything this employee currently has on file for the week
   const allParsed = await prisma.parsedAvailability.findMany({
@@ -111,7 +113,7 @@ export default async function AvailabilitySuccessPage({
                     {ALL_SHIFT_TYPES.filter((st) =>
                       cells.some((c) => c.shiftType === st),
                     ).map((st) => {
-                      const def = SHIFT_DEFS[st];
+                      const def = shiftDefs[st];
                       return (
                         <span
                           key={st}

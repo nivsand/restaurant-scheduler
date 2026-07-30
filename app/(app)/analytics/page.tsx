@@ -8,7 +8,8 @@ import {
 import { prisma } from "@/lib/db";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { ShiftType } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { roleBadge } from "@/lib/role-labels";
 import { cn } from "@/lib/utils";
 import { formatWeekRange } from "@/lib/week";
@@ -22,7 +23,7 @@ export default async function AnalyticsPage() {
   if (!manager) redirect(clearSessionPath("/login"));
   const restaurantId = manager.restaurantId;
 
-  const [employees, weeks, allAssignments] = await Promise.all([
+  const [employees, weeks, allAssignments, shiftDefs] = await Promise.all([
     prisma.employee.findMany({
       where: { restaurantId, archived: false },
       orderBy: { name: "asc" },
@@ -39,6 +40,7 @@ export default async function AnalyticsPage() {
       },
       include: { week: true },
     }),
+    loadShiftDefs(restaurantId),
   ]);
 
   // Per-employee aggregation
@@ -73,7 +75,7 @@ export default async function AnalyticsPage() {
     if (!s) continue;
     s.total += 1;
     s.weeks.add(a.weekId);
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     if (!def) continue;
     if (def.start < "12:00") s.mornings += 1;
     else s.evenings += 1;
@@ -103,18 +105,18 @@ export default async function AnalyticsPage() {
   // Totals
   const totalShifts = allAssignments.length;
   const totalMornings = allAssignments.filter((a) => {
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     return def && def.start < "12:00";
   }).length;
   const totalEvenings = totalShifts - totalMornings;
   const totalClosings = allAssignments.filter((a) => {
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     return def?.isClosing;
   }).length;
 
   // Estimate hours
   function shiftHours(shiftType: string): number {
-    const def = SHIFT_DEFS[shiftType as ShiftType];
+    const def = shiftDefs[shiftType as ShiftType];
     if (!def) return 0;
     const [sh, sm] = def.start.split(":").map(Number);
     const [eh, em] = def.end.split(":").map(Number);

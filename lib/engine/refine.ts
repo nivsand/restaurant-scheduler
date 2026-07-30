@@ -3,6 +3,7 @@
 //   • MOVE-TO-EMPTY — move an employee to an empty slot (if eligible)
 // Accept if total score improves. Stop when no improvement or N iterations.
 
+import { ShiftDefsMap } from "@/lib/shifts";
 import {
   AssignmentDecision,
   AssignmentState,
@@ -28,6 +29,7 @@ export interface RefineParams {
   availability: AvailabilityRow[];
   history: HistorySnapshot;
   weekStart: Date;
+  shiftDefs: ShiftDefsMap;
   minRestHours: number;
   maxConsecutiveDays: number;
   rand: () => number;
@@ -44,6 +46,7 @@ export function refineAssignments(params: RefineParams): {
     availability,
     history,
     weekStart,
+    shiftDefs,
     minRestHours,
     maxConsecutiveDays,
     rand,
@@ -93,6 +96,7 @@ export function refineAssignments(params: RefineParams): {
           availability,
           history,
           weekStart,
+          shiftDefs,
           minRestHours,
           maxConsecutiveDays,
           activeCount,
@@ -163,6 +167,7 @@ export function refineAssignments(params: RefineParams): {
         availability,
         history,
         weekStart,
+        shiftDefs,
         minRestHours,
         maxConsecutiveDays,
         activeCount,
@@ -204,6 +209,7 @@ function tryMoveToEmpty(
   availability: AvailabilityRow[],
   history: HistorySnapshot,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   activeCount: number,
@@ -226,6 +232,7 @@ function tryMoveToEmpty(
     availability,
     simState,
     weekStart,
+    shiftDefs,
     minRestHours,
     maxConsecutiveDays,
     blocks,
@@ -247,6 +254,7 @@ function tryMoveToEmpty(
     history,
     activeCount,
     1,
+    shiftDefs,
   );
   const newA: AssignmentDecision = {
     day: target.day,
@@ -270,6 +278,7 @@ function tryMoveToEmpty(
       availability,
       simState,
       weekStart,
+      shiftDefs,
       minRestHours,
       maxConsecutiveDays,
       blocks,
@@ -289,6 +298,7 @@ function tryMoveToEmpty(
       history,
       activeCount,
       1,
+      shiftDefs,
     );
     if (score > bestRepScore) {
       bestRepScore = score;
@@ -330,6 +340,7 @@ function trySwap(
   availability: AvailabilityRow[],
   history: HistorySnapshot,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   activeCount: number,
@@ -349,6 +360,7 @@ function trySwap(
     availability,
     simStateWithoutB,
     weekStart,
+    shiftDefs,
     minRestHours,
     maxConsecutiveDays,
     blocks,
@@ -361,6 +373,7 @@ function trySwap(
     availability,
     simStateWithoutB,
     weekStart,
+    shiftDefs,
     minRestHours,
     maxConsecutiveDays,
     blocks,
@@ -388,6 +401,7 @@ function trySwap(
     history,
     activeCount,
     1,
+    shiftDefs,
   );
   const { score: newBScore, breakdown: newBBreak } = scoreCandidate(
     empB,
@@ -397,6 +411,7 @@ function trySwap(
     history,
     activeCount,
     1,
+    shiftDefs,
   );
 
   const totalScoreDelta = newAScore + newBScore - A.score - B.score;

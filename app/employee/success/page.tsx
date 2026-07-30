@@ -8,7 +8,8 @@ import {
   getOrCreateWeek,
 } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
-import { ALL_SHIFT_TYPES, SHIFT_DEFS, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { ALL_SHIFT_TYPES, WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default async function EmployeeSuccessPage() {
 
   const weekStart = defaultActiveWeekStart();
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
+  const shiftDefs = await loadShiftDefs(employee.restaurantId);
 
   const allParsed = await prisma.parsedAvailability.findMany({
     where: { weekId: week.id, employeeId: employee.id },
@@ -89,7 +91,7 @@ export default async function EmployeeSuccessPage() {
                     {ALL_SHIFT_TYPES.filter((st) =>
                       cells.some((c) => c.shiftType === st),
                     ).map((st) => {
-                      const def = SHIFT_DEFS[st];
+                      const def = shiftDefs[st];
                       return (
                         <span
                           key={st}

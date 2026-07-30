@@ -3,6 +3,7 @@ import {
   ALL_SHIFT_TYPES,
   SHIFT_DEFS,
   ShiftType,
+  ShiftDefsMap,
   FRIDAY_FLOOR_SPLIT_DAY,
   FRIDAY_FLOOR_SPLIT_SHIFT_TYPE,
   FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES,
@@ -40,7 +41,7 @@ export interface ScheduleNote {
   content: string;
 }
 
-export const NOTE_KINDS: NoteKind[] = ["event", "shift_manager", "hours"];
+export const NOTE_KINDS: NoteKind[] = ["event", "hours"];
 
 export function ScheduleGrid({
   areaId = "schedule-area",
@@ -50,6 +51,7 @@ export function ScheduleGrid({
   notes,
   readOnly,
   cleanExport,
+  shiftDefs,
 }: {
   areaId?: string;
   weekId: string;
@@ -59,6 +61,8 @@ export function ScheduleGrid({
   readOnly: boolean;
   /** true for final exports (PDF/print/WhatsApp/Excel): hide lock/edit-state styling */
   cleanExport?: boolean;
+  /** Restaurant-configured hours per shift type (falls back to SHIFT_DEFS defaults) */
+  shiftDefs?: ShiftDefsMap;
 }) {
   const headMap = new Map<string, number>();
   for (const h of headcounts) headMap.set(`${h.day}:${h.shiftType}`, h.headcount);
@@ -124,7 +128,7 @@ export function ScheduleGrid({
         </thead>
         <tbody>
           {activeShiftTypes.map((st) => {
-            const def = SHIFT_DEFS[st];
+            const def = shiftDefs ? shiftDefs[st] : SHIFT_DEFS[st];
             const theme = themeForShift(st as ShiftType);
             return (
               <tr key={st}>

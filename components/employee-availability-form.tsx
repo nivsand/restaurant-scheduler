@@ -6,6 +6,7 @@ import {
   ALL_SHIFT_TYPES,
   SHIFT_DEFS,
   ShiftType,
+  ShiftDefsMap,
 } from "@/lib/shifts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,16 +30,20 @@ export function EmployeeAvailabilityForm({
   weekStart,
   initialCells,
   employeeRole,
+  employeeShiftManager,
   headcounts,
   initialWeekNote,
+  shiftDefs = SHIFT_DEFS,
 }: {
   token?: string;
   employeeId?: string;
   weekStart: string;
   initialCells: ExistingCell[];
   employeeRole: "kitchen" | "floor" | "both";
+  employeeShiftManager?: boolean;
   headcounts: HeadcountEntry[];
   initialWeekNote?: string;
+  shiftDefs?: ShiftDefsMap;
 }) {
   const [selected, setSelected] = useState<Set<string>>(
     new Set(initialCells.map((c) => `${c.day}:${c.shiftType}`)),
@@ -67,7 +72,10 @@ export function EmployeeAvailabilityForm({
     return ALL_SHIFT_TYPES.filter((st) => {
       const headcount = headMap.get(`${d}:${st}`) ?? 0;
       if (headcount <= 0) return false;
-      const def = SHIFT_DEFS[st];
+      const def = shiftDefs[st];
+      // Shift Manager is an additional capability, not part of Floor/Kitchen
+      // role — only shown to employees explicitly marked as shift managers.
+      if (def.role === "shift_manager") return !!employeeShiftManager;
       if (employeeRole === "both") return true;
       return def.role === employeeRole;
     });
@@ -143,17 +151,17 @@ export function EmployeeAvailabilityForm({
 
   // Quick-select buttons depend on whether mornings/evenings exist for this role.
   const hasMorningsForRole = ALL_SHIFT_TYPES.some((st) => {
-    const def = SHIFT_DEFS[st];
+    const def = shiftDefs[st];
     if (employeeRole !== "both" && def.role !== employeeRole) return false;
     return def.start < "12:00";
   });
   const hasEveningsForRole = ALL_SHIFT_TYPES.some((st) => {
-    const def = SHIFT_DEFS[st];
+    const def = shiftDefs[st];
     if (employeeRole !== "both" && def.role !== employeeRole) return false;
     return def.start >= "12:00";
   });
   const hasClosingsForRole = ALL_SHIFT_TYPES.some((st) => {
-    const def = SHIFT_DEFS[st];
+    const def = shiftDefs[st];
     if (employeeRole !== "both" && def.role !== employeeRole) return false;
     return def.isClosing;
   });
@@ -174,7 +182,7 @@ export function EmployeeAvailabilityForm({
             type="button"
             size="sm"
             variant="secondary"
-            onClick={() => selectMatching((st) => SHIFT_DEFS[st].start < "12:00")}
+            onClick={() => selectMatching((st) => shiftDefs[st].start < "12:00")}
           >
             כל הבקרים
           </Button>
@@ -186,7 +194,7 @@ export function EmployeeAvailabilityForm({
             variant="secondary"
             onClick={() =>
               selectMatching(
-                (st) => SHIFT_DEFS[st].start >= "12:00" && !SHIFT_DEFS[st].isClosing,
+                (st) => shiftDefs[st].start >= "12:00" && !shiftDefs[st].isClosing,
               )
             }
           >
@@ -198,7 +206,7 @@ export function EmployeeAvailabilityForm({
             type="button"
             size="sm"
             variant="secondary"
-            onClick={() => selectMatching((st) => SHIFT_DEFS[st].isClosing)}
+            onClick={() => selectMatching((st) => shiftDefs[st].isClosing)}
           >
             כל הסגירות
           </Button>
@@ -241,7 +249,7 @@ export function EmployeeAvailabilityForm({
               {isClosedDay ? null : (
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {shifts.map((st) => {
-                    const def = SHIFT_DEFS[st];
+                    const def = shiftDefs[st];
                     const key = `${d}:${st}`;
                     const on = selected.has(key);
                     return (
@@ -254,7 +262,9 @@ export function EmployeeAvailabilityForm({
                             on
                               ? def.role === "kitchen"
                                 ? "border-kitchen-400 bg-kitchen-50 text-kitchen-500 shadow-sm"
-                                : "border-floor-400 bg-floor-50 text-floor-500 shadow-sm"
+                                : def.role === "floor"
+                                  ? "border-floor-400 bg-floor-50 text-floor-500 shadow-sm"
+                                  : "border-purple-400 bg-purple-50 text-purple-700 shadow-sm"
                               : "border-cream-200 bg-white text-brown-700 hover:border-cream-300",
                           )}
                         >

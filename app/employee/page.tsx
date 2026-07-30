@@ -12,6 +12,7 @@ import {
 } from "@/lib/week";
 import { EmployeeAvailabilityForm } from "@/components/employee-availability-form";
 import { WEEK_NOTE_SHIFT_TYPE } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { EmployeeLogoutButton } from "@/components/employee-logout-button";
 
 export const metadata = {
@@ -42,7 +43,7 @@ export default async function EmployeeAvailabilityPage({
 
   const week = await getOrCreateWeek(employee.restaurantId, weekStart);
 
-  const [existing, templates, weekOverrides] = await Promise.all([
+  const [existing, templates, weekOverrides, shiftDefs] = await Promise.all([
     prisma.parsedAvailability.findMany({
       where: { weekId: week.id, employeeId: employee.id },
     }),
@@ -50,6 +51,7 @@ export default async function EmployeeAvailabilityPage({
       where: { restaurantId: employee.restaurantId },
     }),
     prisma.weekOverride.findMany({ where: { weekId: week.id } }),
+    loadShiftDefs(employee.restaurantId),
   ]);
 
   const headcountMap = new Map<string, number>();
@@ -159,8 +161,10 @@ export default async function EmployeeAvailabilityPage({
                   note: e.note ?? null,
                 }))}
                 employeeRole={employee.role as "kitchen" | "floor" | "both"}
+                employeeShiftManager={employee.shiftManager}
                 headcounts={headcounts}
                 initialWeekNote={weekNoteRow?.note ?? ""}
+                shiftDefs={shiftDefs}
               />
             </>
           )}

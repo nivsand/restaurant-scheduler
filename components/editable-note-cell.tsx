@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { updateScheduleNoteAction } from "@/app/(app)/schedule/notes-actions";
 import { cn } from "@/lib/utils";
 
-export type NoteKind = "event" | "shift_manager" | "hours";
+export type NoteKind = "event" | "hours";
 
 export function EditableNoteCell({
   weekId,

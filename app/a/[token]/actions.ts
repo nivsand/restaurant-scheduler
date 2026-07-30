@@ -46,6 +46,7 @@ const cellSchema = z.object({
     "EVENING_FLOOR_17",
     "CLOSING_A_19",
     "CLOSING_B_20",
+    "SHIFT_MANAGER",
   ]),
   note: z.string().max(200).optional(),
 });
@@ -124,9 +125,16 @@ export async function submitAvailabilityForm(payloadJson: string): Promise<{
     if (!isShiftAllowedOnDay(cell.shiftType, cell.day as 0 | 1 | 2 | 3 | 4 | 5 | 6))
       continue;
     // Server-side role filter: kitchen employee cannot have a floor cell, and
-    // vice versa. "both" passes through. Defensive against client tampering.
+    // vice versa. "both" passes through. Shift Manager is a separate
+    // capability, gated by employee.shiftManager instead. Defensive against
+    // client tampering.
     const def = SHIFT_DEFS[cell.shiftType as ShiftType];
-    if (employee.role !== "both" && def.role !== employee.role) {
+    if (def.role === "shift_manager") {
+      if (!employee.shiftManager) {
+        droppedRoleMismatch += 1;
+        continue;
+      }
+    } else if (employee.role !== "both" && def.role !== employee.role) {
       droppedRoleMismatch += 1;
       continue;
     }

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { sundayOf } from "@/lib/week";
 import { SHIFT_DEFS, ShiftType, ALL_SHIFT_TYPES } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
 import { roleBadge } from "@/lib/role-labels";
 import { cn } from "@/lib/utils";
@@ -76,6 +77,8 @@ export default async function DashboardPage() {
     ]);
 
   if (!restaurant) redirect(clearSessionPath("/login"));
+
+  const shiftDefs = await loadShiftDefs(restaurantId);
 
   // Today's shifts
   let todayAssignments: Array<{
@@ -243,7 +246,7 @@ export default async function DashboardPage() {
               ) : (
                 <div className="space-y-2">
                   {groupByShift(todayAssignments).map(([shiftType, items]) => {
-                    const def = SHIFT_DEFS[shiftType as ShiftType];
+                    const def = shiftDefs[shiftType as ShiftType];
                     if (!def) return null;
                     return (
                       <div key={shiftType}>

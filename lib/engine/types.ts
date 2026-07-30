@@ -1,5 +1,5 @@
 import { DayOfWeek } from "@/lib/days";
-import { ShiftType, Role } from "@/lib/shifts";
+import { ShiftType, Role, ShiftDefsMap } from "@/lib/shifts";
 
 // ─── Slot definition ───────────────────────────────────────────────────────
 // One row per physical slot to be filled (one row per "person needed").
@@ -10,7 +10,7 @@ export interface SlotDef {
   slotIndex: number;          // 0..headcount-1
   isClosing: boolean;
   isFriday: boolean;
-  role: "kitchen" | "floor";
+  role: "kitchen" | "floor" | "shift_manager";
 }
 
 // ─── Employee profile (read-only snapshot for the engine) ──────────────────
@@ -19,6 +19,7 @@ export interface EmployeeProfile {
   id: string;
   name: string;
   role: Role;                          // "kitchen" | "floor" | "both"
+  shiftManager: boolean;               // additional capability, independent of role
   maxShifts: number | null;            // hard cap if set
   minShifts: number | null;            // soft target (scored, not enforced)
   requestedShifts: number | null;      // HARD cap per decision 3 ("2 משמרות")
@@ -81,6 +82,10 @@ export interface EngineInput {
     fairnessWindowDays: number;
     maxConsecutiveDays: number;
   };
+  // Effective per-shift-type hours for this restaurant (DB overrides merged
+  // over SHIFT_DEFS defaults) — used for rest-hour math and morning/evening
+  // classification instead of the static catalog.
+  shiftDefs: ShiftDefsMap;
   slots: SlotDef[];
   employees: EmployeeProfile[];
   availability: AvailabilityRow[]; // only confirmed rows

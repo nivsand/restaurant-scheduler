@@ -51,6 +51,7 @@ export default async function EditEmployeePage({
         initial={{
           name: employee.name,
           role: employee.role as "kitchen" | "floor" | "both",
+          shiftManager: employee.shiftManager,
           email: employee.email,
           maxShifts: employee.maxShifts,
           minShifts: employee.minShifts,

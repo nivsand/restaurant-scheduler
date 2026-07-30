@@ -3,6 +3,7 @@
 // the highest-scoring candidate. Update state inline so later slots see the
 // new assignments (affects rest-hours, same-day rules, requestedShifts cap).
 
+import { ShiftDefsMap } from "@/lib/shifts";
 import {
   AssignmentDecision,
   AssignmentState,
@@ -23,6 +24,7 @@ export interface GreedyParams {
   state: AssignmentState; // mutated
   history: HistorySnapshot;
   weekStart: Date;
+  shiftDefs: ShiftDefsMap;
   minRestHours: number;
   maxConsecutiveDays: number;
   rand: () => number; // for deterministic tiebreaks
@@ -43,6 +45,7 @@ export function runGreedy(params: GreedyParams): GreedyResult {
     state,
     history,
     weekStart,
+    shiftDefs,
     minRestHours,
     maxConsecutiveDays,
     rand,
@@ -60,6 +63,7 @@ export function runGreedy(params: GreedyParams): GreedyResult {
       availability,
       state,
       weekStart,
+      shiftDefs,
       minRestHours,
       maxConsecutiveDays,
       blocks,
@@ -90,6 +94,7 @@ export function runGreedy(params: GreedyParams): GreedyResult {
       availability,
       state,
       weekStart,
+      shiftDefs,
       minRestHours,
       maxConsecutiveDays,
       blocks,
@@ -97,7 +102,7 @@ export function runGreedy(params: GreedyParams): GreedyResult {
 
     if (candidates.length === 0) {
       // Empty slot — capture the report
-      emptySlots.push(buildEmptyReport(slot, employees, availability, state, weekStart, minRestHours, maxConsecutiveDays, blocks));
+      emptySlots.push(buildEmptyReport(slot, employees, availability, state, weekStart, shiftDefs, minRestHours, maxConsecutiveDays, blocks));
       continue;
     }
 
@@ -117,6 +122,7 @@ export function runGreedy(params: GreedyParams): GreedyResult {
         history,
         activeCount,
         remainingSlots,
+        shiftDefs,
       );
       return { employee: c.employee, score, breakdown, randTie: rand() };
     });
@@ -164,6 +170,7 @@ function buildEmptyReport(
   availability: AvailabilityRow[],
   state: AssignmentState,
   weekStart: Date,
+  shiftDefs: ShiftDefsMap,
   minRestHours: number,
   maxConsecutiveDays: number,
   blocks?: ReadonlyArray<{ employeeId: string; day: number; shiftType: string }>,
@@ -179,6 +186,7 @@ function buildEmptyReport(
       availability,
       state,
       weekStart,
+      shiftDefs,
       minRestHours,
       maxConsecutiveDays,
       blocks,

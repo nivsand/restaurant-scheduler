@@ -6,6 +6,7 @@ import {
   ALL_SHIFT_TYPES,
   SHIFT_DEFS,
   ShiftType,
+  ShiftDefsMap,
 } from "@/lib/shifts";
 import { cn } from "@/lib/utils";
 
@@ -27,10 +28,12 @@ export interface SummaryAvailabilityRow {
 export function AvailabilitySummaryGrid({
   rows,
   headcounts,
+  shiftDefs = SHIFT_DEFS,
 }: {
   rows: SummaryAvailabilityRow[];
   // Optional: shift template headcounts so we can show "X/Y available" per cell
   headcounts?: Map<string, number>;
+  shiftDefs?: ShiftDefsMap;
 }) {
   const map = new Map<string, AvailabilityCell[]>();
   for (const r of rows) {
@@ -57,7 +60,7 @@ export function AvailabilitySummaryGrid({
         </thead>
         <tbody>
           {ALL_SHIFT_TYPES.map((st) => {
-            const def = SHIFT_DEFS[st];
+            const def = shiftDefs[st];
             // If headcounts provided, skip rows with 0 across the week
             if (headcounts) {
               let any = false;

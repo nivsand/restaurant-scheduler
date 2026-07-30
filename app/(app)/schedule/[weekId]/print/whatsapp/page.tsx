@@ -3,7 +3,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
-import { ALL_SHIFT_TYPES, SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { ALL_SHIFT_TYPES, ShiftType } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { DAYS, DAY_NAMES_HE_SHORT, DayOfWeek } from "@/lib/days";
 import { themeForShift, NOTE_THEME, NOTE_LABELS_HE } from "@/lib/grid-theme";
 import { NOTE_KINDS } from "@/components/schedule-grid";
@@ -28,13 +29,14 @@ export default async function WhatsappProfilePage({
   });
   if (!week) notFound();
 
-  const [templates, assignments, scheduleNotes] = await Promise.all([
+  const [templates, assignments, scheduleNotes, shiftDefs] = await Promise.all([
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
     prisma.scheduleAssignment.findMany({
       where: { weekId, employeeId: { not: null } },
       include: { employee: { select: { name: true } } },
     }),
     prisma.scheduleNote.findMany({ where: { weekId } }),
+    loadShiftDefs(restaurantId),
   ]);
 
   // Effective headcount per (day, shiftType) — template default, overridden per-week.
@@ -127,7 +129,7 @@ export default async function WhatsappProfilePage({
             </thead>
             <tbody>
               {activeShiftTypes.map((st) => {
-                const def = SHIFT_DEFS[st as ShiftType];
+                const def = shiftDefs[st as ShiftType];
                 if (!def) return null;
                 const theme = themeForShift(st as ShiftType);
                 return (

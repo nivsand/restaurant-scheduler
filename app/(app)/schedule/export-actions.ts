@@ -7,12 +7,12 @@ import { formatWeekRange } from "@/lib/week";
 import { DAYS, DAY_NAMES_HE } from "@/lib/days";
 import {
   ALL_SHIFT_TYPES,
-  SHIFT_DEFS,
   ShiftType,
   FRIDAY_FLOOR_SPLIT_DAY,
   FRIDAY_FLOOR_SPLIT_SHIFT_TYPE,
   FRIDAY_FLOOR_SPLIT_DEFAULT_TIMES,
 } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 
 // Excel ARGB colors (alpha first). Matches the on-screen theme.
 const COLOR = {
@@ -38,6 +38,8 @@ function fillFor(shiftType: ShiftType): string {
     case "CLOSING_A_19":
     case "CLOSING_B_20":
       return COLOR.GREEN;
+    case "SHIFT_MANAGER":
+      return COLOR.PURPLE;
     default:
       return COLOR.GREEN;
   }
@@ -45,7 +47,6 @@ function fillFor(shiftType: ShiftType): string {
 
 const NOTE_ROWS = [
   { kind: "event", labelHe: "אירועים", fill: COLOR.VIOLET },
-  { kind: "shift_manager", labelHe: "מנהל/ת משמרת", fill: COLOR.PURPLE },
   { kind: "hours", labelHe: "שעות", fill: COLOR.LIME },
 ] as const;
 
@@ -84,7 +85,7 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
   });
   if (!week) throw new Error("שבוע לא נמצא");
 
-  const [templates, assignments, employees, scheduleNotes, submissions, parsed] =
+  const [templates, assignments, employees, scheduleNotes, submissions, parsed, shiftDefs] =
     await Promise.all([
       prisma.shiftTemplate.findMany({ where: { restaurantId } }),
       prisma.scheduleAssignment.findMany({
@@ -103,6 +104,7 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
       prisma.parsedAvailability.findMany({
         where: { weekId, confirmed: true },
       }),
+      loadShiftDefs(restaurantId),
     ]);
 
   const headMap = new Map<string, number>();
@@ -175,7 +177,7 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
   // Shift rows
   let rowIdx = 4;
   for (const st of activeShiftTypes) {
-    const def = SHIFT_DEFS[st];
+    const def = shiftDefs[st];
     const fill = fillFor(st);
     const row = ws.getRow(rowIdx);
     row.values = [
@@ -297,7 +299,7 @@ export async function exportScheduleExcelAction(weekId: string): Promise<string>
   >();
   for (const a of assignments) {
     if (!a.employeeId || !a.employee) continue;
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     if (!def) continue;
     const emp = empMap.get(a.employeeId);
     const c =

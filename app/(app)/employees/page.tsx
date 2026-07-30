@@ -84,7 +84,12 @@ export default async function EmployeesPage({
                       {e.name}
                     </td>
                     <td className="px-5 py-3">
-                      <RoleBadge role={e.role} />
+                      <div className="flex flex-wrap items-center gap-1">
+                        <RoleBadge role={e.role} />
+                        {e.shiftManager && (
+                          <Badge tone="brand">⭐ מנהל/ת משמרת</Badge>
+                        )}
+                      </div>
                     </td>
                     <td className="px-5 py-3 text-brown-600">
                       {e.minShifts != null || e.maxShifts != null ? (

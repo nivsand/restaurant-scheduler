@@ -4,13 +4,13 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
   ALL_SHIFT_TYPES,
-  SHIFT_DEFS,
   ShiftType,
 } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { DAYS, DAY_NAMES_HE, DayOfWeek } from "@/lib/days";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   saveTemplateAction,
@@ -23,9 +23,10 @@ export default async function ShiftTemplatePage() {
   if (!session?.user?.restaurantId) redirect("/login");
   const restaurantId = session.user.restaurantId;
 
-  const [restaurant, templates] = await Promise.all([
+  const [restaurant, templates, shiftDefs] = await Promise.all([
     prisma.restaurant.findUnique({ where: { id: restaurantId } }),
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
+    loadShiftDefs(restaurantId),
   ]);
   if (!restaurant) notFound();
 
@@ -46,8 +47,9 @@ export default async function ShiftTemplatePage() {
       <div>
         <h2 className="text-2xl font-extrabold text-brown-900">תבנית משמרות</h2>
         <p className="text-sm text-brown-500">
-          הגדירו כמה עובדים נדרשים בכל משמרת. הזינו 0 כדי לסמן שהמשמרת סגורה ביום
-          זה. ניתן לעקוף לשבוע ספציפי בעת יצירת סידור.
+          הגדירו כמה עובדים נדרשים בכל משמרת ואת שעות ההתחלה/סיום שלה. הזינו 0
+          כדי לסמן שהמשמרת סגורה ביום זה. ניתן לעקוף לשבוע ספציפי בעת יצירת
+          סידור.
         </p>
       </div>
 
@@ -57,6 +59,7 @@ export default async function ShiftTemplatePage() {
           <div className="text-xs text-brown-500">
             <LegendDot tone="kitchen" /> מטבח &nbsp;
             <LegendDot tone="floor" /> פלור &nbsp;
+            <LegendDot tone="shift_manager" /> מנהל/ת משמרת &nbsp;
             <span className="text-brown-400">0 = סגור</span>
           </div>
         </CardHeader>
@@ -80,7 +83,7 @@ export default async function ShiftTemplatePage() {
               </thead>
               <tbody>
                 {ALL_SHIFT_TYPES.map((st) => {
-                  const def = SHIFT_DEFS[st];
+                  const def = shiftDefs[st];
                   return (
                     <tr
                       key={st}
@@ -90,19 +93,41 @@ export default async function ShiftTemplatePage() {
                         <div className="flex items-center gap-2">
                           <span
                             className={cn(
-                              "inline-block h-2.5 w-2.5 rounded-full",
+                              "inline-block h-2.5 w-2.5 shrink-0 rounded-full",
                               def.role === "kitchen"
                                 ? "bg-kitchen-500"
-                                : "bg-floor-500",
+                                : def.role === "floor"
+                                  ? "bg-floor-500"
+                                  : "bg-purple-500",
                             )}
                           />
                           <div>
                             <div className="font-medium text-brown-900">
                               {def.labelHe}
+                              {def.isClosing && (
+                                <span className="ms-1 text-xs font-normal text-brown-400">
+                                  · סגירה
+                                </span>
+                              )}
                             </div>
-                            <div className="text-xs text-brown-500 num">
-                              {def.start}-{def.end}
-                              {def.isClosing && " · סגירה"}
+                            <div className="mt-1 flex items-center gap-1">
+                              <input
+                                type="time"
+                                name={`hours-start-${st}`}
+                                defaultValue={def.start}
+                                dir="ltr"
+                                aria-label={`שעת התחלה — ${def.labelHe}`}
+                                className="num h-7 w-[5.5rem] rounded border border-cream-200 bg-white px-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                              />
+                              <span className="text-brown-400">–</span>
+                              <input
+                                type="time"
+                                name={`hours-end-${st}`}
+                                defaultValue={def.end}
+                                dir="ltr"
+                                aria-label={`שעת סיום — ${def.labelHe}`}
+                                className="num h-7 w-[5.5rem] rounded border border-cream-200 bg-white px-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                              />
                             </div>
                           </div>
                         </div>
@@ -178,6 +203,23 @@ export default async function ShiftTemplatePage() {
                 יצירת הסידור.
               </p>
             </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="defaultHoursText">
+                טקסט ברירת מחדל לשורת ״שעות״ בסידור
+              </Label>
+              <Textarea
+                id="defaultHoursText"
+                name="defaultHoursText"
+                rows={2}
+                defaultValue={restaurant.defaultHoursText}
+              />
+              <p className="text-xs text-brown-500">
+                משמש כערך התחלתי כשנוצר סידור חדש בלבד. עריכת שורת ״שעות״
+                בסידור קיים לא משנה את ברירת המחדל.
+              </p>
+            </div>
+
             <Button type="submit" variant="secondary">
               שמור הגדרות
             </Button>
@@ -188,7 +230,12 @@ export default async function ShiftTemplatePage() {
   );
 }
 
-function LegendDot({ tone }: { tone: "kitchen" | "floor" }) {
-  const cls = tone === "kitchen" ? "bg-kitchen-500" : "bg-floor-500";
+function LegendDot({ tone }: { tone: "kitchen" | "floor" | "shift_manager" }) {
+  const cls =
+    tone === "kitchen"
+      ? "bg-kitchen-500"
+      : tone === "floor"
+        ? "bg-floor-500"
+        : "bg-purple-500";
   return <span className={cn("inline-block h-2 w-2 rounded-full align-middle", cls)} />;
 }

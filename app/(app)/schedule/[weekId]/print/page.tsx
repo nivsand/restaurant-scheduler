@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatWeekRange } from "@/lib/week";
 import { SHIFT_DEFS, ShiftType } from "@/lib/shifts";
+import { loadShiftDefs } from "@/lib/shift-hours";
 import { cn } from "@/lib/utils";
 import { PrintControls } from "@/components/print-controls";
 import { ScheduleGrid } from "@/components/schedule-grid";
@@ -59,7 +60,7 @@ export default async function PrintSchedulePage({
   });
   if (!week) notFound();
 
-  const [templates, employees, assignments, scheduleNotes, parsed] = await Promise.all([
+  const [templates, employees, assignments, scheduleNotes, parsed, shiftDefs] = await Promise.all([
     prisma.shiftTemplate.findMany({ where: { restaurantId } }),
     prisma.employee.findMany({
       where: { restaurantId, archived: false },
@@ -73,6 +74,7 @@ export default async function PrintSchedulePage({
     prisma.parsedAvailability.findMany({
       where: { weekId, confirmed: true },
     }),
+    loadShiftDefs(restaurantId),
   ]);
 
   // Effective headcount per (day, shiftType)
@@ -138,7 +140,7 @@ export default async function PrintSchedulePage({
     if (!a.employeeId) continue;
     const c = empCounts.get(a.employeeId);
     if (!c) continue;
-    const def = SHIFT_DEFS[a.shiftType as ShiftType];
+    const def = shiftDefs[a.shiftType as ShiftType];
     if (!def) continue;
     c.total += 1;
     if (def.start < "12:00") c.mornings += 1;
@@ -216,6 +218,7 @@ export default async function PrintSchedulePage({
             }))}
             readOnly
             cleanExport
+            shiftDefs={shiftDefs}
           />
         </div>
 

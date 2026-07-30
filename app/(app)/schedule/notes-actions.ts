@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 const noteSchema = z.object({
   weekId: z.string(),
   day: z.number().int().min(0).max(6),
-  kind: z.enum(["event", "shift_manager", "hours"]),
+  kind: z.enum(["event", "hours"]),
   content: z.string().max(500),
 });
 

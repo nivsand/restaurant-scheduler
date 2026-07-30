@@ -60,6 +60,7 @@ export function runEngine(input: EngineInput): EngineOutput {
     state,
     history: input.history,
     weekStart: input.weekStart,
+    shiftDefs: input.shiftDefs,
     minRestHours: input.restaurant.minRestHours,
     maxConsecutiveDays: input.restaurant.maxConsecutiveDays,
     rand,
@@ -76,6 +77,7 @@ export function runEngine(input: EngineInput): EngineOutput {
     availability: input.availability,
     history: input.history,
     weekStart: input.weekStart,
+    shiftDefs: input.shiftDefs,
     minRestHours: input.restaurant.minRestHours,
     maxConsecutiveDays: input.restaurant.maxConsecutiveDays,
     rand,
@@ -199,6 +201,7 @@ function rescueEmptySlots(
       input.availability,
       state,
       input.weekStart,
+      input.shiftDefs,
       input.restaurant.minRestHours,
       input.restaurant.maxConsecutiveDays,
       input.blocks,
@@ -222,6 +225,7 @@ function rescueEmptySlots(
           input.history,
           activeCount,
           1,
+          input.shiftDefs,
         );
         return { employee: c.employee, score, breakdown };
       })

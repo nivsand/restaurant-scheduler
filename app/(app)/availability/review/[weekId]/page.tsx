@@ -82,8 +82,14 @@ export default async function ReviewPage({
     if (!emp) continue;
     // Defensive: drop rows where the employee's role doesn't match the shift's role.
     // This protects against legacy bad data from before the server-side guard.
+    // Shift Manager is a separate capability (emp.shiftManager), not a role.
     const def = SHIFT_DEFS[p.shiftType as ShiftType];
-    if (def && emp.role !== "both" && def.role !== emp.role) {
+    if (def?.role === "shift_manager") {
+      if (!emp.shiftManager) {
+        invalidRoleRows += 1;
+        continue;
+      }
+    } else if (def && emp.role !== "both" && def.role !== emp.role) {
       invalidRoleRows += 1;
       continue;
     }
@@ -224,6 +230,7 @@ export default async function ReviewPage({
             const empParsed = parsed.filter((p) => {
               if (p.employeeId !== emp.id) return false;
               const def = SHIFT_DEFS[p.shiftType as ShiftType];
+              if (def?.role === "shift_manager") return !!emp.shiftManager;
               if (def && emp.role !== "both" && def.role !== emp.role) return false;
               return true;
             });

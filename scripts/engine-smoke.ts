@@ -242,8 +242,8 @@ async function main() {
   )) {
     for (let i = 0; i < arr.length; i++) {
       for (let j = i + 1; j < arr.length; j++) {
-        const t1 = slotDateTimes(input.weekStart, arr[i].day as 0, arr[i].shiftType);
-        const t2 = slotDateTimes(input.weekStart, arr[j].day as 0, arr[j].shiftType);
+        const t1 = slotDateTimes(input.weekStart, arr[i].day as 0, arr[i].shiftType, input.shiftDefs);
+        const t2 = slotDateTimes(input.weekStart, arr[j].day as 0, arr[j].shiftType, input.shiftDefs);
         const gap = restGapHours(t1, t2);
         if (gap < input.restaurant.minRestHours) {
           restViolation = true;

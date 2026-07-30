@@ -5,6 +5,7 @@
 // This is a temporary verification harness — safe to delete.
 
 import { runEngine } from "../lib/engine/run";
+import { SHIFT_DEFS } from "../lib/shifts";
 import type { EngineInput, HistorySnapshot } from "../lib/engine/types";
 
 const emptyHistory: HistorySnapshot = {
@@ -31,6 +32,7 @@ function makeInput(withBlock: boolean): EngineInput {
       fairnessWindowDays: 28,
       maxConsecutiveDays: 6,
     },
+    shiftDefs: SHIFT_DEFS,
     slots: [
       {
         day: 1,
@@ -46,6 +48,7 @@ function makeInput(withBlock: boolean): EngineInput {
         id: "alice",
         name: "Alice",
         role: "floor",
+        shiftManager: false,
         maxShifts: null,
         minShifts: null,
         requestedShifts: null,
@@ -58,6 +61,7 @@ function makeInput(withBlock: boolean): EngineInput {
         id: "bob",
         name: "Bob",
         role: "floor",
+        shiftManager: false,
         maxShifts: null,
         minShifts: null,
         requestedShifts: null,

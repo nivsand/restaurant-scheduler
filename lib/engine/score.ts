@@ -1,7 +1,7 @@
 // Scoring function. Pure: takes the candidate + slot + state + history and
 // returns score + breakdown. Higher = better.
 
-import { SHIFT_DEFS } from "@/lib/shifts";
+import { ShiftDefsMap } from "@/lib/shifts";
 import {
   AssignmentState,
   AvailabilityRow,
@@ -37,6 +37,7 @@ export function scoreCandidate(
   history: HistorySnapshot,
   activeEmployeeCount: number,
   totalRemainingSlots: number,
+  shiftDefs: ShiftDefsMap,
 ): { score: number; breakdown: ScoreComponent[] } {
   const breakdown: ScoreComponent[] = [];
   let score = WEIGHTS.base;
@@ -112,7 +113,7 @@ export function scoreCandidate(
   score += confBoost;
 
   // ── Soft preferences ────────────────────────────────────────────────────
-  const isMorning = SHIFT_DEFS[slot.shiftType].start < "12:00";
+  const isMorning = shiftDefs[slot.shiftType].start < "12:00";
   if (emp.onlyMornings && !isMorning) {
     breakdown.push({
       key: "violatedOnlyMornings",
